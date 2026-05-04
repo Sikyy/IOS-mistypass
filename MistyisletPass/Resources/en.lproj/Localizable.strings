@@ -1,0 +1,94 @@
+/* Tabs */
+"tab.doors" = "Doors";
+"tab.pass" = "Pass";
+"tab.history" = "History";
+"tab.visitors" = "Visitors";
+"tab.profile" = "Profile";
+
+/* Doors */
+"doors.title" = "Doors";
+"doors.hold_to_unlock" = "Hold to Unlock";
+"doors.release_to_unlock" = "Release to Unlock";
+"doors.controller_offline" = "Controller offline";
+"doors.gateway_offline" = "Gateway offline";
+"doors.online" = "Online";
+"doors.ble_ready" = "BLE Ready";
+"doors.offline_banner" = "Offline";
+"doors.last_synced" = "Last synced %@";
+
+/* Unlock */
+"unlock.connecting" = "Connecting...";
+"unlock.granted" = "Door Unlocked";
+"unlock.denied" = "Access Denied";
+"unlock.failed" = "Connection Failed";
+"unlock.try_again" = "Try Again";
+
+/* QR Pass */
+"pass.title" = "Pass";
+"pass.instruction" = "Hold your phone near the reader";
+"pass.generating" = "Generating pass...";
+"pass.refresh" = "Refresh Now";
+"pass.refreshes_in" = "Refreshes in";
+"pass.brightness_hint" = "Screen brightness is increased for scanning";
+"pass.error" = "Unable to Generate Pass";
+
+/* History */
+"history.title" = "History";
+"history.empty" = "No History";
+"history.empty_description" = "Your access history will appear here.";
+"history.today" = "Today";
+"history.yesterday" = "Yesterday";
+
+/* Visitors */
+"visitors.title" = "Visitors";
+"visitors.empty" = "No Visitors";
+"visitors.empty_description" = "Create visitor passes to grant temporary access.";
+"visitors.active" = "Active Passes";
+"visitors.expired" = "Expired";
+"visitors.new" = "New Visitor";
+"visitors.create" = "Create";
+"visitors.name" = "Name";
+"visitors.phone" = "Phone";
+"visitors.host" = "Host Name";
+"visitors.company" = "Company (optional)";
+"visitors.purpose" = "Purpose (optional)";
+"visitors.duration" = "Access Duration";
+"visitors.hours" = "%d hours";
+"visitors.share" = "Share";
+"visitors.copy_token" = "Copy Token";
+"visitors.pass_title" = "Visitor Pass";
+
+/* Profile */
+"profile.title" = "Profile";
+"profile.credentials" = "My Credentials";
+"profile.settings" = "Settings";
+"profile.language" = "Language";
+"profile.biometric_lock" = "Biometric Lock";
+"profile.notifications" = "Notifications";
+"profile.about" = "About";
+"profile.sign_out" = "Sign Out";
+"profile.secure_enclave" = "Secure Enclave";
+"profile.active" = "Active";
+"profile.revoked" = "Revoked";
+"profile.revoke" = "Revoke";
+"profile.expires" = "Expires: %@";
+
+/* Auth */
+"auth.sign_in" = "Sign In";
+"auth.email" = "Email";
+"auth.password" = "Password";
+"auth.subtitle" = "Mobile Access Control";
+
+/* Biometric */
+"biometric.reason" = "Authenticate to unlock %@";
+
+/* Geofence */
+"geofence.nearby_title" = "Door Nearby";
+"geofence.nearby_body" = "You're near a door. Tap to unlock.";
+
+/* Common */
+"common.cancel" = "Cancel";
+"common.done" = "Done";
+"common.error" = "Error";
+"common.ok" = "OK";
+"common.try_again" = "Try Again";

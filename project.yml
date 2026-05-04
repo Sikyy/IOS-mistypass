@@ -1,0 +1,89 @@
+name: MistyisletPass
+options:
+  bundleIdPrefix: com.mistyislet
+  deploymentTarget:
+    iOS: "26.0"
+  xcodeVersion: "26"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    SWIFT_STRICT_CONCURRENCY: complete
+    ENABLE_USER_SCRIPT_SANDBOXING: true
+
+targets:
+  MistyisletPass:
+    type: application
+    platform: iOS
+    sources:
+      - path: MistyisletPass
+        excludes:
+          - "*.xcodeproj"
+          - "*.xcworkspace"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mistyislet.pass
+        INFOPLIST_FILE: MistyisletPass/Info.plist
+    entitlements:
+      path: MistyisletPass/MistyisletPass.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        keychain-access-groups:
+          - "$(AppIdentifierPrefix)com.mistyislet.pass"
+        com.apple.security.application-groups:
+          - "group.com.mistyislet.pass"
+        com.apple.developer.nfc.readersession.formats:
+          - TAG
+    dependencies:
+      - target: MistyisletPassWidgetExtension
+
+  MistyisletPassWidgetExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: MistyisletPassWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mistyislet.pass.widget
+        INFOPLIST_FILE: MistyisletPassWidget/Info.plist
+        GENERATE_INFOPLIST_FILE: true
+        INFOPLIST_KEY_CFBundleDisplayName: MistyisletPass Widget
+        INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: MistyisletPassWidget/MistyisletPassWidget.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - "group.com.mistyislet.pass"
+
+  MistyisletPassTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: MistyisletPassTests
+    dependencies:
+      - target: MistyisletPass
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mistyislet.pass.tests
+        GENERATE_INFOPLIST_FILE: true
+
+schemes:
+  MistyisletPass:
+    build:
+      targets:
+        MistyisletPass: all
+        MistyisletPassWidgetExtension: all
+        MistyisletPassTests: [test]
+    test:
+      targets:
+        - MistyisletPassTests

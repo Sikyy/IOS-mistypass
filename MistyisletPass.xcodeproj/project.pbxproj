@@ -1,0 +1,855 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		009F0BFF5A417946A9B7D1F2 /* AccessEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9941959B7D21B358B58037 /* AccessEvent.swift */; };
+		034B3C3C1EE9FCDCF975A276 /* ModelDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */; };
+		0D328A28F9208EE6FF502987 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA263DEDC614D6571E3D2532 /* UserProfile.swift */; };
+		142B48B826F8DEDC5751CB1D /* Site.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28EC5A794CDD22CF09A9AE43 /* Site.swift */; };
+		1C8B0DB439B4E0836900271F /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DFE34FF8D46259436687834 /* AuthViewModel.swift */; };
+		20D37113F25FE9B61F3B8212 /* ConstantsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2DAA2FF02C9104754C01A3 /* ConstantsTests.swift */; };
+		26E2341103A415AEB791432D /* VisitorsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8391791DA7AD915572F89204 /* VisitorsViewModel.swift */; };
+		273D6FC6537F8F22099D5F32 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6D8E840E9230C199833BD311 /* PrivacyInfo.xcprivacy */; };
+		2D7B157215422AE6B7B8C75C /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BCCD8EB6CD9326E1A3DF595 /* HistoryView.swift */; };
+		30495B37C96C18BE7C9A5F97 /* KeychainServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15BC893999F4D04247727B9 /* KeychainServiceTests.swift */; };
+		33634F1D8EEB1AC76A793D66 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C260646585C9078A802D136 /* ProfileView.swift */; };
+		3DEB94638265C70C5275E335 /* Door.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B8622EB900EC80075267B /* Door.swift */; };
+		41A4B81BE5585F75395F5A5B /* SettingsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AA63B71054C378AB74A5F75 /* SettingsServiceTests.swift */; };
+		43DA894E93608DC3B25C160F /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF89583EC6EF84F7D37F3AE6 /* SettingsService.swift */; };
+		4677EBB36AC6B493BD34EC77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6673606E2593B75182EAB267 /* Assets.xcassets */; };
+		49A7E1BBBBB8E7730B10E01C /* DeepLinkRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49AD49FEE237A3759EF7C00 /* DeepLinkRouterTests.swift */; };
+		53F9981F61505A29A40021BE /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0CBC3FC0151CFF3542A41F /* ProfileViewModel.swift */; };
+		5D494C0B8FBCD11DA21397FA /* MistyisletPassWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A273A2CE2AC635122A86E76 /* MistyisletPassWidget.swift */; };
+		5E1AD4A638E8CFB6240382C4 /* UnlockResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB130FF883D6E48EBA14D32 /* UnlockResult.swift */; };
+		602DB5B9052FBAFF1976E76B /* QRPassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D333302250B4C02DC3BD3051 /* QRPassView.swift */; };
+		60AB2CE743A405DA4E1D0E64 /* MistyisletPassApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F586A68AC009FF3F76BF228 /* MistyisletPassApp.swift */; };
+		6112FAB16366290CBE0E37B2 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC72E841588B5943BA9E465 /* Constants.swift */; };
+		6365BF3434B3056BAB4CF0AC /* CreateVisitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206CD685B913F639CD5D504D /* CreateVisitorView.swift */; };
+		66CAACA4F5F27F739C95639B /* NFCBindingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773DF62387FABE314905A52 /* NFCBindingView.swift */; };
+		688545E0B0D41B67859E2431 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8899FB1B33C78EC4D256FA33 /* APIService.swift */; };
+		689598C3124072683B34D964 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FB3224E2D0D3FFC0239118 /* NetworkMonitor.swift */; };
+		7127B5512C8561B6CC8AF2EA /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47AB007AFE69BF8ECA0FC96 /* Credential.swift */; };
+		75E3B94005DE26AB6FD4B869 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1BE5C4D8FC24106E740B05 /* PreviewData.swift */; };
+		8081890B8F67CA0606FC33D7 /* MistyisletPassWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F3AABA0840F0F795F40A3DBF /* MistyisletPassWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		814CF4C3FCA776C9F4AB1DA2 /* DoorsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533EEB1E9670B68910526F22 /* DoorsViewModel.swift */; };
+		85B304EF78F68A8555AC1792 /* GeofenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54917EFC06E88F37DF1AB446 /* GeofenceService.swift */; };
+		8661C099A0165C714DDBE904 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4616892D550B2C744947874C /* HapticService.swift */; };
+		8A32160AFAA4FB3B162FDD3A /* DoorCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E970DEC2E24763561C02D96 /* DoorCardView.swift */; };
+		8F58227145065925D9503FA1 /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD056A931B00DF7E557C6C0 /* BiometricService.swift */; };
+		9CE03C581E7382F6A89FDD36 /* UnlockOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D611111ABD6680F4648376CA /* UnlockOverlayView.swift */; };
+		AAFFCAD65554AC393A37A9A3 /* NFCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2858D3DC63174DC5CC13ED0E /* NFCService.swift */; };
+		ABAB9E620A74C50835FCFF15 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63F70CFEDA93341F7508634 /* DeepLinkRouter.swift */; };
+		B1D5FCBAFA922FE1BE5F2BF0 /* GeofenceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299224862324725359F1C102 /* GeofenceSettingsView.swift */; };
+		B4B93E64AEF42E3EE57007F4 /* SecureEnclaveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC41E6BE30EDC784C8BF75A /* SecureEnclaveService.swift */; };
+		BC06C4E2302F0C73809D6189 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F786632AE82535B7B0726F /* BLEManager.swift */; };
+		BC9D2C1DAB676F6333FF56E4 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C609E4DE2B696FDF081659D6 /* NotificationService.swift */; };
+		C8267CF557E4DA053313B7BA /* LanguageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E48607EA861738E25FF212 /* LanguageSettingsView.swift */; };
+		C94B682F0A38655C81862651 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F86AF6657BA7E613EECF03 /* MainTabView.swift */; };
+		CDABCE0BE3C48764554DBE95 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E40F803A3CB4AE527CF7EE50 /* Localizable.strings */; };
+		D145F8B4F204DC8A8EAB01CC /* VisitorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F71721675C8C6E91AE2B27 /* VisitorsView.swift */; };
+		DDE7CF6245C23EF098282F6D /* SiteSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B344D41EAE6F4C872DCE9FC6 /* SiteSwitcherView.swift */; };
+		E1C829C1B78DCE99BF43F881 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405AEBA255EF092B2E2ED20C /* KeychainService.swift */; };
+		E6A18F30FCF6D705EBAE516B /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EDD7FE71D151359C9028D5 /* HistoryViewModel.swift */; };
+		E70D0F13F473A6A98C55BF51 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7931F1F33352B66BCE8C56 /* LoginView.swift */; };
+		F06B9DA7019B4C6B09BF44F1 /* BrandColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DDEA8ECAE173EB62EFF36 /* BrandColors.swift */; };
+		F18E8BA07AADEF40F674ADEC /* DoorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0528BCF9C05030730097AB /* DoorsView.swift */; };
+		F56D830F6BCB91477F945B18 /* Visitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2D3E844D8B477A0B81F168 /* Visitor.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		12FCF2520D00C06EB15B4570 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F97EFC44908DFF8AD422D432 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A6E83D55FB8E8C27987A6417;
+			remoteInfo = MistyisletPassWidgetExtension;
+		};
+		81DA22715BE50751AF17B903 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F97EFC44908DFF8AD422D432 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3FE006C36EED1B7C6FE2A816;
+			remoteInfo = MistyisletPass;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		19C9B544FCE6EE741F2BEDBD /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				8081890B8F67CA0606FC33D7 /* MistyisletPassWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		028270B881907F4FDD49DBEF /* MistyisletPassWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MistyisletPassWidget.entitlements; sourceTree = "<group>"; };
+		04DC1E0216F36487DD75FB26 /* MistyisletPass.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MistyisletPass.entitlements; sourceTree = "<group>"; };
+		06E48607EA861738E25FF212 /* LanguageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSettingsView.swift; sourceTree = "<group>"; };
+		1BCCD8EB6CD9326E1A3DF595 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		206CD685B913F639CD5D504D /* CreateVisitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateVisitorView.swift; sourceTree = "<group>"; };
+		2773DF62387FABE314905A52 /* NFCBindingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCBindingView.swift; sourceTree = "<group>"; };
+		27F71721675C8C6E91AE2B27 /* VisitorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorsView.swift; sourceTree = "<group>"; };
+		2858D3DC63174DC5CC13ED0E /* NFCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCService.swift; sourceTree = "<group>"; };
+		286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDecodingTests.swift; sourceTree = "<group>"; };
+		28EC5A794CDD22CF09A9AE43 /* Site.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
+		299224862324725359F1C102 /* GeofenceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceSettingsView.swift; sourceTree = "<group>"; };
+		2A273A2CE2AC635122A86E76 /* MistyisletPassWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MistyisletPassWidget.swift; sourceTree = "<group>"; };
+		2D0528BCF9C05030730097AB /* DoorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoorsView.swift; sourceTree = "<group>"; };
+		2F586A68AC009FF3F76BF228 /* MistyisletPassApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MistyisletPassApp.swift; sourceTree = "<group>"; };
+		3B230EDC22404EE3B124EE0B /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3E970DEC2E24763561C02D96 /* DoorCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoorCardView.swift; sourceTree = "<group>"; };
+		405AEBA255EF092B2E2ED20C /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		4616892D550B2C744947874C /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
+		46656024FDDD88E599AB4740 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		4A0CBC3FC0151CFF3542A41F /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		4AC41E6BE30EDC784C8BF75A /* SecureEnclaveService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveService.swift; sourceTree = "<group>"; };
+		4C260646585C9078A802D136 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		4DFE34FF8D46259436687834 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		533EEB1E9670B68910526F22 /* DoorsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoorsViewModel.swift; sourceTree = "<group>"; };
+		54917EFC06E88F37DF1AB446 /* GeofenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceService.swift; sourceTree = "<group>"; };
+		5CE8A7F6F4F19DDC576571F8 /* MistyisletPass.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MistyisletPass.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FD056A931B00DF7E557C6C0 /* BiometricService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricService.swift; sourceTree = "<group>"; };
+		6673606E2593B75182EAB267 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		687DDEA8ECAE173EB62EFF36 /* BrandColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandColors.swift; sourceTree = "<group>"; };
+		6AA63B71054C378AB74A5F75 /* SettingsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsServiceTests.swift; sourceTree = "<group>"; };
+		6D8E840E9230C199833BD311 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		721FFE03A41749EC9F240C9C /* MistyisletPassTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MistyisletPassTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		77F86AF6657BA7E613EECF03 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		7B2D3E844D8B477A0B81F168 /* Visitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Visitor.swift; sourceTree = "<group>"; };
+		7C7931F1F33352B66BCE8C56 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		8391791DA7AD915572F89204 /* VisitorsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorsViewModel.swift; sourceTree = "<group>"; };
+		8899FB1B33C78EC4D256FA33 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		9C2DAA2FF02C9104754C01A3 /* ConstantsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstantsTests.swift; sourceTree = "<group>"; };
+		A63F70CFEDA93341F7508634 /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouter.swift; sourceTree = "<group>"; };
+		B15BC893999F4D04247727B9 /* KeychainServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainServiceTests.swift; sourceTree = "<group>"; };
+		B344D41EAE6F4C872DCE9FC6 /* SiteSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteSwitcherView.swift; sourceTree = "<group>"; };
+		B9F786632AE82535B7B0726F /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
+		BA1BE5C4D8FC24106E740B05 /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
+		C06B8622EB900EC80075267B /* Door.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Door.swift; sourceTree = "<group>"; };
+		C609E4DE2B696FDF081659D6 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		CA263DEDC614D6571E3D2532 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		D26F1D342146E0FC039FBF96 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D333302250B4C02DC3BD3051 /* QRPassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRPassView.swift; sourceTree = "<group>"; };
+		D611111ABD6680F4648376CA /* UnlockOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnlockOverlayView.swift; sourceTree = "<group>"; };
+		DF89583EC6EF84F7D37F3AE6 /* SettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsService.swift; sourceTree = "<group>"; };
+		DF9941959B7D21B358B58037 /* AccessEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessEvent.swift; sourceTree = "<group>"; };
+		E7FB3224E2D0D3FFC0239118 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		EEC72E841588B5943BA9E465 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		F3AABA0840F0F795F40A3DBF /* MistyisletPassWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MistyisletPassWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3EDD7FE71D151359C9028D5 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		F47AB007AFE69BF8ECA0FC96 /* Credential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
+		F49AD49FEE237A3759EF7C00 /* DeepLinkRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouterTests.swift; sourceTree = "<group>"; };
+		FEB130FF883D6E48EBA14D32 /* UnlockResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnlockResult.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		10CF101DC288518AA5F2A653 /* MistyisletPass */ = {
+			isa = PBXGroup;
+			children = (
+				E4AA79F548A947D07A00BB4F /* Models */,
+				ABC88257EDF7F6F364869476 /* Resources */,
+				EA23E9452FD3F81EB51E37D4 /* Services */,
+				9A50CA2660A9CF80F43D08B2 /* Utilities */,
+				D95945A3C30FE0E170E8B4DE /* ViewModels */,
+				74B997ECB5E55A1089C22218 /* Views */,
+				6673606E2593B75182EAB267 /* Assets.xcassets */,
+				46656024FDDD88E599AB4740 /* Info.plist */,
+				04DC1E0216F36487DD75FB26 /* MistyisletPass.entitlements */,
+				2F586A68AC009FF3F76BF228 /* MistyisletPassApp.swift */,
+				6D8E840E9230C199833BD311 /* PrivacyInfo.xcprivacy */,
+			);
+			path = MistyisletPass;
+			sourceTree = "<group>";
+		};
+		1FC9C54BB657D699FE328F55 = {
+			isa = PBXGroup;
+			children = (
+				10CF101DC288518AA5F2A653 /* MistyisletPass */,
+				3D8D44CE828C54DA168A75B1 /* MistyisletPassTests */,
+				F46A46EB26EF2ED079506486 /* MistyisletPassWidget */,
+				A294676CD406C595F12A8B34 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2025940CE5101C396E0B98E8 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				1BCCD8EB6CD9326E1A3DF595 /* HistoryView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		2885FF033326A3E7C7DCA2F4 /* Doors */ = {
+			isa = PBXGroup;
+			children = (
+				3E970DEC2E24763561C02D96 /* DoorCardView.swift */,
+				2D0528BCF9C05030730097AB /* DoorsView.swift */,
+				D611111ABD6680F4648376CA /* UnlockOverlayView.swift */,
+			);
+			path = Doors;
+			sourceTree = "<group>";
+		};
+		328478B4E341D2F4E4BDEC76 /* Visitors */ = {
+			isa = PBXGroup;
+			children = (
+				206CD685B913F639CD5D504D /* CreateVisitorView.swift */,
+				27F71721675C8C6E91AE2B27 /* VisitorsView.swift */,
+			);
+			path = Visitors;
+			sourceTree = "<group>";
+		};
+		3D8D44CE828C54DA168A75B1 /* MistyisletPassTests */ = {
+			isa = PBXGroup;
+			children = (
+				9C2DAA2FF02C9104754C01A3 /* ConstantsTests.swift */,
+				F49AD49FEE237A3759EF7C00 /* DeepLinkRouterTests.swift */,
+				B15BC893999F4D04247727B9 /* KeychainServiceTests.swift */,
+				286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */,
+				6AA63B71054C378AB74A5F75 /* SettingsServiceTests.swift */,
+			);
+			path = MistyisletPassTests;
+			sourceTree = "<group>";
+		};
+		4C6BB76453F14B2DB4010D11 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		74B997ECB5E55A1089C22218 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9DA4806E64020F1A5C32B86C /* Auth */,
+				4C6BB76453F14B2DB4010D11 /* Components */,
+				2885FF033326A3E7C7DCA2F4 /* Doors */,
+				2025940CE5101C396E0B98E8 /* History */,
+				88949CAA1F9A0D87011A3A2B /* Profile */,
+				7D5F9D368071E100DB37366A /* Scanner */,
+				328478B4E341D2F4E4BDEC76 /* Visitors */,
+				77F86AF6657BA7E613EECF03 /* MainTabView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		7D5F9D368071E100DB37366A /* Scanner */ = {
+			isa = PBXGroup;
+			children = (
+				D333302250B4C02DC3BD3051 /* QRPassView.swift */,
+			);
+			path = Scanner;
+			sourceTree = "<group>";
+		};
+		88949CAA1F9A0D87011A3A2B /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				299224862324725359F1C102 /* GeofenceSettingsView.swift */,
+				06E48607EA861738E25FF212 /* LanguageSettingsView.swift */,
+				2773DF62387FABE314905A52 /* NFCBindingView.swift */,
+				4C260646585C9078A802D136 /* ProfileView.swift */,
+				B344D41EAE6F4C872DCE9FC6 /* SiteSwitcherView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		9A50CA2660A9CF80F43D08B2 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				687DDEA8ECAE173EB62EFF36 /* BrandColors.swift */,
+				EEC72E841588B5943BA9E465 /* Constants.swift */,
+				BA1BE5C4D8FC24106E740B05 /* PreviewData.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		9DA4806E64020F1A5C32B86C /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				7C7931F1F33352B66BCE8C56 /* LoginView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		A294676CD406C595F12A8B34 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5CE8A7F6F4F19DDC576571F8 /* MistyisletPass.app */,
+				721FFE03A41749EC9F240C9C /* MistyisletPassTests.xctest */,
+				F3AABA0840F0F795F40A3DBF /* MistyisletPassWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ABC88257EDF7F6F364869476 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E40F803A3CB4AE527CF7EE50 /* Localizable.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D95945A3C30FE0E170E8B4DE /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				4DFE34FF8D46259436687834 /* AuthViewModel.swift */,
+				533EEB1E9670B68910526F22 /* DoorsViewModel.swift */,
+				F3EDD7FE71D151359C9028D5 /* HistoryViewModel.swift */,
+				4A0CBC3FC0151CFF3542A41F /* ProfileViewModel.swift */,
+				8391791DA7AD915572F89204 /* VisitorsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E4AA79F548A947D07A00BB4F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				DF9941959B7D21B358B58037 /* AccessEvent.swift */,
+				F47AB007AFE69BF8ECA0FC96 /* Credential.swift */,
+				C06B8622EB900EC80075267B /* Door.swift */,
+				28EC5A794CDD22CF09A9AE43 /* Site.swift */,
+				FEB130FF883D6E48EBA14D32 /* UnlockResult.swift */,
+				CA263DEDC614D6571E3D2532 /* UserProfile.swift */,
+				7B2D3E844D8B477A0B81F168 /* Visitor.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EA23E9452FD3F81EB51E37D4 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				8899FB1B33C78EC4D256FA33 /* APIService.swift */,
+				5FD056A931B00DF7E557C6C0 /* BiometricService.swift */,
+				B9F786632AE82535B7B0726F /* BLEManager.swift */,
+				A63F70CFEDA93341F7508634 /* DeepLinkRouter.swift */,
+				54917EFC06E88F37DF1AB446 /* GeofenceService.swift */,
+				4616892D550B2C744947874C /* HapticService.swift */,
+				405AEBA255EF092B2E2ED20C /* KeychainService.swift */,
+				E7FB3224E2D0D3FFC0239118 /* NetworkMonitor.swift */,
+				2858D3DC63174DC5CC13ED0E /* NFCService.swift */,
+				C609E4DE2B696FDF081659D6 /* NotificationService.swift */,
+				4AC41E6BE30EDC784C8BF75A /* SecureEnclaveService.swift */,
+				DF89583EC6EF84F7D37F3AE6 /* SettingsService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F46A46EB26EF2ED079506486 /* MistyisletPassWidget */ = {
+			isa = PBXGroup;
+			children = (
+				028270B881907F4FDD49DBEF /* MistyisletPassWidget.entitlements */,
+				2A273A2CE2AC635122A86E76 /* MistyisletPassWidget.swift */,
+			);
+			path = MistyisletPassWidget;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1A12C9B8CCD844EC65858ADF /* MistyisletPassTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC8766312BF8AE3F0F6AC903 /* Build configuration list for PBXNativeTarget "MistyisletPassTests" */;
+			buildPhases = (
+				95132C553080097C240E9D4F /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				01873130816C7619AAAC2759 /* PBXTargetDependency */,
+			);
+			name = MistyisletPassTests;
+			packageProductDependencies = (
+			);
+			productName = MistyisletPassTests;
+			productReference = 721FFE03A41749EC9F240C9C /* MistyisletPassTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3FE006C36EED1B7C6FE2A816 /* MistyisletPass */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4395327184A6D145306510C1 /* Build configuration list for PBXNativeTarget "MistyisletPass" */;
+			buildPhases = (
+				401AB105A52CD5DAE776A3BD /* Sources */,
+				94E3DFC8B92864868779EBAA /* Resources */,
+				19C9B544FCE6EE741F2BEDBD /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BD8BABF37768B3FACBAA0EC3 /* PBXTargetDependency */,
+			);
+			name = MistyisletPass;
+			packageProductDependencies = (
+			);
+			productName = MistyisletPass;
+			productReference = 5CE8A7F6F4F19DDC576571F8 /* MistyisletPass.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A6E83D55FB8E8C27987A6417 /* MistyisletPassWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7F5C0B5203268E3D67C9CEDB /* Build configuration list for PBXNativeTarget "MistyisletPassWidgetExtension" */;
+			buildPhases = (
+				16324620B8672EFCA0BEC55E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MistyisletPassWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = MistyisletPassWidgetExtension;
+			productReference = F3AABA0840F0F795F40A3DBF /* MistyisletPassWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F97EFC44908DFF8AD422D432 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					1A12C9B8CCD844EC65858ADF = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					3FE006C36EED1B7C6FE2A816 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					A6E83D55FB8E8C27987A6417 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B5DA26BF373A1E813547E5A6 /* Build configuration list for PBXProject "MistyisletPass" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				id,
+			);
+			mainGroup = 1FC9C54BB657D699FE328F55;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A294676CD406C595F12A8B34 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3FE006C36EED1B7C6FE2A816 /* MistyisletPass */,
+				1A12C9B8CCD844EC65858ADF /* MistyisletPassTests */,
+				A6E83D55FB8E8C27987A6417 /* MistyisletPassWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		94E3DFC8B92864868779EBAA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4677EBB36AC6B493BD34EC77 /* Assets.xcassets in Resources */,
+				CDABCE0BE3C48764554DBE95 /* Localizable.strings in Resources */,
+				273D6FC6537F8F22099D5F32 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		16324620B8672EFCA0BEC55E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D494C0B8FBCD11DA21397FA /* MistyisletPassWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		401AB105A52CD5DAE776A3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				688545E0B0D41B67859E2431 /* APIService.swift in Sources */,
+				009F0BFF5A417946A9B7D1F2 /* AccessEvent.swift in Sources */,
+				1C8B0DB439B4E0836900271F /* AuthViewModel.swift in Sources */,
+				BC06C4E2302F0C73809D6189 /* BLEManager.swift in Sources */,
+				8F58227145065925D9503FA1 /* BiometricService.swift in Sources */,
+				F06B9DA7019B4C6B09BF44F1 /* BrandColors.swift in Sources */,
+				6112FAB16366290CBE0E37B2 /* Constants.swift in Sources */,
+				6365BF3434B3056BAB4CF0AC /* CreateVisitorView.swift in Sources */,
+				7127B5512C8561B6CC8AF2EA /* Credential.swift in Sources */,
+				ABAB9E620A74C50835FCFF15 /* DeepLinkRouter.swift in Sources */,
+				3DEB94638265C70C5275E335 /* Door.swift in Sources */,
+				8A32160AFAA4FB3B162FDD3A /* DoorCardView.swift in Sources */,
+				F18E8BA07AADEF40F674ADEC /* DoorsView.swift in Sources */,
+				814CF4C3FCA776C9F4AB1DA2 /* DoorsViewModel.swift in Sources */,
+				85B304EF78F68A8555AC1792 /* GeofenceService.swift in Sources */,
+				B1D5FCBAFA922FE1BE5F2BF0 /* GeofenceSettingsView.swift in Sources */,
+				8661C099A0165C714DDBE904 /* HapticService.swift in Sources */,
+				2D7B157215422AE6B7B8C75C /* HistoryView.swift in Sources */,
+				E6A18F30FCF6D705EBAE516B /* HistoryViewModel.swift in Sources */,
+				E1C829C1B78DCE99BF43F881 /* KeychainService.swift in Sources */,
+				C8267CF557E4DA053313B7BA /* LanguageSettingsView.swift in Sources */,
+				E70D0F13F473A6A98C55BF51 /* LoginView.swift in Sources */,
+				C94B682F0A38655C81862651 /* MainTabView.swift in Sources */,
+				60AB2CE743A405DA4E1D0E64 /* MistyisletPassApp.swift in Sources */,
+				66CAACA4F5F27F739C95639B /* NFCBindingView.swift in Sources */,
+				AAFFCAD65554AC393A37A9A3 /* NFCService.swift in Sources */,
+				689598C3124072683B34D964 /* NetworkMonitor.swift in Sources */,
+				BC9D2C1DAB676F6333FF56E4 /* NotificationService.swift in Sources */,
+				75E3B94005DE26AB6FD4B869 /* PreviewData.swift in Sources */,
+				33634F1D8EEB1AC76A793D66 /* ProfileView.swift in Sources */,
+				53F9981F61505A29A40021BE /* ProfileViewModel.swift in Sources */,
+				602DB5B9052FBAFF1976E76B /* QRPassView.swift in Sources */,
+				B4B93E64AEF42E3EE57007F4 /* SecureEnclaveService.swift in Sources */,
+				43DA894E93608DC3B25C160F /* SettingsService.swift in Sources */,
+				142B48B826F8DEDC5751CB1D /* Site.swift in Sources */,
+				DDE7CF6245C23EF098282F6D /* SiteSwitcherView.swift in Sources */,
+				9CE03C581E7382F6A89FDD36 /* UnlockOverlayView.swift in Sources */,
+				5E1AD4A638E8CFB6240382C4 /* UnlockResult.swift in Sources */,
+				0D328A28F9208EE6FF502987 /* UserProfile.swift in Sources */,
+				F56D830F6BCB91477F945B18 /* Visitor.swift in Sources */,
+				D145F8B4F204DC8A8EAB01CC /* VisitorsView.swift in Sources */,
+				26E2341103A415AEB791432D /* VisitorsViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		95132C553080097C240E9D4F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				20D37113F25FE9B61F3B8212 /* ConstantsTests.swift in Sources */,
+				49A7E1BBBBB8E7730B10E01C /* DeepLinkRouterTests.swift in Sources */,
+				30495B37C96C18BE7C9A5F97 /* KeychainServiceTests.swift in Sources */,
+				034B3C3C1EE9FCDCF975A276 /* ModelDecodingTests.swift in Sources */,
+				41A4B81BE5585F75395F5A5B /* SettingsServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		01873130816C7619AAAC2759 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3FE006C36EED1B7C6FE2A816 /* MistyisletPass */;
+			targetProxy = 81DA22715BE50751AF17B903 /* PBXContainerItemProxy */;
+		};
+		BD8BABF37768B3FACBAA0EC3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A6E83D55FB8E8C27987A6417 /* MistyisletPassWidgetExtension */;
+			targetProxy = 12FCF2520D00C06EB15B4570 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E40F803A3CB4AE527CF7EE50 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D26F1D342146E0FC039FBF96 /* en */,
+				3B230EDC22404EE3B124EE0B /* id */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		00377886965F7329BC4439FE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MistyisletPassWidget/MistyisletPassWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MistyisletPassWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "MistyisletPass Widget";
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = "com.apple.widgetkit-extension";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mistyislet.pass.widget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7B840B72A55F10775D60C40C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mistyislet.pass.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MistyisletPass.app/MistyisletPass";
+			};
+			name = Debug;
+		};
+		A046496919C1DEC1057A6EE7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MistyisletPass/MistyisletPass.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = MistyisletPass/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mistyislet.pass;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C9F7F14380CA4278A8CF33EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		E3078DD0B1E1CBEB257F2E9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MistyisletPass/MistyisletPass.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = MistyisletPass/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mistyislet.pass;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EB87135611C4080FC82B8DC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mistyislet.pass.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MistyisletPass.app/MistyisletPass";
+			};
+			name = Release;
+		};
+		EC9D31CF284389EBD5CF6374 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F930D8095F1FCF65C16FFBF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MistyisletPassWidget/MistyisletPassWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MistyisletPassWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "MistyisletPass Widget";
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = "com.apple.widgetkit-extension";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mistyislet.pass.widget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4395327184A6D145306510C1 /* Build configuration list for PBXNativeTarget "MistyisletPass" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A046496919C1DEC1057A6EE7 /* Debug */,
+				E3078DD0B1E1CBEB257F2E9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7F5C0B5203268E3D67C9CEDB /* Build configuration list for PBXNativeTarget "MistyisletPassWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00377886965F7329BC4439FE /* Debug */,
+				F930D8095F1FCF65C16FFBF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B5DA26BF373A1E813547E5A6 /* Build configuration list for PBXProject "MistyisletPass" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC9D31CF284389EBD5CF6374 /* Debug */,
+				C9F7F14380CA4278A8CF33EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CC8766312BF8AE3F0F6AC903 /* Build configuration list for PBXNativeTarget "MistyisletPassTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B840B72A55F10775D60C40C /* Debug */,
+				EB87135611C4080FC82B8DC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F97EFC44908DFF8AD422D432 /* Project object */;
+}

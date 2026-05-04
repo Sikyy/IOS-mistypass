@@ -1,0 +1,94 @@
+/* Tabs */
+"tab.doors" = "Pintu";
+"tab.pass" = "Pass";
+"tab.history" = "Riwayat";
+"tab.visitors" = "Pengunjung";
+"tab.profile" = "Profil";
+
+/* Doors */
+"doors.title" = "Pintu";
+"doors.hold_to_unlock" = "Tahan untuk Membuka";
+"doors.release_to_unlock" = "Lepas untuk Membuka";
+"doors.controller_offline" = "Controller offline";
+"doors.gateway_offline" = "Gateway offline";
+"doors.online" = "Online";
+"doors.ble_ready" = "BLE Siap";
+"doors.offline_banner" = "Offline";
+"doors.last_synced" = "Sinkronisasi terakhir %@";
+
+/* Unlock */
+"unlock.connecting" = "Menghubungkan...";
+"unlock.granted" = "Pintu Terbuka";
+"unlock.denied" = "Akses Ditolak";
+"unlock.failed" = "Koneksi Gagal";
+"unlock.try_again" = "Coba Lagi";
+
+/* QR Pass */
+"pass.title" = "Pass";
+"pass.instruction" = "Dekatkan ponsel ke pembaca kartu";
+"pass.generating" = "Membuat pass...";
+"pass.refresh" = "Perbarui Sekarang";
+"pass.refreshes_in" = "Diperbarui dalam";
+"pass.brightness_hint" = "Kecerahan layar ditingkatkan untuk pemindaian";
+"pass.error" = "Gagal Membuat Pass";
+
+/* History */
+"history.title" = "Riwayat";
+"history.empty" = "Tidak Ada Riwayat";
+"history.empty_description" = "Riwayat akses Anda akan muncul di sini.";
+"history.today" = "Hari Ini";
+"history.yesterday" = "Kemarin";
+
+/* Visitors */
+"visitors.title" = "Pengunjung";
+"visitors.empty" = "Tidak Ada Pengunjung";
+"visitors.empty_description" = "Buat pass pengunjung untuk memberikan akses sementara.";
+"visitors.active" = "Pass Aktif";
+"visitors.expired" = "Kedaluwarsa";
+"visitors.new" = "Pengunjung Baru";
+"visitors.create" = "Buat";
+"visitors.name" = "Nama";
+"visitors.phone" = "Telepon";
+"visitors.host" = "Nama Tuan Rumah";
+"visitors.company" = "Perusahaan (opsional)";
+"visitors.purpose" = "Tujuan (opsional)";
+"visitors.duration" = "Durasi Akses";
+"visitors.hours" = "%d jam";
+"visitors.share" = "Bagikan";
+"visitors.copy_token" = "Salin Token";
+"visitors.pass_title" = "Pass Pengunjung";
+
+/* Profile */
+"profile.title" = "Profil";
+"profile.credentials" = "Kredensial Saya";
+"profile.settings" = "Pengaturan";
+"profile.language" = "Bahasa";
+"profile.biometric_lock" = "Kunci Biometrik";
+"profile.notifications" = "Notifikasi";
+"profile.about" = "Tentang";
+"profile.sign_out" = "Keluar";
+"profile.secure_enclave" = "Secure Enclave";
+"profile.active" = "Aktif";
+"profile.revoked" = "Dicabut";
+"profile.revoke" = "Cabut";
+"profile.expires" = "Kedaluwarsa: %@";
+
+/* Auth */
+"auth.sign_in" = "Masuk";
+"auth.email" = "Email";
+"auth.password" = "Kata Sandi";
+"auth.subtitle" = "Kontrol Akses Mobile";
+
+/* Biometric */
+"biometric.reason" = "Autentikasi untuk membuka %@";
+
+/* Geofence */
+"geofence.nearby_title" = "Pintu Terdekat";
+"geofence.nearby_body" = "Anda dekat pintu. Ketuk untuk membuka.";
+
+/* Common */
+"common.cancel" = "Batal";
+"common.done" = "Selesai";
+"common.error" = "Kesalahan";
+"common.ok" = "OK";
+"common.try_again" = "Coba Lagi";

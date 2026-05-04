@@ -1,0 +1,57 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad
+*.xcscmblueprint
+*.xccheckout
+
+# Xcode build artifacts
+build/
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods (if ever added)
+Pods/
+
+# Carthage (if ever added)
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# XcodeGen
+# project.yml is committed; the generated .xcodeproj should be too for now
+# (until we adopt a project-gen-on-checkout flow).
+
+# Secrets & local config
+*.p12
+*.mobileprovision
+*.p8
+*.cer
+fastlane/Appfile
+.env
+.env.local
+secrets.xcconfig
+
+# IDE
+.idea/
+*.swp
+*~
