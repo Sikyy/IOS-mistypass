@@ -20,6 +20,8 @@ final class BLEManager: NSObject {
     private var challengeCharacteristic: CBCharacteristic?
     private var authResponseCharacteristic: CBCharacteristic?
     private var authResultCharacteristic: CBCharacteristic?
+    private var readerIdentityCharacteristic: CBCharacteristic?
+    private var verifiedReaderId: String?
 
     override private init() {
         super.init()
@@ -91,6 +93,8 @@ final class BLEManager: NSObject {
         challengeCharacteristic = nil
         authResponseCharacteristic = nil
         authResultCharacteristic = nil
+        readerIdentityCharacteristic = nil
+        verifiedReaderId = nil
         switch result {
         case .success(let code): continuation.resume(returning: code)
         case .failure(let error): continuation.resume(throwing: error)
@@ -190,6 +194,7 @@ extension BLEManager: CBPeripheralDelegate {
             Constants.BLE.challengeUUID,
             Constants.BLE.authResponseUUID,
             Constants.BLE.authResultUUID,
+            Constants.BLE.readerIdentityUUID,
         ], for: service)
     }
 
@@ -203,20 +208,37 @@ extension BLEManager: CBPeripheralDelegate {
             switch characteristic.uuid {
             case Constants.BLE.challengeUUID:
                 challengeCharacteristic = characteristic
-                peripheral.readValue(for: characteristic)
             case Constants.BLE.authResponseUUID:
                 authResponseCharacteristic = characteristic
             case Constants.BLE.authResultUUID:
                 authResultCharacteristic = characteristic
                 peripheral.setNotifyValue(true, for: characteristic)
+            case Constants.BLE.readerIdentityUUID:
+                readerIdentityCharacteristic = characteristic
             default:
                 break
             }
+        }
+
+        // Read reader identity first; challenge is read after identity is verified.
+        if let readerIdChar = readerIdentityCharacteristic {
+            peripheral.readValue(for: readerIdChar)
+        } else if let challengeChar = challengeCharacteristic {
+            peripheral.readValue(for: challengeChar)
         }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         switch characteristic.uuid {
+        case Constants.BLE.readerIdentityUUID:
+            if let data = characteristic.value, let readerId = String(data: data, encoding: .utf8), !readerId.isEmpty {
+                verifiedReaderId = readerId
+            }
+            // Chain: now read the challenge
+            if let challengeChar = challengeCharacteristic {
+                peripheral.readValue(for: challengeChar)
+            }
+
         case Constants.BLE.challengeUUID:
             guard let data = characteristic.value, data.count >= 48 else {
                 finishUnlock(.failure(BLEUnlockError.invalidChallenge))
