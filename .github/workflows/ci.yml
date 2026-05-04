@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, initial-ios-app]
+  pull_request:
+    branches: [main, initial-ios-app]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project MistyisletPass.xcodeproj \
+            -scheme MistyisletPass \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -skipPackagePluginValidation \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO | tail -20
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project MistyisletPass.xcodeproj \
+            -scheme MistyisletPass \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -skipPackagePluginValidation \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO | tail -30
