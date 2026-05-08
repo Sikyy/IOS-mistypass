@@ -98,7 +98,7 @@ final class ModelDecodingTests: XCTestCase {
         let json = """
         {
             "id": "cred-001",
-            "user_email": "siky@mistyislet.com",
+            "user_email": "test@example.com",
             "device_id": "iPhone17Pro",
             "platform": "ios",
             "device_model": "iPhone 17 Pro",

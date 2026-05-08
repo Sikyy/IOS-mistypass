@@ -186,7 +186,7 @@ enum PreviewData {
     static let credentials: [Credential] = [
         Credential(
             id: "cred-001",
-            userEmail: "siky@mistyislet.com",
+            userEmail: "demo@example.com",
             deviceId: "iPhone17Pro",
             platform: "ios",
             deviceModel: "iPhone 17 Pro",
@@ -307,34 +307,34 @@ enum PreviewData {
     }()
 
     static let userPresenceRecords: [UserPresenceRecord] = [
-        UserPresenceRecord(id: "u1", userName: "Ahmad Wijaya", email: "ahmad@mistyislet.com",
+        UserPresenceRecord(id: "u1", userName: "Ahmad Wijaya", email: "ahmad@example.com",
                            firstUnlock: "2026-04-08", lastUnlock: "2026-05-07", daysPresent: 26, totalUnlocks: 187,
                            weekdayBreakdown: [32, 28, 30, 27, 31, 8, 5]),
-        UserPresenceRecord(id: "u2", userName: "Siti Rahayu", email: "siti@mistyislet.com",
+        UserPresenceRecord(id: "u2", userName: "Siti Rahayu", email: "siti@example.com",
                            firstUnlock: "2026-04-08", lastUnlock: "2026-05-07", daysPresent: 24, totalUnlocks: 156,
                            weekdayBreakdown: [28, 25, 22, 30, 26, 4, 2]),
-        UserPresenceRecord(id: "u3", userName: "Budi Santoso", email: "budi@mistyislet.com",
+        UserPresenceRecord(id: "u3", userName: "Budi Santoso", email: "budi@example.com",
                            firstUnlock: "2026-04-10", lastUnlock: "2026-05-06", daysPresent: 22, totalUnlocks: 134,
                            weekdayBreakdown: [24, 22, 20, 25, 23, 6, 3]),
-        UserPresenceRecord(id: "u4", userName: "Dewi Lestari", email: "dewi@mistyislet.com",
+        UserPresenceRecord(id: "u4", userName: "Dewi Lestari", email: "dewi@example.com",
                            firstUnlock: "2026-04-08", lastUnlock: "2026-05-07", daysPresent: 20, totalUnlocks: 98,
                            weekdayBreakdown: [18, 16, 20, 15, 19, 2, 0]),
-        UserPresenceRecord(id: "u5", userName: "Eko Prasetyo", email: "eko@mistyislet.com",
+        UserPresenceRecord(id: "u5", userName: "Eko Prasetyo", email: "eko@example.com",
                            firstUnlock: "2026-04-12", lastUnlock: "2026-05-05", daysPresent: 18, totalUnlocks: 112,
                            weekdayBreakdown: [20, 18, 22, 17, 21, 10, 8]),
-        UserPresenceRecord(id: "u6", userName: "Fitri Handayani", email: "fitri@mistyislet.com",
+        UserPresenceRecord(id: "u6", userName: "Fitri Handayani", email: "fitri@example.com",
                            firstUnlock: "2026-04-15", lastUnlock: "2026-05-07", daysPresent: 16, totalUnlocks: 78,
                            weekdayBreakdown: [14, 12, 16, 13, 15, 0, 0]),
-        UserPresenceRecord(id: "u7", userName: "Gunawan Tan", email: "gunawan@mistyislet.com",
+        UserPresenceRecord(id: "u7", userName: "Gunawan Tan", email: "gunawan@example.com",
                            firstUnlock: "2026-04-20", lastUnlock: "2026-05-04", daysPresent: 12, totalUnlocks: 45,
                            weekdayBreakdown: [8, 10, 6, 9, 7, 3, 1]),
-        UserPresenceRecord(id: "u8", userName: "Hesti Wulandari", email: "hesti@mistyislet.com",
+        UserPresenceRecord(id: "u8", userName: "Hesti Wulandari", email: "hesti@example.com",
                            firstUnlock: "2026-04-22", lastUnlock: "2026-05-02", daysPresent: 8, totalUnlocks: 32,
                            weekdayBreakdown: [6, 5, 7, 4, 6, 0, 0]),
-        UserPresenceRecord(id: "u9", userName: "Irfan Maulana", email: "irfan@mistyislet.com",
+        UserPresenceRecord(id: "u9", userName: "Irfan Maulana", email: "irfan@example.com",
                            firstUnlock: "2026-04-28", lastUnlock: "2026-05-07", daysPresent: 6, totalUnlocks: 21,
                            weekdayBreakdown: [4, 3, 5, 3, 4, 1, 0]),
-        UserPresenceRecord(id: "u10", userName: "Joko Widodo", email: "joko@mistyislet.com",
+        UserPresenceRecord(id: "u10", userName: "Joko Widodo", email: "joko@example.com",
                            firstUnlock: "2026-05-01", lastUnlock: "2026-05-06", daysPresent: 4, totalUnlocks: 14,
                            weekdayBreakdown: [3, 2, 3, 2, 3, 0, 0]),
     ]
@@ -385,9 +385,9 @@ enum PreviewData {
     ]
 
     static let groupMembers: [GroupMember] = [
-        GroupMember(id: "gm-001", userId: "u1", name: "Ahmad Wijaya", email: "ahmad@mistyislet.com", role: "door_access", addedAt: "2026-01-15T10:00:00Z"),
-        GroupMember(id: "gm-002", userId: "u2", name: "Siti Rahayu", email: "siti@mistyislet.com", role: "door_access", addedAt: "2026-01-16T08:00:00Z"),
-        GroupMember(id: "gm-003", userId: "u3", name: "Budi Santoso", email: "budi@mistyislet.com", role: "group_manager", addedAt: "2026-01-15T10:00:00Z"),
+        GroupMember(id: "gm-001", userId: "u1", name: "Ahmad Wijaya", email: "ahmad@example.com", role: "door_access", addedAt: "2026-01-15T10:00:00Z"),
+        GroupMember(id: "gm-002", userId: "u2", name: "Siti Rahayu", email: "siti@example.com", role: "door_access", addedAt: "2026-01-16T08:00:00Z"),
+        GroupMember(id: "gm-003", userId: "u3", name: "Budi Santoso", email: "budi@example.com", role: "group_manager", addedAt: "2026-01-15T10:00:00Z"),
     ]
 
     static let groupDoors: [GroupDoor] = [
@@ -399,9 +399,9 @@ enum PreviewData {
     // MARK: - Team Members & Access Rights
 
     static let teamMembers: [TeamMember] = [
-        TeamMember(id: "tm-001", userId: "u1", name: "Ahmad Wijaya", email: "ahmad@mistyislet.com", addedAt: "2026-01-15T10:00:00Z"),
-        TeamMember(id: "tm-002", userId: "u4", name: "Dewi Lestari", email: "dewi@mistyislet.com", addedAt: "2026-02-01T08:00:00Z"),
-        TeamMember(id: "tm-003", userId: "u5", name: "Eko Prasetyo", email: "eko@mistyislet.com", addedAt: "2026-02-10T09:00:00Z"),
+        TeamMember(id: "tm-001", userId: "u1", name: "Ahmad Wijaya", email: "ahmad@example.com", addedAt: "2026-01-15T10:00:00Z"),
+        TeamMember(id: "tm-002", userId: "u4", name: "Dewi Lestari", email: "dewi@example.com", addedAt: "2026-02-01T08:00:00Z"),
+        TeamMember(id: "tm-003", userId: "u5", name: "Eko Prasetyo", email: "eko@example.com", addedAt: "2026-02-10T09:00:00Z"),
     ]
 
     static let accessRights: [AccessRightAssignment] = [

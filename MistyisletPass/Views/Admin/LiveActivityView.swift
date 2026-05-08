@@ -106,11 +106,11 @@ struct LiveActivityView: View {
             let now = ISO8601DateFormatter().string(from: Date())
             let recent = ISO8601DateFormatter().string(from: Date().addingTimeInterval(-180))
             activities = [
-                UserActivity(userId: "siky@mistyislet.com", placeId: placeId,
+                UserActivity(userId: "user1@example.com", placeId: placeId,
                              lastSeen: now, lastDoor: "Main Entrance", eventId: "e1"),
-                UserActivity(userId: "admin@mistyislet.com", placeId: placeId,
+                UserActivity(userId: "admin@example.com", placeId: placeId,
                              lastSeen: recent, lastDoor: "Server Room", eventId: "e2"),
-                UserActivity(userId: "guard@mistyislet.com", placeId: placeId,
+                UserActivity(userId: "guard@example.com", placeId: placeId,
                              lastSeen: recent, lastDoor: "Lobby", eventId: "e3"),
             ]
         }

@@ -94,10 +94,8 @@ private struct EmailEntryStep: View {
 
             #if DEBUG
             if Constants.AppEnvironment.current == .dev {
-                Button("Dev Login (siky)") {
-                    vm.email = "siky@mistyislet.com"
-                    vm.orgDomain = "test"
-                    Task { await authViewModel.login(email: "siky@mistyislet.com", password: "65552588") }
+                Button("Dev Login") {
+                    Task { await authViewModel.devAutoLogin() }
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)

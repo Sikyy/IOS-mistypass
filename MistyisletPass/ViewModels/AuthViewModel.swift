@@ -32,7 +32,12 @@ final class AuthViewModel {
     #if DEBUG
     func devAutoLogin() async {
         guard Constants.AppEnvironment.current == .dev, !isAuthenticated else { return }
-        await login(email: "siky@mistyislet.com", password: "65552588")
+        guard let email = ProcessInfo.processInfo.environment["DEV_LOGIN_EMAIL"],
+              let password = ProcessInfo.processInfo.environment["DEV_LOGIN_PASSWORD"] else {
+            AppLogger.auth.warning("DEV_LOGIN_EMAIL / DEV_LOGIN_PASSWORD not set in scheme env vars")
+            return
+        }
+        await login(email: email, password: password)
     }
     #endif
 
