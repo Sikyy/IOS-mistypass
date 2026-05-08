@@ -43,17 +43,13 @@ final class DeepLinkRouter {
             // mistyislet://pass
             pendingTab = 1
 
-        case "history":
-            // mistyislet://history
+        case "dashboard", "history":
+            // mistyislet://dashboard or mistyislet://history
             pendingTab = 2
 
-        case "visitors":
-            // mistyislet://visitors
+        case "profile", "visitors":
+            // mistyislet://profile (visitors is inside profile)
             pendingTab = 3
-
-        case "profile":
-            // mistyislet://profile
-            pendingTab = 4
 
         default:
             break
@@ -66,7 +62,7 @@ final class DeepLinkRouter {
         if pathComponents.count >= 2 && pathComponents[0] == "visitor" {
             // https://app.mistyislet.com/visitor/{token}
             pendingVisitorToken = String(pathComponents[1])
-            pendingTab = 3 // Visitors tab
+            pendingTab = 3 // Profile tab (visitors is inside profile)
         }
     }
 

@@ -53,6 +53,7 @@ final class GeofenceService: NSObject {
 
         locationManager.startMonitoring(for: region)
         monitoredDoors[doorId] = region
+        AppLogger.geofence.info("Started monitoring region for door \(doorId)")
     }
 
     /// Stop monitoring a specific door geofence
@@ -60,6 +61,7 @@ final class GeofenceService: NSObject {
         guard let region = monitoredDoors[doorId] else { return }
         locationManager.stopMonitoring(for: region)
         monitoredDoors.removeValue(forKey: doorId)
+        AppLogger.geofence.info("Stopped monitoring region for door \(doorId)")
     }
 
     /// Stop all geofence monitoring
@@ -94,7 +96,7 @@ final class GeofenceService: NSObject {
 
 // MARK: - CLLocationManagerDelegate
 
-extension GeofenceService: CLLocationManagerDelegate {
+extension GeofenceService: @preconcurrency CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
     }
@@ -102,6 +104,7 @@ extension GeofenceService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         guard let circularRegion = region as? CLCircularRegion else { return }
         let doorId = circularRegion.identifier
+        AppLogger.geofence.info("Entered geofence region for door \(doorId)")
 
         enteredRegionDoorId = doorId
 
@@ -114,8 +117,8 @@ extension GeofenceService: CLLocationManagerDelegate {
 
         // Send local notification if app is in background
         sendLocalNotification(
-            title: String(localized: "geofence.nearby_title"),
-            body: String(localized: "geofence.nearby_body"),
+            title: SettingsService.shared.L("geofence.nearby_title"),
+            body: SettingsService.shared.L("geofence.nearby_body"),
             doorId: doorId
         )
     }
@@ -123,6 +126,7 @@ extension GeofenceService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         guard let circularRegion = region as? CLCircularRegion else { return }
         let doorId = circularRegion.identifier
+        AppLogger.geofence.info("Exited geofence region for door \(doorId)")
 
         if enteredRegionDoorId == doorId {
             enteredRegionDoorId = nil

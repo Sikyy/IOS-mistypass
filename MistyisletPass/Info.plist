@@ -37,6 +37,17 @@
 	<array>
 		<string>bluetooth-central</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Mistyislet uses Bluetooth to discover and unlock doors near you.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
@@ -45,6 +56,8 @@
 	<string>Mistyislet uses the camera to scan QR codes for door access.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Mistyislet uses Face ID to protect your access credentials.</string>
+	<key>APP_ENV</key>
+	<string>dev</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleURLTypes</key>

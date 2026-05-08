@@ -42,8 +42,8 @@ struct DoorTimelineProvider: TimelineProvider {
 // MARK: - App Intent for Quick Unlock
 
 struct QuickUnlockIntent: AppIntent {
-    static var title: LocalizedStringResource = "Quick Unlock"
-    static var description = IntentDescription("Unlock your favorite door")
+    static let title: LocalizedStringResource = "Quick Unlock"
+    static let description = IntentDescription("Unlock your favorite door")
 
     @Parameter(title: "Door ID")
     var doorId: String

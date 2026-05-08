@@ -2,6 +2,7 @@ import SwiftUI
 
 struct UnlockOverlayView: View {
     let state: UnlockState
+    private let settings = SettingsService.shared
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -53,15 +54,15 @@ struct UnlockOverlayView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(.brandPrimary)
                 .symbolEffect(
-                    reduceMotion ? .pulse : .variableColor.iterative,
+                    .variableColor.iterative,
                     options: .repeating
                 )
 
-            Text("Connecting...")
+            Text(settings.L("unlock.connecting"))
                 .font(.title2)
                 .fontWeight(.semibold)
         }
-        .accessibilityLabel("Connecting to door controller")
+        .accessibilityLabel(settings.L("unlock.connecting"))
     }
 
     private func grantedContent(doorName: String) -> some View {
@@ -69,9 +70,9 @@ struct UnlockOverlayView: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 64))
                 .foregroundStyle(.green)
-                .symbolEffect(reduceMotion ? .pulse : .bounce, options: .nonRepeating)
+                .symbolEffect(.bounce, options: .nonRepeating)
 
-            Text("Door Unlocked")
+            Text(settings.L("unlock.granted"))
                 .font(.title2)
                 .fontWeight(.semibold)
 
@@ -92,7 +93,7 @@ struct UnlockOverlayView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(.red)
 
-            Text("Access Denied")
+            Text(settings.L("unlock.denied"))
                 .font(.title2)
                 .fontWeight(.semibold)
 

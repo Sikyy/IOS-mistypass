@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct SiteSwitcherView: View {
-    let viewModel: ProfileViewModel
+    @Environment(ProfileViewModel.self) private var viewModel
 
-    @State private var sites: [Site] = []
+    @State private var orgs: [Organization] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var settings = SettingsService.shared
@@ -12,18 +12,17 @@ struct SiteSwitcherView: View {
 
     var body: some View {
         List {
-            // "All Sites" option
             Section {
                 Button {
-                    settings.selectedSiteId = nil
-                    settings.selectedSiteName = nil
+                    settings.selectedOrgId = nil
+                    settings.selectedOrgName = nil
                     dismiss()
                 } label: {
                     HStack {
-                        Label("All Sites", systemImage: "building.2")
+                        Label("All Organizations", systemImage: "building.2")
                             .foregroundStyle(.primary)
                         Spacer()
-                        if settings.selectedSiteId == nil {
+                        if settings.selectedOrgId == nil {
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.brandPrimary)
                         }
@@ -31,38 +30,36 @@ struct SiteSwitcherView: View {
                 }
             }
 
-            // Sites list
-            Section("Your Sites") {
+            Section("Your Organizations") {
                 if isLoading {
                     HStack {
                         Spacer()
                         ProgressView()
                         Spacer()
                     }
-                } else if sites.isEmpty {
-                    Text("No sites available")
+                } else if orgs.isEmpty {
+                    Text(settings.L("places.no_orgs"))
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(sites) { site in
+                    ForEach(orgs) { org in
                         Button {
-                            settings.selectedSiteId = site.id
-                            settings.selectedSiteName = site.name
+                            settings.selectedOrgId = org.id
+                            settings.selectedOrgName = org.name
                             dismiss()
                         } label: {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(site.name)
+                                    Text(org.name)
                                         .font(.headline)
                                         .foregroundStyle(.primary)
-                                    Text(site.address)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                    Text("\(site.buildingCount) buildings")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
+                                    if let role = org.role {
+                                        Text(role.replacingOccurrences(of: "_", with: " ").capitalized)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
                                 Spacer()
-                                if settings.selectedSiteId == site.id {
+                                if settings.selectedOrgId == org.id {
                                     Image(systemName: "checkmark")
                                         .foregroundStyle(.brandPrimary)
                                 }
@@ -79,26 +76,17 @@ struct SiteSwitcherView: View {
                 }
             }
         }
-        .navigationTitle("Select Site")
+        .navigationTitle("Select Organization")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await fetchSites()
+            await fetchOrgs()
         }
     }
 
-    private func fetchSites() async {
+    private func fetchOrgs() async {
         isLoading = true
         do {
-            guard let url = URL(string: Constants.API.baseURL + "/app/sites") else { return }
-            var request = URLRequest(url: url)
-            if let token = KeychainService.shared.readString(forKey: Constants.Keychain.accessTokenKey) {
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            }
-
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            sites = try decoder.decode([Site].self, from: data)
+            orgs = try await APIService.shared.listOrgs()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -108,6 +96,7 @@ struct SiteSwitcherView: View {
 
 #Preview {
     NavigationStack {
-        SiteSwitcherView(viewModel: ProfileViewModel())
+        SiteSwitcherView()
+            .environment(ProfileViewModel())
     }
 }

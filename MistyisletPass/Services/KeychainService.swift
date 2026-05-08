@@ -8,7 +8,7 @@ enum KeychainError: Error {
 }
 
 final class KeychainService: Sendable {
-    static let shared = KeychainService()
+    nonisolated(unsafe) static let shared = KeychainService()
     private init() {}
 
     func save(_ data: Data, forKey key: String) throws {

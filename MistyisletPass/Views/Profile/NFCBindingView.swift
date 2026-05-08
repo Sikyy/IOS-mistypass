@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct NFCBindingView: View {
-    let viewModel: ProfileViewModel
+    @Environment(ProfileViewModel.self) private var viewModel
+    private let settings = SettingsService.shared
 
     @State private var isScanning = false
     @State private var scannedUID: String?
@@ -20,11 +21,11 @@ struct NFCBindingView: View {
                         .font(.system(size: 48))
                         .foregroundStyle(.brandPrimary)
 
-                    Text("Bind NFC Card")
+                    Text(settings.L("nfc.title"))
                         .font(.title2)
                         .fontWeight(.semibold)
 
-                    Text("Register your DESFire EV3 physical access card with your account. Hold the card near the top of your iPhone when prompted.")
+                    Text(settings.L("nfc.description"))
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -34,13 +35,13 @@ struct NFCBindingView: View {
             }
 
             // Step 1: Scan
-            Section("Step 1: Scan Card") {
+            Section(settings.L("nfc.scan_step")) {
                 if let uid = scannedUID {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundStyle(.green)
                         VStack(alignment: .leading) {
-                            Text("Card Detected")
+                            Text(settings.L("nfc.card_detected"))
                                 .font(.headline)
                             Text("UID: \(uid)")
                                 .font(.caption)
@@ -56,10 +57,10 @@ struct NFCBindingView: View {
                             if isScanning {
                                 ProgressView()
                                     .padding(.trailing, 8)
-                                Text("Hold card near iPhone...")
+                                Text(settings.L("nfc.hold_near"))
                             } else {
                                 Image(systemName: "wave.3.right")
-                                Text("Scan NFC Card")
+                                Text(settings.L("nfc.scan_card"))
                             }
                         }
                     }
@@ -67,13 +68,11 @@ struct NFCBindingView: View {
                 }
             }
 
-            // Step 2: Label
             if scannedUID != nil {
-                Section("Step 2: Label") {
-                    TextField("Card label (e.g., \"Office Card\")", text: $cardLabel)
+                Section(settings.L("nfc.label_step")) {
+                    TextField(settings.L("nfc.label_placeholder"), text: $cardLabel)
                 }
 
-                // Step 3: Bind
                 Section {
                     Button {
                         Task { await bindCard() }
@@ -84,7 +83,7 @@ struct NFCBindingView: View {
                                 ProgressView()
                                     .tint(.white)
                             } else {
-                                Text("Bind Card")
+                                Text(settings.L("nfc.bind_card"))
                                     .fontWeight(.semibold)
                             }
                             Spacer()
@@ -104,12 +103,12 @@ struct NFCBindingView: View {
                 }
             }
         }
-        .navigationTitle("Bind NFC Card")
+        .navigationTitle(settings.L("nfc.title"))
         .navigationBarTitleDisplayMode(.inline)
-        .alert("Card Bound", isPresented: $bindSuccess) {
-            Button("Done") { dismiss() }
+        .alert(settings.L("nfc.card_bound"), isPresented: $bindSuccess) {
+            Button(settings.L("common.done")) { dismiss() }
         } message: {
-            Text("Your NFC card has been registered successfully. You can now use it to unlock doors.")
+            Text(settings.L("nfc.bind_success"))
         }
     }
 
@@ -151,6 +150,7 @@ struct NFCBindingView: View {
 
 #Preview {
     NavigationStack {
-        NFCBindingView(viewModel: ProfileViewModel())
+        NFCBindingView()
+            .environment(ProfileViewModel())
     }
 }
