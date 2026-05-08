@@ -3,77 +3,73 @@ import UIKit
 
 struct GeofenceSettingsView: View {
     @State private var geofenceService = GeofenceService.shared
-    @State private var isEnabled = false
+    @State private var settings = SettingsService.shared
 
     var body: some View {
         List {
             Section {
-                Toggle("Auto-Unlock Geofence", isOn: $isEnabled)
+                Toggle(settings.L("geofence.toggle"), isOn: Bindable(settings).geofenceEnabled)
                     .tint(.brandPrimary)
-                    .onChange(of: isEnabled) { _, enabled in
+                    .onChange(of: settings.geofenceEnabled) { _, enabled in
                         if enabled {
                             geofenceService.requestAuthorization()
                         } else {
                             geofenceService.stopAllMonitoring()
                         }
-                        UserDefaults.standard.set(enabled, forKey: "settings.geofenceEnabled")
                     }
             } footer: {
-                Text("When enabled, you'll receive a notification when you're near a door, making it faster to unlock.")
+                Text(settings.L("geofence.description"))
             }
 
             Section {
                 HStack {
-                    Text("Location Permission")
+                    Text(settings.L("geofence.location_permission"))
                     Spacer()
                     Text(permissionText)
                         .foregroundStyle(permissionColor)
                 }
 
                 HStack {
-                    Text("Monitored Doors")
+                    Text(settings.L("geofence.monitored_doors"))
                     Spacer()
                     Text("\(geofenceService.monitoredDoors.count)")
                         .foregroundStyle(.secondary)
                 }
             }
 
-            if !geofenceService.isAuthorized && isEnabled {
+            if !geofenceService.isAuthorized && settings.geofenceEnabled {
                 Section {
-                    Button("Open Settings") {
+                    Button(settings.L("geofence.open_settings")) {
                         if let url = URL(string: UIApplication.openSettingsURLString) {
                             UIApplication.shared.open(url)
                         }
                     }
                 } footer: {
-                    Text("Location permission is required for geofence monitoring. Please enable \"While Using\" in Settings.")
+                    Text(settings.L("geofence.permission_required"))
                 }
             }
 
-            Section("How It Works") {
-                Label("A small geofence (50m) is set around each door", systemImage: "mappin.circle")
-                Label("When you enter the zone, you get a notification", systemImage: "bell")
-                Label("Tap the notification to quickly unlock", systemImage: "lock.open")
-                Label("No GPS tracking — only region entry/exit", systemImage: "hand.raised")
+            Section(settings.L("geofence.how_it_works")) {
+                Label(settings.L("geofence.step_1"), systemImage: "mappin.circle")
+                Label(settings.L("geofence.step_2"), systemImage: "bell")
+                Label(settings.L("geofence.step_3"), systemImage: "lock.open")
+                Label(settings.L("geofence.step_4"), systemImage: "hand.raised")
             }
             .font(.callout)
             .foregroundStyle(.secondary)
         }
-        .navigationTitle("Auto-Unlock")
+        .navigationTitle(settings.L("geofence.title"))
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            isEnabled = UserDefaults.standard.bool(forKey: "settings.geofenceEnabled")
-        }
     }
 
     private var permissionText: String {
         switch geofenceService.authorizationStatus {
-        case .authorizedAlways: return "Always"
-        case .authorizedWhenInUse: return "While Using"
-        case .denied: return "Denied"
-        case .restricted: return "Restricted"
-        case .notDetermined: return "Not Set"
-        @unknown default: return "Unknown"
+        case .authorizedAlways: return settings.L("geofence.perm_always")
+        case .authorizedWhenInUse: return settings.L("geofence.perm_while_using")
+        case .denied: return settings.L("geofence.perm_denied")
+        case .restricted: return settings.L("geofence.perm_restricted")
+        case .notDetermined: return settings.L("geofence.perm_not_set")
+        @unknown default: return "—"
         }
     }
 

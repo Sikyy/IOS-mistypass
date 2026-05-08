@@ -31,7 +31,7 @@ final class ModelDecodingTests: XCTestCase {
         XCTAssertTrue(door.controllerOnline)
         XCTAssertTrue(door.hasPermission)
         XCTAssertTrue(door.canUnlock)
-        XCTAssertEqual(door.statusDescription, "Online")
+        XCTAssertEqual(door.statusDescription, NSLocalizedString("doors.online", comment: ""))
     }
 
     func testDoorOfflineStatus() throws {
@@ -49,7 +49,7 @@ final class ModelDecodingTests: XCTestCase {
 
         let door = try decoder.decode(Door.self, from: json)
         XCTAssertFalse(door.canUnlock)
-        XCTAssertEqual(door.statusDescription, "Controller offline")
+        XCTAssertEqual(door.statusDescription, NSLocalizedString("doors.controller_offline", comment: ""))
     }
 
     // MARK: - AccessEvent
@@ -98,11 +98,14 @@ final class ModelDecodingTests: XCTestCase {
         let json = """
         {
             "id": "cred-001",
-            "device_name": "iPhone 17 Pro",
-            "public_key_fingerprint": "SHA256:abc123",
-            "created_at": "2026-04-01T00:00:00Z",
-            "expires_at": "2026-07-01T00:00:00Z",
-            "is_active": true
+            "user_email": "siky@mistyislet.com",
+            "device_id": "iPhone17Pro",
+            "platform": "ios",
+            "device_model": "iPhone 17 Pro",
+            "keystore_level": "strongbox",
+            "status": "active",
+            "issued_at": "2026-04-01T00:00:00Z",
+            "expires_at": "2026-07-01T00:00:00Z"
         }
         """.data(using: .utf8)!
 
@@ -110,6 +113,7 @@ final class ModelDecodingTests: XCTestCase {
         XCTAssertEqual(credential.deviceName, "iPhone 17 Pro")
         XCTAssertTrue(credential.isActive)
         XCTAssertFalse(credential.isExpired)
+        XCTAssertEqual(credential.platform, "ios")
     }
 
     // MARK: - Visitor
@@ -118,25 +122,22 @@ final class ModelDecodingTests: XCTestCase {
         let json = """
         {
             "id": "vis-001",
-            "name": "John Doe",
-            "phone": "+62812345678",
-            "host_name": "Ahmad",
-            "company": "Acme Corp",
-            "purpose": "Meeting",
-            "door_ids": ["door-001"],
-            "door_names": ["Main Entrance"],
-            "access_token": "token-abc",
+            "visitor": "John Doe",
+            "host": "Ahmad",
+            "delivery_method": "whatsapp",
+            "expires_at": "2027-12-31T00:00:00Z",
             "created_at": "2026-05-03T00:00:00Z",
-            "expires_at": "2026-05-04T00:00:00Z",
-            "is_active": true
+            "valid_from": "2026-05-03T00:00:00Z",
+            "valid_until": "2027-12-31T00:00:00Z",
+            "display_label": "VP-001"
         }
         """.data(using: .utf8)!
 
         let visitor = try decoder.decode(Visitor.self, from: json)
         XCTAssertEqual(visitor.name, "John Doe")
         XCTAssertEqual(visitor.hostName, "Ahmad")
-        XCTAssertEqual(visitor.doorIds.count, 1)
-        XCTAssertTrue(visitor.isActive)
+        XCTAssertEqual(visitor.displayLabel, "VP-001")
+        XCTAssertFalse(visitor.isExpired)
     }
 
     // MARK: - LoginResponse
@@ -144,11 +145,9 @@ final class ModelDecodingTests: XCTestCase {
     func testDecodeLoginResponse() throws {
         let json = """
         {
-            "tokens": {
-                "access_token": "eyJ...",
-                "refresh_token": "eyR...",
-                "expires_in": 3600
-            },
+            "access_token": "eyJ...",
+            "refresh_token": "eyR...",
+            "expires_in": 3600,
             "user": {
                 "id": "user-001",
                 "email": "test@example.com",
@@ -161,7 +160,7 @@ final class ModelDecodingTests: XCTestCase {
         """.data(using: .utf8)!
 
         let response = try decoder.decode(LoginResponse.self, from: json)
-        XCTAssertEqual(response.tokens.accessToken, "eyJ...")
+        XCTAssertEqual(response.accessToken, "eyJ...")
         XCTAssertEqual(response.tokens.expiresIn, 3600)
         XCTAssertEqual(response.user.email, "test@example.com")
     }

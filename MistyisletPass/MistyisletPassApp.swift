@@ -26,6 +26,9 @@ struct MistyisletPassApp: App {
                     _ = await NotificationService.shared.requestAuthorization()
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
+                authViewModel.logout()
+            }
         }
         .modelContainer(for: [CachedDoor.self, CachedAccessEvent.self])
     }

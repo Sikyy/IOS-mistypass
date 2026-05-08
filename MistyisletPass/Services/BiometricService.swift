@@ -38,6 +38,17 @@ final class BiometricService {
         }
     }
 
+    var deviceBiometricType: BiometricType {
+        let context = LAContext()
+        _ = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
+        switch context.biometryType {
+        case .faceID: return .faceID
+        case .touchID: return .touchID
+        case .opticID: return .opticID
+        default: return .none
+        }
+    }
+
     var isAvailable: Bool {
         biometricType != .none
     }

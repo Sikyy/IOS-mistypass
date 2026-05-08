@@ -3,7 +3,7 @@ import UserNotifications
 import UIKit
 
 final class NotificationService: NSObject {
-    static let shared = NotificationService()
+    nonisolated(unsafe) static let shared = NotificationService()
     private override init() { super.init() }
 
     /// Request notification permission and register for APNs
@@ -26,21 +26,13 @@ final class NotificationService: NSObject {
 
     /// Send device token to backend
     func registerDeviceToken(_ token: Data) async {
-        let tokenString = token.map { String(format: "%02.2hhx", $0) }.joined()
-
-        guard let url = URL(string: Constants.API.baseURL + "/app/devices/apns") else { return }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        if let accessToken = KeychainService.shared.readString(forKey: Constants.Keychain.accessTokenKey) {
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        let tokenHex = token.map { String(format: "%02.2hhx", $0) }.joined()
+        do {
+            _ = try await APIService.shared.registerAPNSToken(tokenHex)
+            AppLogger.push.info("APNS token registered")
+        } catch {
+            AppLogger.push.error("APNS registration failed: \(error.localizedDescription)")
         }
-
-        let body = ["device_token": tokenString, "platform": "ios"]
-        request.httpBody = try? JSONEncoder().encode(body)
-
-        _ = try? await URLSession.shared.data(for: request)
     }
 }
 
@@ -62,13 +54,16 @@ extension NotificationService: UNUserNotificationCenterDelegate {
     ) async {
         let userInfo = response.notification.request.content.userInfo
 
-        // Navigate based on notification type
         if let type = userInfo["type"] as? String {
+            let payload = Dictionary(uniqueKeysWithValues: userInfo.compactMap { key, val -> (String, String)? in
+                guard let k = key as? String, let v = val as? String else { return nil }
+                return (k, v)
+            })
             await MainActor.run {
                 NotificationCenter.default.post(
                     name: .didReceiveDeepLink,
                     object: nil,
-                    userInfo: ["type": type, "payload": userInfo]
+                    userInfo: ["type": type, "payload": payload]
                 )
             }
         }
@@ -77,4 +72,5 @@ extension NotificationService: UNUserNotificationCenterDelegate {
 
 extension Notification.Name {
     static let didReceiveDeepLink = Notification.Name("didReceiveDeepLink")
+    static let sessionExpired = Notification.Name("sessionExpired")
 }

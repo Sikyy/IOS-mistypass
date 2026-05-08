@@ -10,13 +10,14 @@ final class DoorsViewModel {
     var unlockState: UnlockState = .idle
     var errorMessage: String?
 
-    var biometricEnabled = true
+    private var biometricEnabled: Bool { SettingsService.shared.biometricEnabled }
     var sortOrder: DoorSortOrder = .status
 
     private let bleManager = BLEManager.shared
     private let hapticService = HapticService.shared
     private let networkMonitor = NetworkMonitor.shared
     private let biometricService = BiometricService.shared
+    private let settings = SettingsService.shared
 
     var sortedDoors: [Door] {
         doors.sorted { lhs, rhs in
@@ -40,6 +41,7 @@ final class DoorsViewModel {
     // MARK: - Fetch Doors
 
     func fetchDoors(modelContext: ModelContext) async {
+        guard !Constants.AppEnvironment.isPreview else { return }
         isLoading = true
         isOffline = !networkMonitor.isConnected
 
@@ -89,7 +91,7 @@ final class DoorsViewModel {
                 unlockState = .idle
                 return
             } catch {
-                unlockState = .denied(doorName: door.name, reason: "Biometric authentication failed")
+                unlockState = .denied(doorName: door.name, reason: settings.L("doors.biometric_failed"))
                 hapticService.unlockDenied()
                 try? await Task.sleep(for: .seconds(Constants.UI.unlockOverlayDismissDelay))
                 unlockState = .idle
@@ -117,14 +119,13 @@ final class DoorsViewModel {
                 unlockState = .granted(doorName: door.name)
             } else {
                 hapticService.unlockDenied()
-                unlockState = .denied(doorName: door.name, reason: "Access denied by controller")
+                unlockState = .denied(doorName: door.name, reason: settings.L("doors.access_denied_controller"))
             }
         } catch {
-            // Fallback to remote unlock
             await remoteUnlock(door: door)
+            return
         }
 
-        // Auto-dismiss after delay
         try? await Task.sleep(for: .seconds(Constants.UI.unlockOverlayDismissDelay))
         unlockState = .idle
     }
@@ -137,7 +138,7 @@ final class DoorsViewModel {
                 unlockState = .granted(doorName: door.name)
             } else {
                 hapticService.unlockDenied()
-                unlockState = .denied(doorName: door.name, reason: response.reason ?? "Access denied")
+                unlockState = .denied(doorName: door.name, reason: response.reason ?? settings.L("doors.access_denied"))
             }
         } catch {
             hapticService.unlockDenied()

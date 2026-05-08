@@ -3,29 +3,34 @@ import UIKit
 @MainActor
 final class HapticService {
     static let shared = HapticService()
-    private init() {}
+
+    private let impactMedium = UIImpactFeedbackGenerator(style: .medium)
+    private let impactLight = UIImpactFeedbackGenerator(style: .light)
+    private let notification = UINotificationFeedbackGenerator()
+
+    private init() {
+        impactMedium.prepare()
+        impactLight.prepare()
+        notification.prepare()
+    }
 
     func holdStart() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.prepare()
-        generator.impactOccurred()
+        impactMedium.impactOccurred()
+        impactMedium.prepare()
     }
 
     func unlockGranted() {
-        let generator = UINotificationFeedbackGenerator()
-        generator.prepare()
-        generator.notificationOccurred(.success)
+        notification.notificationOccurred(.success)
+        notification.prepare()
     }
 
     func unlockDenied() {
-        let generator = UINotificationFeedbackGenerator()
-        generator.prepare()
-        generator.notificationOccurred(.error)
+        notification.notificationOccurred(.error)
+        notification.prepare()
     }
 
     func buttonTap() {
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.prepare()
-        generator.impactOccurred()
+        impactLight.impactOccurred()
+        impactLight.prepare()
     }
 }

@@ -11,6 +11,11 @@ final class DeepLinkRouterTests: XCTestCase {
         router.clearPending()
     }
 
+    override func tearDown() async throws {
+        router.clearPending()
+        router = nil
+    }
+
     func testUnlockDeepLink() {
         let url = URL(string: "mistyislet://unlock/door-001")!
         router.handle(url: url)
@@ -39,7 +44,7 @@ final class DeepLinkRouterTests: XCTestCase {
     func testProfileDeepLink() {
         let url = URL(string: "mistyislet://profile")!
         router.handle(url: url)
-        XCTAssertEqual(router.pendingTab, 4)
+        XCTAssertEqual(router.pendingTab, 3)
     }
 
     func testVisitorUniversalLink() {

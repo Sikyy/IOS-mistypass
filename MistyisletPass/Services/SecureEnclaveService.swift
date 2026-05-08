@@ -18,7 +18,7 @@ enum SecureEnclaveError: Error, LocalizedError {
 }
 
 final class SecureEnclaveService {
-    static let shared = SecureEnclaveService()
+    nonisolated(unsafe) static let shared = SecureEnclaveService()
     private let tag = Data(Constants.Keychain.credentialTag.utf8)
 
     private init() {}
@@ -88,7 +88,8 @@ final class SecureEnclaveService {
 
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
-        guard status == errSecSuccess, let key = item as? SecKey else { return nil }
+        guard status == errSecSuccess, let item else { return nil }
+        let key = item as! SecKey
         return key
     }
 

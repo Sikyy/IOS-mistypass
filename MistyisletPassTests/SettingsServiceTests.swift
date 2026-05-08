@@ -4,6 +4,13 @@ import XCTest
 @MainActor
 final class SettingsServiceTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        if let bundleId = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleId)
+        }
+    }
+
     func testBiometricDefault() {
         // Default is true on first launch
         let settings = SettingsService.shared
@@ -22,13 +29,12 @@ final class SettingsServiceTests: XCTestCase {
 
     func testLanguageDefault() {
         let settings = SettingsService.shared
-        XCTAssertEqual(settings.selectedLanguage, .system)
+        XCTAssertEqual(settings.selectedLanguage, .english)
     }
 
-    func testSiteDefaultNil() {
+    func testPlaceDefaultNil() {
         let settings = SettingsService.shared
-        // May not be nil if previous test set it, so just verify it doesn't crash
-        _ = settings.selectedSiteId
-        _ = settings.selectedSiteName
+        XCTAssertNil(settings.selectedPlaceId)
+        XCTAssertNil(settings.selectedPlaceName)
     }
 }

@@ -84,6 +84,9 @@ schemes:
         MistyisletPass: all
         MistyisletPassWidgetExtension: all
         MistyisletPassTests: [test]
+    run:
+      environmentVariables:
+        APP_ENV: dev
     test:
       targets:
         - MistyisletPassTests

@@ -12,6 +12,8 @@ struct DoorCardView: View {
     @State private var isHolding = false
     @State private var holdTimer: Timer?
     @GestureState private var isPressed = false
+    @Namespace private var glassNS
+    private let settings = SettingsService.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -40,11 +42,12 @@ struct DoorCardView: View {
             } else {
                 Text(door.statusDescription)
                     .font(.callout)
-                    .foregroundStyle(door.controllerOnline ? .secondary : .orange)
+                    .foregroundStyle(door.controllerOnline ? .secondary : Color.orange)
             }
         }
         .padding()
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
+        .glassEffectUnion(id: "card", namespace: glassNS)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(door.name), \(door.floor), \(door.building), \(door.statusDescription)")
         .accessibilityHint(door.canUnlock ? "Long press to unlock" : "")
@@ -79,7 +82,7 @@ struct DoorCardView: View {
             // Label
             HStack {
                 Image(systemName: holdProgress >= 1.0 ? "lock.open.fill" : "lock.fill")
-                Text(holdProgress >= 1.0 ? "Release to Unlock" : "Hold to Unlock")
+                Text(holdProgress >= 1.0 ? settings.L("doors.release_to_unlock") : settings.L("doors.hold_to_unlock"))
                     .fontWeight(.medium)
             }
             .frame(maxWidth: .infinity)
@@ -87,6 +90,7 @@ struct DoorCardView: View {
             .foregroundStyle(holdProgress > 0 ? .brandPrimary : .primary)
         }
         .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 10))
+        .glassEffectUnion(id: "card", namespace: glassNS)
         .gesture(
             LongPressGesture(minimumDuration: 0.01)
                 .onChanged { _ in

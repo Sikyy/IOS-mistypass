@@ -14,14 +14,14 @@ final class HistoryViewModel {
         return f
     }()
 
-    /// Events grouped by day
     var groupedEvents: [(String, [AccessEvent])] {
         let calendar = Calendar.current
+        let settings = SettingsService.shared
         let grouped = Dictionary(grouping: events) { event -> String in
             if calendar.isDateInToday(event.timestamp) {
-                return "Today"
+                return settings.L("history.today")
             } else if calendar.isDateInYesterday(event.timestamp) {
-                return "Yesterday"
+                return settings.L("history.yesterday")
             } else {
                 return Self.dateFormatter.string(from: event.timestamp)
             }
@@ -35,12 +35,13 @@ final class HistoryViewModel {
     }
 
     func fetchEvents() async {
+        guard !Constants.AppEnvironment.isPreview else { return }
         isLoading = true
         currentPage = 1
         errorMessage = nil
 
         do {
-            events = try await APIService.shared.fetchEvents(page: 1)
+            events = try await APIService.shared.fetchEvents(offset: 0, limit: 20)
             hasMorePages = events.count >= 20
         } catch {
             errorMessage = error.localizedDescription
@@ -54,11 +55,13 @@ final class HistoryViewModel {
 
         currentPage += 1
         do {
-            let newEvents = try await APIService.shared.fetchEvents(page: currentPage)
+            let offset = (currentPage - 1) * 20
+            let newEvents = try await APIService.shared.fetchEvents(offset: offset, limit: 20)
             events.append(contentsOf: newEvents)
             hasMorePages = newEvents.count >= 20
         } catch {
             currentPage -= 1
+            errorMessage = error.localizedDescription
         }
     }
 }

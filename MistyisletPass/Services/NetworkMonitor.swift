@@ -17,7 +17,7 @@ final class NetworkMonitor {
 
     private init() {
         monitor.pathUpdateHandler = { [weak self] path in
-            DispatchQueue.main.async {
+            Task { @MainActor [weak self] in
                 self?.isConnected = path.status == .satisfied
                 self?.connectionType = self?.getConnectionType(path) ?? .unknown
             }

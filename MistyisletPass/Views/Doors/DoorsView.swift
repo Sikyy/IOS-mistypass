@@ -3,6 +3,7 @@ import SwiftData
 
 struct DoorsView: View {
     @State private var viewModel = DoorsViewModel()
+    @State private var settings = SettingsService.shared
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
@@ -19,7 +20,7 @@ struct DoorsView: View {
                     EmptyView()
                 }
             }
-            .navigationTitle("Doors")
+            .navigationTitle(settings.L("doors.title"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
@@ -72,9 +73,9 @@ struct DoorsView: View {
     private var offlineBanner: some View {
         HStack {
             Image(systemName: "wifi.slash")
-            Text("Offline")
+            Text(settings.L("doors.offline_banner"))
             if let lastSync = viewModel.lastSyncedAt {
-                Text("- Last synced \(lastSync, style: .relative) ago")
+                Text("- \(String(format: settings.L("doors.last_synced"), lastSync.formatted(.relative(presentation: .named))))")
                     .font(.caption)
             }
         }

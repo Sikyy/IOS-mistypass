@@ -36,3 +36,17 @@ struct RegisterMobileCredentialBody: Codable {
 struct RegisterMobileCredentialResponse: Codable {
     let credential: Credential
 }
+
+/// Response from `GET /app/access/pin-code`.
+/// TOTP-based dynamic PIN, refreshes every `periodSecs` (typically 30s).
+struct PinCodeResponse: Codable {
+    let pin: String
+    let validUntil: String
+    let periodSecs: Int
+
+    enum CodingKeys: String, CodingKey {
+        case pin
+        case validUntil = "valid_until"
+        case periodSecs = "period_secs"
+    }
+}

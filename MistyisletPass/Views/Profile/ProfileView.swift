@@ -1,47 +1,132 @@
 import SwiftUI
+import PhotosUI
 
 struct ProfileView: View {
     @Environment(AuthViewModel.self) private var authViewModel
     @State private var viewModel = ProfileViewModel()
     @State private var settings = SettingsService.shared
+    @State private var selectedTab: SettingsTab = .main
 
-    var body: some View {
-        NavigationStack {
-            List {
-                userSection
-                siteSection
-                credentialsSection
-                settingsSection
-                signOutSection
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle(String(localized: "profile.title"))
-            .task {
-                await viewModel.fetchProfile()
+    private enum SettingsTab: CaseIterable {
+        case main, logins, help
+
+        @MainActor func label(_ s: SettingsService) -> String {
+            switch self {
+            case .main: return s.L("profile.tab_main")
+            case .logins: return s.L("profile.tab_logins")
+            case .help: return s.L("profile.tab_help")
             }
         }
     }
 
-    // MARK: - User Info
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                Picker("Settings", selection: $selectedTab) {
+                    ForEach(SettingsTab.allCases, id: \.self) { tab in
+                        Text(tab.label(settings)).tag(tab)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
 
-    private var userSection: some View {
+                switch selectedTab {
+                case .main:
+                    MainSettingsTab(
+                        viewModel: viewModel,
+                        settings: settings,
+                        authViewModel: authViewModel
+                    )
+                case .logins:
+                    LoginsTab(viewModel: viewModel)
+                case .help:
+                    HelpTab()
+                }
+            }
+            .navigationTitle(settings.L("profile.title"))
+            .task {
+                await viewModel.fetchProfile()
+            }
+        }
+        .environment(viewModel)
+    }
+}
+
+// MARK: - Main Settings Tab
+
+private struct MainSettingsTab: View {
+    let viewModel: ProfileViewModel
+    @Bindable var settings: SettingsService
+    let authViewModel: AuthViewModel
+    @State private var avatarItem: PhotosPickerItem?
+
+    var body: some View {
+        List {
+            profileHeader
+            settingsItems
+            signOutSection
+        }
+        .listStyle(.insetGrouped)
+        .refreshable { await viewModel.fetchProfile() }
+        .onChange(of: avatarItem) { _, newItem in
+            guard let newItem else { return }
+            Task {
+                if let data = try? await newItem.loadTransferable(type: Data.self) {
+                    await viewModel.uploadAvatar(data)
+                }
+            }
+        }
+    }
+
+    private var profileHeader: some View {
         Section {
             if let user = viewModel.user {
                 HStack(spacing: 16) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 48))
-                        .foregroundStyle(.brandPrimary)
+                    PhotosPicker(selection: $avatarItem, matching: .images) {
+                        ZStack(alignment: .bottomTrailing) {
+                            if let avatarURL = user.avatar, let url = URL(string: avatarURL) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    default:
+                                        Image(systemName: "person.crop.circle.fill")
+                                            .resizable()
+                                            .foregroundStyle(.brandPrimary)
+                                    }
+                                }
+                                .frame(width: 52, height: 52)
+                                .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.crop.circle.fill")
+                                    .font(.system(size: 48))
+                                    .foregroundStyle(.brandPrimary)
+                            }
+
+                            Image(systemName: "camera.circle.fill")
+                                .font(.system(size: 18))
+                                .foregroundStyle(.white, .brandPrimary)
+                                .offset(x: 2, y: 2)
+                        }
+                    }
+                    .buttonStyle(.plain)
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(user.name)
-                            .font(.headline)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
                         Text(user.email)
                             .font(.body)
                             .foregroundStyle(.secondary)
-                        Text("\(user.building) \u{00B7} \(user.role)")
+                        Text("\(user.organizationName ?? "") \u{00B7} \(user.roleDisplayLabel ?? user.role)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+
+                    Spacer()
                 }
                 .padding(.vertical, 8)
             } else if viewModel.isLoading {
@@ -54,103 +139,34 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Site Switching
-
-    private var siteSection: some View {
-        Section {
+    private var settingsItems: some View {
+        Section(settings.L("profile.settings")) {
             NavigationLink {
-                SiteSwitcherView(viewModel: viewModel)
+                ChangePasswordView(viewModel: viewModel)
             } label: {
-                HStack {
-                    Label("Site", systemImage: "building.2")
-                    Spacer()
-                    Text(settings.selectedSiteName ?? "All Sites")
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-    }
-
-    // MARK: - Credentials
-
-    private var credentialsSection: some View {
-        Section(String(localized: "profile.credentials")) {
-            ForEach(viewModel.credentials) { credential in
-                CredentialRowView(
-                    credential: credential,
-                    onRevoke: {
-                        Task { await viewModel.revokeCredential(credential) }
-                    }
-                )
+                Label(settings.L("profile.change_password"), systemImage: "key")
             }
 
-            // NFC Card Binding
-            if NFCService.shared.isAvailable {
-                NavigationLink {
-                    NFCBindingView(viewModel: viewModel)
-                } label: {
-                    Label("Bind NFC Card", systemImage: "wave.3.right")
-                }
+            Toggle(isOn: $settings.biometricEnabled) {
+                Label(biometricLabel, systemImage: biometricIcon)
             }
-        }
-    }
+            .tint(.brandPrimary)
 
-    // MARK: - Settings
-
-    private var settingsSection: some View {
-        Section(String(localized: "profile.settings")) {
-            // Language
             NavigationLink {
                 LanguageSettingsView()
             } label: {
                 HStack {
-                    Label(String(localized: "profile.language"), systemImage: "globe")
+                    Label(settings.L("profile.language"), systemImage: "globe")
                     Spacer()
                     Text(settings.selectedLanguage.displayName)
                         .foregroundStyle(.secondary)
                 }
             }
 
-            // Biometric
-            Toggle(isOn: Bindable(settings).biometricEnabled) {
-                Label(
-                    String(localized: "profile.biometric_lock"),
-                    systemImage: biometricIcon
-                )
-            }
-            .tint(.brandPrimary)
-
-            // Haptic
-            Toggle(isOn: Bindable(settings).hapticEnabled) {
-                Label("Haptic Feedback", systemImage: "hand.tap")
-            }
-            .tint(.brandPrimary)
-
-            // Screen brightness
-            Toggle(isOn: Bindable(settings).autoScreenBrightness) {
-                Label("Auto Brightness for Pass", systemImage: "sun.max")
-            }
-            .tint(.brandPrimary)
-
-            // Geofence
             NavigationLink {
                 GeofenceSettingsView()
             } label: {
-                Label("Auto-Unlock Zone", systemImage: "location.circle")
-            }
-
-            // Notifications
-            NavigationLink {
-                Text("Notification Settings")
-            } label: {
-                Label(String(localized: "profile.notifications"), systemImage: "bell")
-            }
-
-            // About
-            NavigationLink {
-                AboutView()
-            } label: {
-                Label(String(localized: "profile.about"), systemImage: "info.circle")
+                Label(settings.L("profile.auto_unlock_zone"), systemImage: "location.circle")
             }
         }
     }
@@ -162,15 +178,24 @@ struct ProfileView: View {
             } label: {
                 HStack {
                     Spacer()
-                    Text(String(localized: "profile.sign_out"))
+                    Label(settings.L("profile.sign_out"), systemImage: "rectangle.portrait.and.arrow.right")
                     Spacer()
                 }
             }
         }
     }
 
+    private var biometricLabel: String {
+        switch BiometricService.shared.deviceBiometricType {
+        case .faceID: return "Face ID"
+        case .touchID: return "Touch ID"
+        case .opticID: return "Optic ID"
+        case .none: return settings.L("profile.biometric_lock")
+        }
+    }
+
     private var biometricIcon: String {
-        switch BiometricService.shared.biometricType {
+        switch BiometricService.shared.deviceBiometricType {
         case .faceID: return "faceid"
         case .touchID: return "touchid"
         case .opticID: return "opticid"
@@ -179,84 +204,235 @@ struct ProfileView: View {
     }
 }
 
-// MARK: - Credential Row
+// MARK: - Logins Tab
 
-struct CredentialRowView: View {
-    let credential: Credential
-    let onRevoke: () -> Void
+private struct LoginsTab: View {
+    let viewModel: ProfileViewModel
+    @State private var settings = SettingsService.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Image(systemName: "iphone")
-                    .foregroundStyle(.brandPrimary)
-                Text(credential.deviceName)
-                    .font(.headline)
-            }
-
-            HStack {
-                Text(String(localized: "profile.secure_enclave"))
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color(.tertiarySystemBackground))
-                    .clipShape(Capsule())
-
-                Text(credential.isActive
-                     ? String(localized: "profile.active")
-                     : String(localized: "profile.revoked"))
-                    .font(.caption)
-                    .foregroundStyle(credential.isActive ? .green : .red)
-            }
-
-            HStack {
-                Text("Expires: \(credential.expiresAt, style: .date)")
-                    .font(.caption)
-                    .foregroundStyle(credential.isExpiringSoon ? .orange : .secondary)
-
-                Spacer()
-
-                if credential.isActive {
-                    Button(String(localized: "profile.revoke"), role: .destructive) {
-                        onRevoke()
+        List {
+            if viewModel.isLoadingLogins {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+                .listRowBackground(Color.clear)
+            } else if viewModel.logins.isEmpty {
+                ContentUnavailableView(
+                    settings.L("profile.no_sessions"),
+                    systemImage: "iphone.and.arrow.forward",
+                    description: Text(settings.L("profile.no_sessions_description"))
+                )
+                .listRowBackground(Color.clear)
+            } else {
+                ForEach(viewModel.logins) { login in
+                    LoginSessionRow(login: login) {
+                        Task { await viewModel.remoteLogout(login) }
                     }
-                    .font(.caption)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
                 }
             }
         }
-        .padding(.vertical, 4)
+        .listStyle(.insetGrouped)
+        .task {
+            await viewModel.fetchLogins()
+        }
+    }
+}
+
+// MARK: - Help Tab
+
+private struct HelpTab: View {
+    @State private var settings = SettingsService.shared
+
+    var body: some View {
+        List {
+            NavigationLink {
+                AboutView()
+            } label: {
+                Label(settings.L("profile.about"), systemImage: "info.circle")
+            }
+
+            NavigationLink {
+                Text(settings.L("profile.help_center"))
+                    .navigationTitle(settings.L("profile.help_center"))
+            } label: {
+                Label(settings.L("profile.help_center"), systemImage: "questionmark.circle")
+            }
+
+            NavigationLink {
+                Text(settings.L("profile.acknowledgments"))
+                    .navigationTitle(settings.L("profile.acknowledgments"))
+            } label: {
+                Label(settings.L("profile.acknowledgments"), systemImage: "doc.text")
+            }
+        }
+        .listStyle(.insetGrouped)
     }
 }
 
 // MARK: - About
 
 struct AboutView: View {
+    @State private var settings = SettingsService.shared
+    @State private var tapCount = 0
+    @State private var showDevOptions = false
+
     var body: some View {
         List {
             Section {
                 HStack {
-                    Text("Version")
+                    Text(settings.L("profile.version"))
                     Spacer()
                     Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
                         .foregroundStyle(.secondary)
                 }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    tapCount += 1
+                    if tapCount >= 7 {
+                        showDevOptions = true
+                        tapCount = 0
+                    }
+                }
+
                 HStack {
-                    Text("Build")
+                    Text(settings.L("profile.build"))
                     Spacer()
                     Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
                         .foregroundStyle(.secondary)
                 }
+
+                LabeledContent(settings.L("profile.device_label"), value: "\(deviceModel)")
+                LabeledContent("iOS", value: UIDevice.current.systemVersion)
+
+                HStack {
+                    Text(settings.L("profile.environment"))
+                    Spacer()
+                    Text(Constants.AppEnvironment.current.rawValue.capitalized)
+                        .foregroundStyle(environmentColor)
+                        .fontWeight(.medium)
+                }
             }
 
+            #if DEBUG
+            if showDevOptions {
+                Section("Developer Options") {
+                    ForEach(devEnvironments, id: \.self) { env in
+                        HStack {
+                            Text(env.rawValue.capitalized)
+                            Spacer()
+                            if env == Constants.AppEnvironment.current {
+                                Text("(\(settings.L("profile.active")))")
+                                    .foregroundStyle(.green)
+                                    .font(.caption)
+                            }
+                        }
+                    }
+                }
+            }
+            #endif
+
             Section {
-                Text("Mistyislet is a mobile access control application for the Indonesian SaaS access control platform.")
+                Text(settings.L("profile.app_description"))
                     .font(.body)
                     .foregroundStyle(.secondary)
             }
         }
-        .navigationTitle(String(localized: "profile.about"))
+        .navigationTitle(settings.L("profile.about"))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var deviceModel: String {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let model = withUnsafePointer(to: &systemInfo.machine) {
+            $0.withMemoryRebound(to: CChar.self, capacity: 1) {
+                String(validatingCString: $0) ?? "Unknown"
+            }
+        }
+        return model
+    }
+
+    private var environmentColor: Color {
+        switch Constants.AppEnvironment.current {
+        case .dev: return .orange
+        case .staging: return .yellow
+        case .production: return .green
+        case .mock: return .purple
+        }
+    }
+
+    #if DEBUG
+    private var devEnvironments: [Constants.AppEnvironment] {
+        [.dev, .staging, .production, .mock]
+    }
+    #endif
+}
+
+// MARK: - Change Password
+
+struct ChangePasswordView: View {
+    let viewModel: ProfileViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var settings = SettingsService.shared
+
+    @State private var currentPassword = ""
+    @State private var newPassword = ""
+    @State private var confirmPassword = ""
+
+    private var passwordsMatch: Bool {
+        !newPassword.isEmpty && newPassword == confirmPassword
+    }
+
+    private var isValid: Bool {
+        !currentPassword.isEmpty && passwordsMatch
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                SecureField(settings.L("profile.current_password"), text: $currentPassword)
+                    .textContentType(.password)
+            }
+
+            Section {
+                SecureField(settings.L("profile.new_password"), text: $newPassword)
+                    .textContentType(.newPassword)
+                SecureField(settings.L("profile.confirm_password"), text: $confirmPassword)
+                    .textContentType(.newPassword)
+
+                if !confirmPassword.isEmpty && !passwordsMatch {
+                    Text(settings.L("profile.passwords_mismatch"))
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+            }
+
+            if let error = viewModel.errorMessage {
+                Section {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .font(.callout)
+                }
+            }
+
+            Section {
+                Button(settings.L("profile.update_password")) {
+                    Task {
+                        let success = await viewModel.changePassword(
+                            currentPassword: currentPassword,
+                            newPassword: newPassword
+                        )
+                        if success { dismiss() }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .disabled(!isValid)
+            }
+        }
+        .navigationTitle(settings.L("profile.change_password"))
         .navigationBarTitleDisplayMode(.inline)
     }
 }
