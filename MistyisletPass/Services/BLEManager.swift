@@ -112,6 +112,7 @@ final class BLEManager: NSObject, @unchecked Sendable {
             var signPayload = Data()
             signPayload.append(nonce)
             signPayload.append(userIdData)
+            signPayload.append("BLE".data(using: .utf8)!) // v2 transport binding
 
             let signature = try SecureEnclaveService.shared.sign(data: signPayload)
 
@@ -243,7 +244,7 @@ extension BLEManager: CBPeripheralDelegate {
             }
 
         case Constants.BLE.challengeUUID:
-            guard let data = characteristic.value, data.count >= 48 else {
+            guard let data = characteristic.value, data.count >= 52 else {
                 AppLogger.ble.error("Invalid BLE challenge data")
                 finishUnlock(.failure(BLEUnlockError.invalidChallenge))
                 return
