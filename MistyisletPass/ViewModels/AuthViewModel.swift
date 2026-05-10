@@ -176,10 +176,35 @@ final class AuthViewModel {
         resetFlow()
     }
 
+    // MARK: - Credential Renewal
+
+    /// Check if the BLE credential is expiring soon and re-register if needed.
+    /// Called on app foreground / login to ensure the gateway always has a valid public key.
+    func renewCredentialIfNeeded() async {
+        guard isAuthenticated else { return }
+
+        do {
+            let credentials = try await APIService.shared.fetchCredentials()
+            let hasValidCredential = credentials.contains { cred in
+                cred.isActive && !cred.isExpired && !cred.isExpiringSoon
+            }
+
+            if !hasValidCredential {
+                AppLogger.auth.info("BLE credential expired or expiring soon, renewing")
+                try await registerDeviceCredential()
+                AppLogger.auth.info("BLE credential renewed successfully")
+            }
+        } catch {
+            AppLogger.auth.error("Credential renewal check failed: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: - Private
 
     private func registerDeviceCredential() async throws {
-        _ = try SecureEnclaveService.shared.generateKeyPair()
+        if SecureEnclaveService.shared.getPrivateKey() == nil {
+            _ = try SecureEnclaveService.shared.generateKeyPair()
+        }
         let publicKeyPEM = try SecureEnclaveService.shared.exportPublicKeyPEM()
         let deviceName = UIDevice.current.name
         _ = try await APIService.shared.registerCredential(
