@@ -1,5 +1,6 @@
 import Foundation
 import CoreBluetooth
+import CryptoKit
 
 extension CBPeripheral: @unchecked @retroactive Sendable {}
 
@@ -105,6 +106,33 @@ final class BLEManager: NSObject, @unchecked Sendable {
         guard let authResponseChar = authResponseCharacteristic else { return }
 
         do {
+            // Validate v2 challenge structure (52 bytes: nonce[32] + issued_at[8] + expires_at[8] + gateway_id[4])
+            guard challengeData.count >= 52 else {
+                throw BLEUnlockError.invalidChallenge
+            }
+
+            // Check challenge hasn't expired (bytes [40:48] = expires_at as BigEndian uint64 unix timestamp)
+            let expiresAtRaw = challengeData[challengeData.startIndex + 40 ..< challengeData.startIndex + 48]
+            let expiresAtUnix = expiresAtRaw.withUnsafeBytes { $0.load(as: UInt64.self).bigEndian }
+            let expiresAt = Date(timeIntervalSince1970: TimeInterval(expiresAtUnix))
+            guard expiresAt > Date() else {
+                AppLogger.ble.warning("BLE challenge expired, rejecting")
+                throw BLEUnlockError.invalidChallenge
+            }
+
+            // Validate gateway_id matches the reader identity we read earlier (bytes [48:52])
+            if let expectedReaderId = verifiedReaderId,
+               let readerIdData = expectedReaderId.data(using: .utf8) {
+                let challengeGatewayIdBytes = challengeData[challengeData.startIndex + 48 ..< challengeData.startIndex + 52]
+                let challengeGatewayId = challengeGatewayIdBytes.withUnsafeBytes { $0.load(as: UInt32.self).bigEndian }
+                let digest = SHA256.hash(data: readerIdData)
+                let expectedGatewayId = digest.withUnsafeBytes { $0.load(as: UInt32.self).bigEndian }
+                if challengeGatewayId != expectedGatewayId {
+                    AppLogger.ble.warning("BLE challenge gateway_id mismatch: got \(challengeGatewayId), expected \(expectedGatewayId)")
+                    throw BLEUnlockError.invalidChallenge
+                }
+            }
+
             let nonce = challengeData.prefix(32)
             let userId = KeychainService.shared.readString(forKey: "com.mistyislet.userId") ?? ""
             let userIdData = userId.data(using: .utf8) ?? Data()

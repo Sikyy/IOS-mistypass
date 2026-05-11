@@ -204,7 +204,7 @@ enum Constants {
         /// "MISTYPASS-RESULT"
         nonisolated(unsafe) static let authResultUUID = CBUUID(string: "4D495354-5950-4153-532D-524553554C54")
 
-        static let connectionTimeout: TimeInterval = 5.0
+        static let connectionTimeout: TimeInterval = 8.0
         static let scanDebounceDuration: TimeInterval = 3.0
 
         /// BLE auth result codes (must match `BLEResult*` in ble_protocol.go)

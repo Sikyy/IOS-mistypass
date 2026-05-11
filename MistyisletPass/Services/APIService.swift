@@ -256,12 +256,19 @@ final class APIService: @unchecked Sendable {
     /// Register a BLE mobile credential public key with the backend.
     /// Payload shape matches Android `RegisterMobileCredentialRequest`.
     func registerCredential(publicKey: String, deviceName: String) async throws -> Credential {
+        let keystoreLevel: String = {
+            #if targetEnvironment(simulator)
+            return "software"
+            #else
+            return "strongbox"
+            #endif
+        }()
         let body = RegisterMobileCredentialBody(
             publicKeyPem: publicKey,
             platform: "ios",
             deviceId: deviceName,
             deviceModel: deviceName,
-            keystoreLevel: "strongbox",
+            keystoreLevel: keystoreLevel,
             attestationCertChain: []
         )
         let response: RegisterMobileCredentialResponse = try await post(

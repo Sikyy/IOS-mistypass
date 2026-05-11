@@ -24,6 +24,12 @@ struct MistyisletPassApp: App {
             .task {
                 if authViewModel.isAuthenticated {
                     _ = await NotificationService.shared.requestAuthorization()
+                    await authViewModel.renewCredentialIfNeeded()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                Task {
+                    await authViewModel.renewCredentialIfNeeded()
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .sessionExpired)) { _ in
