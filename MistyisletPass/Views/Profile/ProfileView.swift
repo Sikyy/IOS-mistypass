@@ -330,6 +330,12 @@ struct AboutView: View {
                             }
                         }
                     }
+
+                    NavigationLink {
+                        TCPAuthTestView()
+                    } label: {
+                        Label("TCP Auth Test", systemImage: "network")
+                    }
                 }
             }
             #endif

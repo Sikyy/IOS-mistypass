@@ -33,6 +33,7 @@
 		C2E91A4B7D3F5C8E0A6B1D72 /* TCPAuthClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4D2B61A9C3E70F5D8B4A93 /* TCPAuthClientTests.swift */; };
 		43DA894E93608DC3B25C160F /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF89583EC6EF84F7D37F3AE6 /* SettingsService.swift */; };
 		D1A2F83C7E904B2A1C3F5E09 /* TCPAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B3C94D5F1E6A80D2E47F13 /* TCPAuthClient.swift */; };
+		E3C4D85F2A1B6E70C9F80A43 /* TCPAuthTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B2A73E8D4C5901E6A03B57 /* TCPAuthTestView.swift */; };
 		45CD020B61EFA263EA17B449 /* Organization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CB970123BA0B316693BB182 /* Organization.swift */; };
 		4677EBB36AC6B493BD34EC77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6673606E2593B75182EAB267 /* Assets.xcassets */; };
 		49A7E1BBBBB8E7730B10E01C /* DeepLinkRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49AD49FEE237A3759EF7C00 /* DeepLinkRouterTests.swift */; };
@@ -140,6 +141,7 @@
 		286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDecodingTests.swift; sourceTree = "<group>"; };
 		28EC5A794CDD22CF09A9AE43 /* Site.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
 		A7B3C94D5F1E6A80D2E47F13 /* TCPAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPAuthClient.swift; sourceTree = "<group>"; };
+		F1B2A73E8D4C5901E6A03B57 /* TCPAuthTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPAuthTestView.swift; sourceTree = "<group>"; };
 		299224862324725359F1C102 /* GeofenceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceSettingsView.swift; sourceTree = "<group>"; };
 		2A273A2CE2AC635122A86E76 /* MistyisletPassWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MistyisletPassWidget.swift; sourceTree = "<group>"; };
 		2C839F0FDE48F1DF2E3C778C /* PlaceDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailsView.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				2773DF62387FABE314905A52 /* NFCBindingView.swift */,
 				4C260646585C9078A802D136 /* ProfileView.swift */,
 				B344D41EAE6F4C872DCE9FC6 /* SiteSwitcherView.swift */,
+				F1B2A73E8D4C5901E6A03B57 /* TCPAuthTestView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -678,6 +681,7 @@
 				B4B93E64AEF42E3EE57007F4 /* SecureEnclaveService.swift in Sources */,
 				43DA894E93608DC3B25C160F /* SettingsService.swift in Sources */,
 				D1A2F83C7E904B2A1C3F5E09 /* TCPAuthClient.swift in Sources */,
+				E3C4D85F2A1B6E70C9F80A43 /* TCPAuthTestView.swift in Sources */,
 				142B48B826F8DEDC5751CB1D /* Site.swift in Sources */,
 				DDE7CF6245C23EF098282F6D /* SiteSwitcherView.swift in Sources */,
 				9CE03C581E7382F6A89FDD36 /* UnlockOverlayView.swift in Sources */,
