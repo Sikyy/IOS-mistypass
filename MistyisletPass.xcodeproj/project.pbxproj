@@ -30,7 +30,9 @@
 		4160C011FCE84B64570E1C74 /* AccessibleDoorCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29D64FB91DBC5D61B6DBDF /* AccessibleDoorCardView.swift */; };
 		41A4B81BE5585F75395F5A5B /* SettingsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AA63B71054C378AB74A5F75 /* SettingsServiceTests.swift */; };
 		424244DD8F61F7C8A5B6C4BB /* UnlockResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F362959848BD9BB51D07668F /* UnlockResultTests.swift */; };
+		C2E91A4B7D3F5C8E0A6B1D72 /* TCPAuthClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4D2B61A9C3E70F5D8B4A93 /* TCPAuthClientTests.swift */; };
 		43DA894E93608DC3B25C160F /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF89583EC6EF84F7D37F3AE6 /* SettingsService.swift */; };
+		D1A2F83C7E904B2A1C3F5E09 /* TCPAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B3C94D5F1E6A80D2E47F13 /* TCPAuthClient.swift */; };
 		45CD020B61EFA263EA17B449 /* Organization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CB970123BA0B316693BB182 /* Organization.swift */; };
 		4677EBB36AC6B493BD34EC77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6673606E2593B75182EAB267 /* Assets.xcassets */; };
 		49A7E1BBBBB8E7730B10E01C /* DeepLinkRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49AD49FEE237A3759EF7C00 /* DeepLinkRouterTests.swift */; };
@@ -137,6 +139,7 @@
 		2858D3DC63174DC5CC13ED0E /* NFCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCService.swift; sourceTree = "<group>"; };
 		286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDecodingTests.swift; sourceTree = "<group>"; };
 		28EC5A794CDD22CF09A9AE43 /* Site.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
+		A7B3C94D5F1E6A80D2E47F13 /* TCPAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPAuthClient.swift; sourceTree = "<group>"; };
 		299224862324725359F1C102 /* GeofenceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceSettingsView.swift; sourceTree = "<group>"; };
 		2A273A2CE2AC635122A86E76 /* MistyisletPassWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MistyisletPassWidget.swift; sourceTree = "<group>"; };
 		2C839F0FDE48F1DF2E3C778C /* PlaceDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailsView.swift; sourceTree = "<group>"; };
@@ -205,6 +208,7 @@
 		E7FB3224E2D0D3FFC0239118 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		EE035429D381024CB6E76619 /* AdminCRUDViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminCRUDViews.swift; sourceTree = "<group>"; };
 		EEC72E841588B5943BA9E465 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		8F4D2B61A9C3E70F5D8B4A93 /* TCPAuthClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPAuthClientTests.swift; sourceTree = "<group>"; };
 		F362959848BD9BB51D07668F /* UnlockResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnlockResultTests.swift; sourceTree = "<group>"; };
 		F3AABA0840F0F795F40A3DBF /* MistyisletPassWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MistyisletPassWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3EDD7FE71D151359C9028D5 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
@@ -289,6 +293,7 @@
 				B15BC893999F4D04247727B9 /* KeychainServiceTests.swift */,
 				286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */,
 				6AA63B71054C378AB74A5F75 /* SettingsServiceTests.swift */,
+				8F4D2B61A9C3E70F5D8B4A93 /* TCPAuthClientTests.swift */,
 				F362959848BD9BB51D07668F /* UnlockResultTests.swift */,
 			);
 			path = MistyisletPassTests;
@@ -456,6 +461,7 @@
 				C609E4DE2B696FDF081659D6 /* NotificationService.swift */,
 				4AC41E6BE30EDC784C8BF75A /* SecureEnclaveService.swift */,
 				DF89583EC6EF84F7D37F3AE6 /* SettingsService.swift */,
+				A7B3C94D5F1E6A80D2E47F13 /* TCPAuthClient.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -671,6 +677,7 @@
 				602DB5B9052FBAFF1976E76B /* QRPassView.swift in Sources */,
 				B4B93E64AEF42E3EE57007F4 /* SecureEnclaveService.swift in Sources */,
 				43DA894E93608DC3B25C160F /* SettingsService.swift in Sources */,
+				D1A2F83C7E904B2A1C3F5E09 /* TCPAuthClient.swift in Sources */,
 				142B48B826F8DEDC5751CB1D /* Site.swift in Sources */,
 				DDE7CF6245C23EF098282F6D /* SiteSwitcherView.swift in Sources */,
 				9CE03C581E7382F6A89FDD36 /* UnlockOverlayView.swift in Sources */,
@@ -695,6 +702,7 @@
 				30495B37C96C18BE7C9A5F97 /* KeychainServiceTests.swift in Sources */,
 				034B3C3C1EE9FCDCF975A276 /* ModelDecodingTests.swift in Sources */,
 				41A4B81BE5585F75395F5A5B /* SettingsServiceTests.swift in Sources */,
+				C2E91A4B7D3F5C8E0A6B1D72 /* TCPAuthClientTests.swift in Sources */,
 				424244DD8F61F7C8A5B6C4BB /* UnlockResultTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

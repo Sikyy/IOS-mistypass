@@ -55,6 +55,20 @@ final class BLEManager: NSObject, @unchecked Sendable {
         bleReadyDoorIds.removeAll()
     }
 
+    /// Authenticate against a Gateway TCP simulator (for dev/testing without BLE hardware).
+    ///
+    /// Same v2 challenge-response protocol as BLE GATT, but over a plain TCP socket.
+    /// Run gateway-agent on Mac, then call this from a real iOS device on the same network.
+    ///
+    /// - Parameters:
+    ///   - host: IP address of the Mac running gateway-agent (e.g. "192.168.1.100")
+    ///   - port: TCP port (default 9900, matching gateway-agent's BLE TCP simulator)
+    ///   - expectedGatewayId: Optional gateway ID for challenge validation
+    /// - Returns: Auth result code (0x01 = granted, 0x02 = denied)
+    func unlockViaTCP(host: String, port: UInt16 = 9900, expectedGatewayId: String? = nil) async throws -> UInt8 {
+        return try await TCPAuthClient.shared.authenticate(host: host, port: port, expectedGatewayId: expectedGatewayId)
+    }
+
     func unlock(doorId: String) async throws -> UInt8 {
         guard let peripheral = discoveredControllers[doorId] else {
             throw BLEUnlockError.controllerNotFound

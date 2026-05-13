@@ -89,7 +89,8 @@ final class SecureEnclaveService {
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         guard status == errSecSuccess, let item else { return nil }
-        return item as? SecKey
+        // swiftlint:disable:next force_cast
+        return (item as! SecKey)
     }
 
     /// Get the public key from the stored private key
