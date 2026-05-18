@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 enum APIError: Error, LocalizedError {
     case invalidURL
@@ -25,6 +26,7 @@ final class APIService: @unchecked Sendable {
     private let session: URLSession
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
+    private let pinningDelegate = CertificatePinningDelegate()
 
     /// Coordinates concurrent token refreshes so two parallel 401s don't
     /// race and burn the refresh token twice. Access only via `refreshLock`.
@@ -34,7 +36,7 @@ final class APIService: @unchecked Sendable {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 15
         config.timeoutIntervalForResource = 30
-        self.session = URLSession(configuration: config)
+        self.session = URLSession(configuration: config, delegate: pinningDelegate, delegateQueue: nil)
 
         self.decoder = JSONDecoder()
         self.decoder.dateDecodingStrategy = .custom { decoder in
@@ -925,6 +927,108 @@ private actor TokenRefreshLock {
 
 // Helper for endpoints that return no meaningful body
 private struct Empty: Codable {}
+
+// MARK: - Certificate Pinning
+
+/// URLSession delegate that performs SPKI (SubjectPublicKeyInfo) certificate pinning.
+///
+/// In release builds, connections to the API host are only allowed when the server
+/// certificate's SPKI hash matches one of the pinned values. In DEBUG builds,
+/// pinning is bypassed to allow proxy-based development/testing.
+private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
+
+    /// SHA-256 hashes of the SubjectPublicKeyInfo (SPKI) for pinned certificates.
+    /// To obtain the pin hash for your production certificate, run:
+    ///
+    ///   openssl s_client -connect api.mistyislet.com:443 -servername api.mistyislet.com </dev/null 2>/dev/null \
+    ///     | openssl x509 -pubkey -noout \
+    ///     | openssl pkey -pubin -outform DER \
+    ///     | openssl dgst -sha256 -binary \
+    ///     | base64
+    ///
+    /// Add the resulting base64 string below. Include both the leaf and a backup pin
+    /// (e.g. an intermediate CA) to allow certificate rotation without app updates.
+    ///
+    /// IMPORTANT: Replace these placeholder values before shipping to production.
+    private static let pinnedSPKIHashes: Set<String> = [
+        // TODO: Insert production SPKI SHA-256 base64 hash (leaf cert)
+        // "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        // TODO: Insert backup SPKI SHA-256 base64 hash (intermediate CA)
+        // "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
+    ]
+
+    /// The host to pin against. Only connections to this host are subject to pinning.
+    private static let pinnedHost = "api.mistyislet.com"
+
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+              let serverTrust = challenge.protectionSpace.serverTrust else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
+
+        #if DEBUG
+        // Skip pinning in debug builds to allow Charles/Proxyman/mitmproxy usage.
+        completionHandler(.useCredential, URLCredential(trust: serverTrust))
+        return
+        #else
+        guard challenge.protectionSpace.host == Self.pinnedHost else {
+            // Not our API host — use default TLS validation.
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
+
+        // If no pins are configured yet, fall through to default validation.
+        // This allows shipping before the production pin hash is known, while still
+        // enforcing pinning once configured.
+        guard !Self.pinnedSPKIHashes.isEmpty else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
+
+        // Evaluate the trust chain.
+        let policy = SecPolicyCreateSSL(true, Self.pinnedHost as CFString)
+        SecTrustSetPolicies(serverTrust, policy)
+
+        var trustError: CFError?
+        guard SecTrustEvaluateWithError(serverTrust, &trustError) else {
+            AppLogger.api.error("TLS trust evaluation failed: \(trustError?.localizedDescription ?? "unknown")")
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+
+        // Check each certificate in the chain for a matching SPKI hash.
+        let certCount = SecTrustGetCertificateCount(serverTrust)
+        for index in 0..<certCount {
+            guard let certificate = SecTrustCopyCertificateChain(serverTrust)?[index] as? SecCertificate else {
+                continue
+            }
+            guard let publicKey = SecCertificateCopyKey(certificate) else {
+                continue
+            }
+            var error: Unmanaged<CFError>?
+            guard let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, &error) as Data? else {
+                continue
+            }
+            let hash = SHA256.hash(data: publicKeyData)
+            let hashBase64 = Data(hash).base64EncodedString()
+
+            if Self.pinnedSPKIHashes.contains(hashBase64) {
+                completionHandler(.useCredential, URLCredential(trust: serverTrust))
+                return
+            }
+        }
+
+        // No pin matched — reject the connection.
+        AppLogger.api.error("Certificate pinning failed: no SPKI hash matched for \(Self.pinnedHost)")
+        completionHandler(.cancelAuthenticationChallenge, nil)
+        #endif
+    }
+}
 
 extension ISO8601DateFormatter {
     nonisolated(unsafe) static let withFractionalSeconds: ISO8601DateFormatter = {

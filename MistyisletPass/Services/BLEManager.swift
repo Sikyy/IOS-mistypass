@@ -14,17 +14,39 @@ final class BLEManager: NSObject, @unchecked Sendable {
     var discoveredControllers: [String: CBPeripheral] = [:]
     var bleReadyDoorIds: Set<String> = []
 
-    // MARK: - BLE-Internal State (serialized on bleQueue)
+    // MARK: - BLE-Internal State (protected by bleStateLock)
 
+    /// Initialized once in init() and never reassigned.
     nonisolated(unsafe) private var centralManager: CBCentralManager!
+
+    /// Lock protecting all mutable BLE session state below.
+    /// We use NSLock rather than OSAllocatedUnfairLock because the protected values
+    /// include CoreBluetooth types that are not Sendable (CBPeripheral, CBCharacteristic,
+    /// CheckedContinuation), and OSAllocatedUnfairLock requires Sendable state.
+    private let bleStateLock = NSLock()
+
+    // All fields below are guarded by bleStateLock. Access only via withBLEState().
+    // nonisolated(unsafe) is required because @Observable rewrites stored properties
+    // with @ObservationTracked, and plain `nonisolated` cannot apply to the macro-
+    // generated mutable backing storage.
+    nonisolated(unsafe) private var _connectedPeripheral: CBPeripheral?
+    nonisolated(unsafe) private var _authResultContinuation: CheckedContinuation<UInt8, Error>?
+    nonisolated(unsafe) private var _challengeCharacteristic: CBCharacteristic?
+    nonisolated(unsafe) private var _authResponseCharacteristic: CBCharacteristic?
+    nonisolated(unsafe) private var _authResultCharacteristic: CBCharacteristic?
+    nonisolated(unsafe) private var _readerIdentityCharacteristic: CBCharacteristic?
+    nonisolated(unsafe) private var _verifiedReaderId: String?
+
     private let bleQueue = DispatchQueue(label: "com.mistyislet.ble", qos: .userInitiated)
-    nonisolated(unsafe) private var connectedPeripheral: CBPeripheral?
-    nonisolated(unsafe) private var authResultContinuation: CheckedContinuation<UInt8, Error>?
-    nonisolated(unsafe) private var challengeCharacteristic: CBCharacteristic?
-    nonisolated(unsafe) private var authResponseCharacteristic: CBCharacteristic?
-    nonisolated(unsafe) private var authResultCharacteristic: CBCharacteristic?
-    nonisolated(unsafe) private var readerIdentityCharacteristic: CBCharacteristic?
-    nonisolated(unsafe) private var verifiedReaderId: String?
+
+    /// Execute a closure while holding bleStateLock. All access to _-prefixed
+    /// BLE session state must go through this method.
+    @inline(__always)
+    nonisolated private func withBLEState<T>(_ body: () -> T) -> T {
+        bleStateLock.lock()
+        defer { bleStateLock.unlock() }
+        return body()
+    }
 
     override private init() {
         super.init()
@@ -80,12 +102,16 @@ final class BLEManager: NSObject, @unchecked Sendable {
                     continuation.resume(throwing: BLEUnlockError.connectionFailed)
                     return
                 }
-                guard self.authResultContinuation == nil else {
+                let alreadyInFlight = self.withBLEState { () -> Bool in
+                    guard self._authResultContinuation == nil else { return true }
+                    self._authResultContinuation = continuation
+                    self._connectedPeripheral = peripheral
+                    return false
+                }
+                guard !alreadyInFlight else {
                     continuation.resume(throwing: BLEUnlockError.connectionFailed)
                     return
                 }
-                self.authResultContinuation = continuation
-                self.connectedPeripheral = peripheral
                 self.centralManager.connect(peripheral, options: nil)
 
                 self.bleQueue.asyncAfter(deadline: .now() + Constants.BLE.connectionTimeout) { [weak self] in
@@ -99,17 +125,22 @@ final class BLEManager: NSObject, @unchecked Sendable {
     /// Must be called on bleQueue (where all delegate callbacks land).
     nonisolated fileprivate func finishUnlock(_ result: Result<UInt8, Error>) {
         dispatchPrecondition(condition: .onQueue(bleQueue))
-        guard let continuation = authResultContinuation else { return }
-        authResultContinuation = nil
-        if let peripheral = connectedPeripheral {
-            centralManager.cancelPeripheralConnection(peripheral)
-            connectedPeripheral = nil
+        let (continuation, peripheral) = withBLEState { () -> (CheckedContinuation<UInt8, Error>?, CBPeripheral?) in
+            let cont = _authResultContinuation
+            let periph = _connectedPeripheral
+            _authResultContinuation = nil
+            _connectedPeripheral = nil
+            _challengeCharacteristic = nil
+            _authResponseCharacteristic = nil
+            _authResultCharacteristic = nil
+            _readerIdentityCharacteristic = nil
+            _verifiedReaderId = nil
+            return (cont, periph)
         }
-        challengeCharacteristic = nil
-        authResponseCharacteristic = nil
-        authResultCharacteristic = nil
-        readerIdentityCharacteristic = nil
-        verifiedReaderId = nil
+        guard let continuation else { return }
+        if let peripheral {
+            centralManager.cancelPeripheralConnection(peripheral)
+        }
         switch result {
         case .success(let code): continuation.resume(returning: code)
         case .failure(let error): continuation.resume(throwing: error)
@@ -117,7 +148,7 @@ final class BLEManager: NSObject, @unchecked Sendable {
     }
 
     nonisolated private func signAndRespond(challengeData: Data, peripheral: CBPeripheral) {
-        guard let authResponseChar = authResponseCharacteristic else { return }
+        guard let authResponseChar = withBLEState({ _authResponseCharacteristic }) else { return }
 
         do {
             // Validate v2 challenge structure (52 bytes: nonce[32] + issued_at[8] + expires_at[8] + gateway_id[4])
@@ -135,7 +166,7 @@ final class BLEManager: NSObject, @unchecked Sendable {
             }
 
             // Validate gateway_id matches the reader identity we read earlier (bytes [48:52])
-            if let expectedReaderId = verifiedReaderId,
+            if let expectedReaderId = withBLEState({ _verifiedReaderId }),
                let readerIdData = expectedReaderId.data(using: .utf8) {
                 let challengeGatewayIdBytes = challengeData[challengeData.startIndex + 48 ..< challengeData.startIndex + 52]
                 let challengeGatewayId = challengeGatewayIdBytes.withUnsafeBytes { $0.load(as: UInt32.self).bigEndian }
@@ -252,25 +283,28 @@ extension BLEManager: CBPeripheralDelegate {
             return
         }
 
-        for characteristic in characteristics {
-            switch characteristic.uuid {
-            case Constants.BLE.challengeUUID:
-                challengeCharacteristic = characteristic
-            case Constants.BLE.authResponseUUID:
-                authResponseCharacteristic = characteristic
-            case Constants.BLE.authResultUUID:
-                authResultCharacteristic = characteristic
-                peripheral.setNotifyValue(true, for: characteristic)
-            case Constants.BLE.readerIdentityUUID:
-                readerIdentityCharacteristic = characteristic
-            default:
-                break
+        let (readerIdChar, challengeChar) = withBLEState { () -> (CBCharacteristic?, CBCharacteristic?) in
+            for characteristic in characteristics {
+                switch characteristic.uuid {
+                case Constants.BLE.challengeUUID:
+                    _challengeCharacteristic = characteristic
+                case Constants.BLE.authResponseUUID:
+                    _authResponseCharacteristic = characteristic
+                case Constants.BLE.authResultUUID:
+                    _authResultCharacteristic = characteristic
+                    peripheral.setNotifyValue(true, for: characteristic)
+                case Constants.BLE.readerIdentityUUID:
+                    _readerIdentityCharacteristic = characteristic
+                default:
+                    break
+                }
             }
+            return (_readerIdentityCharacteristic, _challengeCharacteristic)
         }
 
-        if let readerIdChar = readerIdentityCharacteristic {
+        if let readerIdChar {
             peripheral.readValue(for: readerIdChar)
-        } else if let challengeChar = challengeCharacteristic {
+        } else if let challengeChar {
             peripheral.readValue(for: challengeChar)
         }
     }
@@ -278,10 +312,13 @@ extension BLEManager: CBPeripheralDelegate {
     nonisolated func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         switch characteristic.uuid {
         case Constants.BLE.readerIdentityUUID:
-            if let data = characteristic.value, let readerId = String(data: data, encoding: .utf8), !readerId.isEmpty {
-                verifiedReaderId = readerId
+            let challengeChar = withBLEState { () -> CBCharacteristic? in
+                if let data = characteristic.value, let readerId = String(data: data, encoding: .utf8), !readerId.isEmpty {
+                    _verifiedReaderId = readerId
+                }
+                return _challengeCharacteristic
             }
-            if let challengeChar = challengeCharacteristic {
+            if let challengeChar {
                 peripheral.readValue(for: challengeChar)
             }
 

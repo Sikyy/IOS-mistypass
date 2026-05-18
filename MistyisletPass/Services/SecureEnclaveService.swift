@@ -89,8 +89,10 @@ final class SecureEnclaveService {
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         guard status == errSecSuccess, let item else { return nil }
-        // swiftlint:disable:next force_cast
-        return (item as! SecKey)
+        // Explicitly verify the CFTypeID instead of force-casting, in case the
+        // keychain returns an unexpected type (e.g. after a keychain migration).
+        guard CFGetTypeID(item) == SecKeyGetTypeID() else { return nil }
+        return (item as! SecKey) // Safe: CFTypeID already validated above
     }
 
     /// Get the public key from the stored private key
