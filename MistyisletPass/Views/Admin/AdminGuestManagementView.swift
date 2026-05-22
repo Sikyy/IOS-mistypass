@@ -4,6 +4,7 @@ import SwiftUI
 
 @MainActor @Observable
 final class GuestManagementViewModel {
+    let placeId: String
     var guests: [Guest] = []
     var isLoading = false
     var errorMessage: String?
@@ -14,11 +15,15 @@ final class GuestManagementViewModel {
     var checkedInGuests: [Guest] { guests.filter { $0.status == "checked_in" } }
     var completedGuests: [Guest] { guests.filter { $0.status == "checked_out" || $0.status == "cancelled" } }
 
+    init(placeId: String) {
+        self.placeId = placeId
+    }
+
     func fetchGuests() async {
         isLoading = true
         errorMessage = nil
         do {
-            guests = try await APIService.shared.fetchGuests()
+            guests = try await APIService.shared.fetchGuests(placeId: placeId)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -27,7 +32,7 @@ final class GuestManagementViewModel {
 
     func checkIn(_ guest: Guest) async {
         do {
-            let updated = try await APIService.shared.updateGuestStatus(guestId: guest.id, status: "checked_in")
+            let updated = try await APIService.shared.updateGuestStatus(placeId: placeId, guestId: guest.id, status: "checked_in")
             if let idx = guests.firstIndex(where: { $0.id == guest.id }) {
                 guests[idx] = updated
             }
@@ -38,7 +43,7 @@ final class GuestManagementViewModel {
 
     func checkOut(_ guest: Guest) async {
         do {
-            let updated = try await APIService.shared.updateGuestStatus(guestId: guest.id, status: "checked_out")
+            let updated = try await APIService.shared.updateGuestStatus(placeId: placeId, guestId: guest.id, status: "checked_out")
             if let idx = guests.firstIndex(where: { $0.id == guest.id }) {
                 guests[idx] = updated
             }
@@ -49,7 +54,7 @@ final class GuestManagementViewModel {
 
     func cancel(_ guest: Guest) async {
         do {
-            let updated = try await APIService.shared.updateGuestStatus(guestId: guest.id, status: "cancelled")
+            let updated = try await APIService.shared.updateGuestStatus(placeId: placeId, guestId: guest.id, status: "cancelled")
             if let idx = guests.firstIndex(where: { $0.id == guest.id }) {
                 guests[idx] = updated
             }
@@ -60,7 +65,7 @@ final class GuestManagementViewModel {
 
     func deleteGuest(_ guest: Guest) async {
         do {
-            try await APIService.shared.deleteGuest(guestId: guest.id)
+            try await APIService.shared.deleteGuest(placeId: placeId, guestId: guest.id)
             guests.removeAll { $0.id == guest.id }
         } catch {
             errorMessage = error.localizedDescription
@@ -71,8 +76,12 @@ final class GuestManagementViewModel {
 // MARK: - List View
 
 struct AdminGuestManagementView: View {
-    @State private var viewModel = GuestManagementViewModel()
+    @State private var viewModel: GuestManagementViewModel
     @State private var settings = SettingsService.shared
+
+    init(placeId: String) {
+        _viewModel = State(initialValue: GuestManagementViewModel(placeId: placeId))
+    }
 
     var body: some View {
         Group {
@@ -402,7 +411,7 @@ struct CreateGuestView: View {
             accessTtlHours: selectedTTL
         )
         do {
-            let guest = try await APIService.shared.createGuest(request)
+            let guest = try await APIService.shared.createGuest(placeId: viewModel.placeId, request)
             viewModel.guests.insert(guest, at: 0)
             dismiss()
         } catch {

@@ -97,7 +97,7 @@ private struct DashboardContent: View {
 
             Section(settings.L("dashboard.visitors_section")) {
                 NavigationLink {
-                    AdminGuestManagementView()
+                    AdminGuestManagementView(placeId: placeId)
                 } label: {
                     dashboardRow(title: settings.L("dashboard.guest_management"), icon: "person.badge.clock", color: .orange)
                 }

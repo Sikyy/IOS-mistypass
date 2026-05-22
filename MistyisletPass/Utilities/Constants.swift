@@ -134,14 +134,12 @@ enum Constants {
         // Visitor passes
         static let visitorPassesPath = "/app/visitor-passes"
         static func visitorGroupsPath(_ placeId: String) -> String { "/app/places/\(placeId)/visitor-groups" }
-        static func visitorGroupPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)" }
         static func visitorGroupMembersPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)/members" }
         static func visitorGroupCleanupPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)/cleanup-expired" }
 
-        // Guests (admin-scoped)
-        static let guestsPath = "/guests"
-        static func guestPath(_ guestId: String) -> String { "/guests/\(guestId)" }
-        static func guestStatusPath(_ guestId: String) -> String { "/guests/\(guestId)/status" }
+        // Guests (place-scoped)
+        static func guestsPath(_ placeId: String) -> String { "/app/places/\(placeId)/guests" }
+        static func guestPath(_ placeId: String, _ guestId: String) -> String { "/app/places/\(placeId)/guests/\(guestId)" }
 
         // Mobile credentials
         static let credentialsPath = "/app/credentials"

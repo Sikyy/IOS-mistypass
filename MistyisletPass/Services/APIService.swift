@@ -364,23 +364,23 @@ final class APIService: @unchecked Sendable {
         try await post(path: Constants.API.visitorGroupCleanupPath(placeId, groupId), body: Optional<String>.none)
     }
 
-    // MARK: - Guests (admin)
+    // MARK: - Guests (place-scoped)
 
-    func fetchGuests() async throws -> [Guest] {
-        let response: AdminListResponse<Guest> = try await get(path: Constants.API.guestsPath)
+    func fetchGuests(placeId: String) async throws -> [Guest] {
+        let response: AdminListResponse<Guest> = try await get(path: Constants.API.guestsPath(placeId))
         return response.items
     }
 
-    func createGuest(_ request: CreateGuestRequest) async throws -> Guest {
-        try await post(path: Constants.API.guestsPath, body: request)
+    func createGuest(placeId: String, _ request: CreateGuestRequest) async throws -> Guest {
+        try await post(path: Constants.API.guestsPath(placeId), body: request)
     }
 
-    func updateGuestStatus(guestId: String, status: String) async throws -> Guest {
-        try await patch(path: Constants.API.guestStatusPath(guestId), body: ["status": status])
+    func updateGuestStatus(placeId: String, guestId: String, status: String) async throws -> Guest {
+        try await patch(path: Constants.API.guestPath(placeId, guestId), body: ["status": status])
     }
 
-    func deleteGuest(guestId: String) async throws {
-        let _: Empty = try await delete(path: Constants.API.guestPath(guestId))
+    func deleteGuest(placeId: String, guestId: String) async throws {
+        let _: Empty = try await delete(path: Constants.API.guestPath(placeId, guestId))
     }
 
     // MARK: - Profile
