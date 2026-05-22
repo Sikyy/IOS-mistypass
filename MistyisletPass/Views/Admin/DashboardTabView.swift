@@ -1279,7 +1279,19 @@ struct CameraDetailView: View {
         isLoadingStream = true
         streamError = nil
         do {
-            videoLink = try await APIService.shared.fetchCameraVideoLink(cameraId: camera.id)
+            var link = try await APIService.shared.fetchCameraVideoLink(cameraId: camera.id)
+            #if DEBUG
+            // AVPlayer doesn't support RTSP; proxy through local HLS relay in dev
+            if link.videoUrl.hasPrefix("rtsp://") {
+                link = CameraVideoLink(
+                    cameraId: link.cameraId,
+                    videoUrl: "http://localhost:8888/stream.m3u8",
+                    `protocol`: "hls",
+                    expiresAt: link.expiresAt
+                )
+            }
+            #endif
+            videoLink = link
             isPlaying = true
         } catch {
             streamError = error.localizedDescription

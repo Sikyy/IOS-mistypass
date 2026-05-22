@@ -12,10 +12,43 @@ enum APIError: Error, LocalizedError {
         switch self {
         case .invalidURL: return "Invalid URL"
         case .unauthorized: return "Session expired. Please log in again."
-        case .serverError(let code, let msg): return "Server error (\(code)): \(msg ?? "Unknown")"
+        case .serverError(let code, let msg):
+            if let payload = Self.decodeServerError(msg) {
+                return payload.message ?? payload.error ?? "Server error (\(code))"
+            }
+            return "Server error (\(code)): \(msg ?? "Unknown")"
         case .networkError(let err): return "Network error: \(err.localizedDescription)"
         case .decodingError(let err): return "Data error: \(err.localizedDescription)"
         }
+    }
+
+    var serverCode: String? {
+        guard case .serverError(_, let msg) = self else { return nil }
+        return Self.decodeServerError(msg)?.code
+    }
+
+    var serverMessage: String? {
+        guard case .serverError(_, let msg) = self else { return nil }
+        let payload = Self.decodeServerError(msg)
+        return payload?.message ?? payload?.error ?? msg
+    }
+
+    private static func decodeServerError(_ message: String?) -> APIErrorResponse? {
+        guard let message, let data = message.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(APIErrorResponse.self, from: data)
+    }
+}
+
+struct APIErrorResponse: Decodable {
+    let error: String?
+    let message: String?
+    let code: String?
+    let status: String?
+    let mfaRequired: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case error, message, code, status
+        case mfaRequired = "mfa_required"
     }
 }
 
@@ -53,8 +86,8 @@ final class APIService: @unchecked Sendable {
 
     // MARK: - Auth
 
-    func login(email: String, password: String) async throws -> LoginResponse {
-        let body = LoginRequest(email: email, password: password)
+    func login(email: String, password: String, mfaCode: String? = nil) async throws -> LoginResponse {
+        let body = LoginRequest(email: email, password: password, mfaCode: mfaCode)
         return try await post(path: Constants.API.loginPath, body: body, authenticated: false)
     }
 
@@ -755,7 +788,7 @@ final class APIService: @unchecked Sendable {
 
     private func get<T: Decodable>(path: String, authenticated: Bool = true) async throws -> T {
         let request = try buildRequest(path: path, method: "GET", authenticated: authenticated)
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func post<T: Decodable, B: Encodable>(
@@ -768,12 +801,12 @@ final class APIService: @unchecked Sendable {
             request.httpBody = try encoder.encode(body)
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func put<T: Decodable>(path: String, authenticated: Bool = true) async throws -> T {
         let request = try buildRequest(path: path, method: "PUT", authenticated: authenticated)
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func put<T: Decodable, B: Encodable>(
@@ -784,7 +817,7 @@ final class APIService: @unchecked Sendable {
         var request = try buildRequest(path: path, method: "PUT", authenticated: authenticated)
         request.httpBody = try encoder.encode(body)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func patch<T: Decodable, B: Encodable>(
@@ -795,12 +828,12 @@ final class APIService: @unchecked Sendable {
         var request = try buildRequest(path: path, method: "PATCH", authenticated: authenticated)
         request.httpBody = try encoder.encode(body)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func delete<T: Decodable>(path: String, authenticated: Bool = true) async throws -> T {
         let request = try buildRequest(path: path, method: "DELETE", authenticated: authenticated)
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func uploadMultipart<T: Decodable>(
@@ -823,7 +856,7 @@ final class APIService: @unchecked Sendable {
         body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
         request.httpBody = body
 
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func buildRequest(path: String, method: String, authenticated: Bool) throws -> URLRequest {
@@ -866,8 +899,8 @@ final class APIService: @unchecked Sendable {
                 throw APIError.decodingError(error)
             }
         case 401:
-            AppLogger.api.warning("401 received, attempting token refresh")
             if retryOnUnauthorized {
+                AppLogger.api.warning("401 received, attempting token refresh")
                 let refreshed = await refreshLock.refresh { [weak self] in
                     await self?.performTokenRefresh() ?? false
                 }
@@ -878,8 +911,10 @@ final class APIService: @unchecked Sendable {
                     }
                     return try await execute(retryRequest, retryOnUnauthorized: false)
                 }
+                throw APIError.unauthorized
             }
-            throw APIError.unauthorized
+            let message = String(data: data, encoding: .utf8)
+            throw APIError.serverError(httpResponse.statusCode, message)
         default:
             let message = String(data: data, encoding: .utf8)
             AppLogger.api.error("Server error \(httpResponse.statusCode): \(message ?? "")")

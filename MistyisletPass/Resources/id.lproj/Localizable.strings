@@ -279,6 +279,10 @@
 "auth.magic_link_sent" = "Kami telah mengirim tautan masuk ke **%@**";
 "auth.resend_link" = "Kirim ulang tautan";
 "auth.back_to_sign_in" = "Kembali ke halaman masuk";
+"auth.mfa_title" = "Masukkan kode verifikasi";
+"auth.mfa_description" = "Masukkan kode dari aplikasi autentikator untuk menyelesaikan proses masuk.";
+"auth.mfa_code" = "Kode verifikasi";
+"auth.verify" = "Verifikasi";
 
 /* Visitors - Additional */
 "visitors.visitor_info" = "Informasi Pengunjung";

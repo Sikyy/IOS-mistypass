@@ -15,6 +15,8 @@ struct LoginView: View {
                     DomainEntryStep()
                 case .credentials:
                     CredentialsStep()
+                case .mfaCode:
+                    MFACodeStep()
                 case .magicLinkSent:
                     MagicLinkSentStep()
                 }
@@ -372,6 +374,89 @@ private struct CredentialsStep: View {
             .frame(width: 44, height: 44)
             .background(Color.brandPrimary)
             .clipShape(Circle())
+    }
+}
+
+// MARK: - Step 4: MFA Code
+
+private struct MFACodeStep: View {
+    @Environment(AuthViewModel.self) private var authViewModel
+    @State private var settings = SettingsService.shared
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        @Bindable var vm = authViewModel
+
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                authViewModel.goBack()
+            } label: {
+                Image(systemName: "arrow.left")
+                    .font(.title3)
+                    .foregroundStyle(.primary)
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 32)
+
+            Text(settings.L("auth.mfa_title"))
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding(.bottom, 12)
+
+            Text(settings.L("auth.mfa_description"))
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 40)
+
+            TextField(settings.L("auth.mfa_code"), text: $vm.mfaCode)
+                .keyboardType(.numberPad)
+                .textContentType(.oneTimeCode)
+                .focused($isFocused)
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(isFocused ? Color.brandPrimary : Color(.systemGray4), lineWidth: isFocused ? 2 : 1)
+                )
+
+            if let error = authViewModel.errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .padding(.top, 8)
+            }
+
+            Spacer()
+
+            Button {
+                Task { await authViewModel.submitMFA(code: vm.mfaCode) }
+            } label: {
+                Group {
+                    if authViewModel.isLoading {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Text(settings.L("auth.verify"))
+                            .fontWeight(.semibold)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(vm.mfaCode.isEmpty ? Color(.systemGray5) : .brandPrimary)
+            .foregroundStyle(vm.mfaCode.isEmpty ? Color.secondary : Color.white)
+            .disabled(vm.mfaCode.isEmpty || authViewModel.isLoading)
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 24)
+        .onAppear {
+            isFocused = true
+        }
+        .onSubmit {
+            if !vm.mfaCode.isEmpty {
+                Task { await authViewModel.submitMFA(code: vm.mfaCode) }
+            }
+        }
     }
 }
 

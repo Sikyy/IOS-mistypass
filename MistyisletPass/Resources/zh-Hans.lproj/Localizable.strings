@@ -279,6 +279,10 @@
 "auth.magic_link_sent" = "我们已向 **%@** 发送了登录链接";
 "auth.resend_link" = "重新发送链接";
 "auth.back_to_sign_in" = "返回登录";
+"auth.mfa_title" = "输入验证码";
+"auth.mfa_description" = "请输入身份验证器应用中的验证码以完成登录。";
+"auth.mfa_code" = "验证码";
+"auth.verify" = "验证";
 
 /* Visitors - Additional */
 "visitors.visitor_info" = "访客信息";
