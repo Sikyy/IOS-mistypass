@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import PassKit
 import CoreImage.CIFilterBuiltins
 
 // MARK: - Wallet View
@@ -64,31 +63,10 @@ struct WalletView: View {
                 )
             }
 
-            addToWalletSection
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
         .padding(.bottom, 100)
-    }
-
-    // MARK: - Add to Wallet
-
-    private var addToWalletSection: some View {
-        VStack(spacing: 12) {
-            Divider()
-                .padding(.vertical, 8)
-
-            PKAddPassButtonWrapper()
-                .frame(width: 250, height: 50)
-                .opacity(0.4)
-                .allowsHitTesting(false)
-
-            Text(settings.L("wallet.region_notice"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
-        }
     }
 
     private func toggleExpand(_ pass: PassItem) {
@@ -726,18 +704,6 @@ private struct PassCardView: View {
 // MARK: - QR Generator
 
 // MARK: - Color hex helper
-
-// MARK: - PKAddPassButton Wrapper
-
-private struct PKAddPassButtonWrapper: UIViewRepresentable {
-    func makeUIView(context: Context) -> PKAddPassButton {
-        let button = PKAddPassButton(addPassButtonStyle: .blackOutline)
-        button.isUserInteractionEnabled = false
-        return button
-    }
-
-    func updateUIView(_ uiView: PKAddPassButton, context: Context) {}
-}
 
 extension Color {
     init(hex: UInt, opacity: Double = 1.0) {
