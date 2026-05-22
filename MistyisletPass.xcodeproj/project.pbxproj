@@ -787,6 +787,8 @@
 		A046496919C1DEC1057A6EE7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				API_PINNED_SPKI_HASHES = "";
+				APP_ENV = dev;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MistyisletPass/MistyisletPass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -869,6 +871,8 @@
 		E3078DD0B1E1CBEB257F2E9C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				API_PINNED_SPKI_HASHES = "";
+				APP_ENV = production;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MistyisletPass/MistyisletPass.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
