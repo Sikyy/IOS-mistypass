@@ -973,6 +973,7 @@ private struct Empty: Codable {}
 private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
 
     /// SHA-256 hashes of the SubjectPublicKeyInfo (SPKI) for pinned certificates.
+    /// Configure `API_PINNED_SPKI_HASHES` in Info.plist or the scheme environment.
     /// To obtain the pin hash for your production certificate, run:
     ///
     ///   openssl s_client -connect api.mistyislet.com:443 -servername api.mistyislet.com </dev/null 2>/dev/null \
@@ -981,19 +982,15 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
     ///     | openssl dgst -sha256 -binary \
     ///     | base64
     ///
-    /// Add the resulting base64 string below. Include both the leaf and a backup pin
-    /// (e.g. an intermediate CA) to allow certificate rotation without app updates.
-    ///
-    /// IMPORTANT: Replace these placeholder values before shipping to production.
-    private static let pinnedSPKIHashes: Set<String> = [
-        // TODO: Insert production SPKI SHA-256 base64 hash (leaf cert)
-        // "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-        // TODO: Insert backup SPKI SHA-256 base64 hash (intermediate CA)
-        // "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
-    ]
+    /// Set the resulting base64 values as a comma or newline separated list.
+    /// Include both the leaf and a backup pin, such as the issuing intermediate,
+    /// to allow certificate rotation without app updates.
+    private static var pinnedSPKIHashes: Set<String> {
+        Constants.Security.apiPinnedSPKIHashes
+    }
 
     /// The host to pin against. Only connections to this host are subject to pinning.
-    private static let pinnedHost = "api.mistyislet.com"
+    private static let pinnedHost = Constants.Security.apiPinnedHost
 
     func urlSession(
         _ session: URLSession,
@@ -1017,11 +1014,14 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
             return
         }
 
-        // If no pins are configured yet, fall through to default validation.
-        // This allows shipping before the production pin hash is known, while still
-        // enforcing pinning once configured.
-        guard !Self.pinnedSPKIHashes.isEmpty else {
-            completionHandler(.performDefaultHandling, nil)
+        let pins = Self.pinnedSPKIHashes
+        guard !pins.isEmpty else {
+            if Constants.Security.requiresProductionPinning {
+                AppLogger.api.error("Certificate pinning failed: no production SPKI pins configured for \(Self.pinnedHost)")
+                completionHandler(.cancelAuthenticationChallenge, nil)
+            } else {
+                completionHandler(.performDefaultHandling, nil)
+            }
             return
         }
 
@@ -1049,10 +1049,21 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
             guard let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, &error) as Data? else {
                 continue
             }
-            let hash = SHA256.hash(data: publicKeyData)
+            let keyType = SecKeyCopyAttributes(publicKey).flatMap {
+                ($0 as NSDictionary)[kSecAttrKeyType as String] as? String
+            }
+            let keySize = SecKeyCopyAttributes(publicKey).flatMap {
+                ($0 as NSDictionary)[kSecAttrKeySizeInBits as String] as? Int
+            }
+            let spkiData = Self.subjectPublicKeyInfoData(
+                publicKeyData: publicKeyData,
+                keyType: keyType,
+                keySize: keySize
+            )
+            let hash = SHA256.hash(data: spkiData)
             let hashBase64 = Data(hash).base64EncodedString()
 
-            if Self.pinnedSPKIHashes.contains(hashBase64) {
+            if pins.contains(hashBase64) {
                 completionHandler(.useCredential, URLCredential(trust: serverTrust))
                 return
             }
@@ -1062,6 +1073,71 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
         AppLogger.api.error("Certificate pinning failed: no SPKI hash matched for \(Self.pinnedHost)")
         completionHandler(.cancelAuthenticationChallenge, nil)
         #endif
+    }
+
+    private static func subjectPublicKeyInfoData(
+        publicKeyData: Data,
+        keyType: String?,
+        keySize: Int?
+    ) -> Data {
+        let algorithmIdentifier: Data
+        if keyType == kSecAttrKeyTypeECSECPrimeRandom as String {
+            algorithmIdentifier = ecAlgorithmIdentifier(keySize: keySize)
+        } else {
+            algorithmIdentifier = Data([
+                0x30, 0x0d,
+                0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01,
+                0x05, 0x00,
+            ])
+        }
+
+        let bitString = Data([0x00]) + publicKeyData
+        return derSequence(algorithmIdentifier + der(tag: 0x03, value: bitString))
+    }
+
+    private static func ecAlgorithmIdentifier(keySize: Int?) -> Data {
+        switch keySize {
+        case 384:
+            return Data([
+                0x30, 0x10,
+                0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
+                0x06, 0x05, 0x2b, 0x81, 0x04, 0x00, 0x22,
+            ])
+        case 521:
+            return Data([
+                0x30, 0x10,
+                0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
+                0x06, 0x05, 0x2b, 0x81, 0x04, 0x00, 0x23,
+            ])
+        default:
+            return Data([
+                0x30, 0x13,
+                0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
+                0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07,
+            ])
+        }
+    }
+
+    private static func derSequence(_ value: Data) -> Data {
+        der(tag: 0x30, value: value)
+    }
+
+    private static func der(tag: UInt8, value: Data) -> Data {
+        Data([tag]) + derLength(value.count) + value
+    }
+
+    private static func derLength(_ length: Int) -> Data {
+        if length < 128 {
+            return Data([UInt8(length)])
+        }
+
+        var value = length
+        var bytes: [UInt8] = []
+        while value > 0 {
+            bytes.insert(UInt8(value & 0xff), at: 0)
+            value >>= 8
+        }
+        return Data([0x80 | UInt8(bytes.count)] + bytes)
     }
 }
 

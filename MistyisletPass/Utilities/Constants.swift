@@ -186,6 +186,29 @@ enum Constants {
         }
     }
 
+    // MARK: - Security
+    enum Security {
+        static let apiPinnedHost = "api.mistyislet.com"
+
+        /// Comma or newline separated SHA-256 hashes of allowed API certificate
+        /// SubjectPublicKeyInfo values, encoded with base64.
+        static var apiPinnedSPKIHashes: Set<String> {
+            let raw = (Bundle.main.object(forInfoDictionaryKey: "API_PINNED_SPKI_HASHES") as? String)
+                ?? ProcessInfo.processInfo.environment["API_PINNED_SPKI_HASHES"]
+                ?? ""
+            let separators = CharacterSet(charactersIn: ",\n")
+            return Set(
+                raw.components(separatedBy: separators)
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+            )
+        }
+
+        static var requiresProductionPinning: Bool {
+            AppEnvironment.current == .production
+        }
+    }
+
     // MARK: - BLE
     /// GATT UUIDs are derived from ASCII strings to keep the protocol identifiable
     /// across platforms. Each segment encodes 6 ASCII chars (12 hex digits).
