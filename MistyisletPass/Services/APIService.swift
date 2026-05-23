@@ -1037,11 +1037,12 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
         }
 
         // Check each certificate in the chain for a matching SPKI hash.
-        let certCount = SecTrustGetCertificateCount(serverTrust)
-        for index in 0..<certCount {
-            guard let certificate = SecTrustCopyCertificateChain(serverTrust)?[index] as? SecCertificate else {
-                continue
-            }
+        guard let certificates = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate] else {
+            AppLogger.api.error("Certificate pinning failed: unable to read certificate chain for \(Self.pinnedHost)")
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+        for certificate in certificates {
             guard let publicKey = SecCertificateCopyKey(certificate) else {
                 continue
             }

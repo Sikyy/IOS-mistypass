@@ -9,6 +9,16 @@ final class SettingsServiceTests: XCTestCase {
         if let bundleId = Bundle.main.bundleIdentifier {
             UserDefaults.standard.removePersistentDomain(forName: bundleId)
         }
+        let settings = SettingsService.shared
+        settings.biometricEnabled = true
+        settings.hapticEnabled = true
+        settings.autoScreenBrightness = true
+        settings.geofenceEnabled = false
+        settings.selectedLanguage = .english
+        settings.selectedOrgId = nil
+        settings.selectedOrgName = nil
+        settings.selectedPlaceId = nil
+        settings.selectedPlaceName = nil
     }
 
     func testBiometricDefault() {

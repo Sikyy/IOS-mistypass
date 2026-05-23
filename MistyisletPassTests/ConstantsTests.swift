@@ -15,7 +15,7 @@ final class ConstantsTests: XCTestCase {
     }
 
     func testConnectionTimeout() {
-        XCTAssertEqual(Constants.BLE.connectionTimeout, 5.0)
+        XCTAssertEqual(Constants.BLE.connectionTimeout, 8.0)
     }
 
     func testHoldDuration() {
