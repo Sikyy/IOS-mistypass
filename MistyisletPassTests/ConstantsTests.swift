@@ -38,6 +38,7 @@ final class ConstantsTests: XCTestCase {
     }
 
     func testAdminUserDetailRoutePaths() {
+        XCTAssertEqual(Constants.API.adminUsersPath("place-001"), "/app/places/place-001/users")
         XCTAssertEqual(Constants.API.adminUserPath("place-001", "user-001"), "/app/places/place-001/users/user-001")
         XCTAssertEqual(Constants.API.adminUserLoginsPath("place-001", "user-001"), "/app/places/place-001/users/user-001/logins")
         XCTAssertEqual(Constants.API.adminUserAccessRightsPath("place-001", "user-001"), "/app/places/place-001/users/user-001/access-rights")
