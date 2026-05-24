@@ -28,52 +28,64 @@ enum Constants {
     }
 
     // MARK: - API
-    /// Endpoint paths must match `api/internal/http/router.go` (mobile routes
-    /// nested under `/app`, mounted at `/api/v1` on the backend).
+    /// Endpoint paths are sourced from generated mobile OpenAPI routes where
+    /// coverage exists. Routes are mounted at `/api/v1` on the backend.
     enum API {
         static var baseURL: String { AppEnvironment.current.baseURL }
 
         // Auth (mobile routes under /app/auth)
-        static let loginPath = "/app/auth/login"
-        static let refreshPath = "/app/auth/refresh"
-        static let magicLinkPath = "/app/auth/magic-link"
-        static let magicLinkVerifyPath = "/app/auth/magic-link/verify"
-        static let orgLookupPath = "/app/auth/org-lookup"
-        static let restorePasswordPath = "/app/auth/restore-password"
+        static let loginPath = MobileAPIRoutes.createAppLoginSession.path
+        static let refreshPath = MobileAPIRoutes.refreshAppLoginSession.path
+        static let magicLinkPath = MobileAPIRoutes.postAppAuthMagicLink.path
+        static let magicLinkVerifyPath = MobileAPIRoutes.postAppAuthMagicLinkVerify.path
+        static let orgLookupPath = MobileAPIRoutes.getAppAuthOrgLookup.path
+        static let restorePasswordPath = MobileAPIRoutes.postAppAuthRestorePassword.path
 
         // User
-        static let mePath = "/app/me"
+        static let mePath = MobileAPIRoutes.fetchAppCurrentUser.path
 
         // Legacy flat endpoints (still supported by backend)
-        static let doorsPath = "/app/access/my-doors"
-        static let unlockPath = "/app/access/unlock"
-        static let qrUnlockPath = "/app/access/qr-unlock"
-        static let bleTokenPath = "/app/access/ble-token"
-        static let logsPath = "/app/access/logs"
-        static let pinCodePath = "/app/access/pin-code"
+        static let doorsPath = MobileAPIRoutes.fetchAppAccessMyDoors.path
+        static let unlockPath = MobileAPIRoutes.appUnlockDoor.path
+        static let qrUnlockPath = MobileAPIRoutes.appQRUnlockDoor.path
+        static let bleTokenPath = MobileAPIRoutes.fetchAppAccessBLEToken.path
+        static let logsPath = MobileAPIRoutes.fetchAppAccessLogs.path
+        static let pinCodePath = MobileAPIRoutes.getAppAccessPinCode.path
 
         // Org / Place hierarchy (matches Android navigation)
-        static let orgsPath = "/app/orgs"
-        static func switchOrgPath(_ orgId: String) -> String { "/app/orgs/\(orgId)/switch" }
-        static func placesPath(_ orgId: String) -> String { "/app/orgs/\(orgId)/places" }
-        static func placesSearchPath(_ orgId: String) -> String { "/app/orgs/\(orgId)/places/search" }
-        static func placeDoorsPath(_ placeId: String) -> String { "/app/places/\(placeId)/doors" }
-        static func placeDoorsSearchPath(_ placeId: String) -> String { "/app/places/\(placeId)/doors/search" }
+        static let orgsPath = MobileAPIRoutes.getAppOrgs.path
+        static func switchOrgPath(_ orgId: String) -> String {
+            MobileAPIRoutes.postAppOrgsOrgIdSwitch(orgId: orgId).path
+        }
+        static func placesPath(_ orgId: String) -> String {
+            MobileAPIRoutes.getAppOrgsOrgIdPlaces(orgId: orgId).path
+        }
+        static func placesSearchPath(_ orgId: String) -> String {
+            MobileAPIRoutes.getAppOrgsOrgIdPlacesSearch(orgId: orgId).path
+        }
+        static func placeDoorsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdDoors(placeId: placeId).path
+        }
+        static func placeDoorsSearchPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdDoorsSearch(placeId: placeId).path
+        }
         static func placeUnlockPath(_ placeId: String, _ doorId: String) -> String {
-            "/app/places/\(placeId)/doors/\(doorId)/unlock"
+            MobileAPIRoutes.postAppPlacesPlaceIdDoorsDoorIdUnlock(placeId: placeId, doorId: doorId).path
         }
         static func placeFavoriteDoorPath(_ placeId: String, _ doorId: String) -> String {
-            "/app/places/\(placeId)/doors/\(doorId)/favorite"
+            MobileAPIRoutes.putAppPlacesPlaceIdDoorsDoorIdFavorite(placeId: placeId, doorId: doorId).path
         }
-        static func placeLockdownPath(_ placeId: String) -> String { "/app/places/\(placeId)/lockdown" }
+        static func placeLockdownPath(_ placeId: String) -> String {
+            MobileAPIRoutes.postAppPlacesPlaceIdLockdown(placeId: placeId).path
+        }
         static func doorLockdownPath(_ placeId: String, _ doorId: String) -> String {
-            "/app/places/\(placeId)/doors/\(doorId)/lockdown"
+            MobileAPIRoutes.postAppPlacesPlaceIdDoorsDoorIdLockdown(placeId: placeId, doorId: doorId).path
         }
         static func doorRestrictionsPath(_ placeId: String, _ doorId: String) -> String {
-            "/app/places/\(placeId)/doors/\(doorId)/restrictions"
+            MobileAPIRoutes.getAppPlacesPlaceIdDoorsDoorIdRestrictions(placeId: placeId, doorId: doorId).path
         }
         static func doorSchedulesPath(_ placeId: String, _ doorId: String) -> String {
-            "/app/places/\(placeId)/doors/\(doorId)/schedules"
+            MobileAPIRoutes.getAppPlacesPlaceIdDoorsDoorIdSchedules(placeId: placeId, doorId: doorId).path
         }
 
         // Schedule CRUD
@@ -145,7 +157,9 @@ enum Constants {
         // Analytics & Reports (place-scoped)
         static func analyticsSummaryPath(_ placeId: String) -> String { "/app/places/\(placeId)/analytics/summary" }
         static func userPresencePath(_ placeId: String) -> String { "/app/places/\(placeId)/analytics/presence" }
-        static func reportExportPath(_ placeId: String) -> String { "/app/places/\(placeId)/reports/export" }
+        static func reportExportPath(_ placeId: String) -> String {
+            MobileAPIRoutes.postAppPlacesPlaceIdReportsExport(placeId: placeId).path
+        }
 
         // Profile
         static let avatarPath = "/app/me/avatar"
@@ -169,7 +183,7 @@ enum Constants {
         static let primaryDevicePath = "/app/me/primary-device"
         static let apnsDevicePath = "/app/devices/apns"
         static let nfcCredentialPath = "/app/credentials/nfc"
-        static let qrTokenPath = "/app/qr-token"
+        static let qrTokenPath = MobileAPIRoutes.postAppQrToken.path
 
         // Hardware rename
         static func doorRenamePath(_ placeId: String, _ doorId: String) -> String {
@@ -197,11 +211,19 @@ enum Constants {
         static func checkOutBookingPath(_ bookingId: String) -> String { "/app/bookings/\(bookingId)/check-out" }
 
         // Cameras / Monitoring
-        static let camerasPath = "/app/cameras"
-        static func cameraVideoLinkPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/video-link" }
-        static func cameraSnapshotPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/snapshot" }
-        static func cameraCloudTokenPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/cloud-token" }
-        static func cameraRecordingsPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/cloud-recordings" }
+        static let camerasPath = MobileAPIRoutes.getAppCameras.path
+        static func cameraVideoLinkPath(_ cameraId: String) -> String {
+            MobileAPIRoutes.getAppCamerasCameraIDVideoLink(cameraID: cameraId).path
+        }
+        static func cameraSnapshotPath(_ cameraId: String) -> String {
+            MobileAPIRoutes.postAppCamerasCameraIDSnapshot(cameraID: cameraId).path
+        }
+        static func cameraCloudTokenPath(_ cameraId: String) -> String {
+            MobileAPIRoutes.getAppCamerasCameraIDCloudToken(cameraID: cameraId).path
+        }
+        static func cameraRecordingsPath(_ cameraId: String) -> String {
+            MobileAPIRoutes.getAppCamerasCameraIDCloudRecordings(cameraID: cameraId).path
+        }
         static func eventMediaPath(_ placeId: String, _ eventId: String) -> String {
             "/app/places/\(placeId)/events/\(eventId)/media"
         }

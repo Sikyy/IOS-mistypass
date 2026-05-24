@@ -47,6 +47,7 @@
 		602DB5B9052FBAFF1976E76B /* QRPassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D333302250B4C02DC3BD3051 /* QRPassView.swift */; };
 		60AB2CE743A405DA4E1D0E64 /* MistyisletPassApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F586A68AC009FF3F76BF228 /* MistyisletPassApp.swift */; };
 		6112FAB16366290CBE0E37B2 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC72E841588B5943BA9E465 /* Constants.swift */; };
+		C0DE05240000000000000101 /* MobileAPIRoutes.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE05240000000000000102 /* MobileAPIRoutes.generated.swift */; };
 		6365BF3434B3056BAB4CF0AC /* CreateVisitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 206CD685B913F639CD5D504D /* CreateVisitorView.swift */; };
 		66CAACA4F5F27F739C95639B /* NFCBindingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2773DF62387FABE314905A52 /* NFCBindingView.swift */; };
 		688545E0B0D41B67859E2431 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8899FB1B33C78EC4D256FA33 /* APIService.swift */; };
@@ -212,6 +213,7 @@
 		E7FB3224E2D0D3FFC0239118 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		EE035429D381024CB6E76619 /* AdminCRUDViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminCRUDViews.swift; sourceTree = "<group>"; };
 		EEC72E841588B5943BA9E465 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		C0DE05240000000000000102 /* MobileAPIRoutes.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileAPIRoutes.generated.swift; sourceTree = "<group>"; };
 		8F4D2B61A9C3E70F5D8B4A93 /* TCPAuthClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPAuthClientTests.swift; sourceTree = "<group>"; };
 		B2C3D4E5F60718293041526A /* BLEAuthFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEAuthFlowTests.swift; sourceTree = "<group>"; };
 		D4E5F6071829304152637B85 /* NFCAuthFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCAuthFlowTests.swift; sourceTree = "<group>"; };
@@ -387,6 +389,7 @@
 				C583EFD4D9C0AD8F4683C82B /* AppLogger.swift */,
 				687DDEA8ECAE173EB62EFF36 /* BrandColors.swift */,
 				EEC72E841588B5943BA9E465 /* Constants.swift */,
+				C0DE05240000000000000102 /* MobileAPIRoutes.generated.swift */,
 				BA1BE5C4D8FC24106E740B05 /* PreviewData.swift */,
 				1A6606D9BDEED96A2F80A94C /* QRGenerator.swift */,
 			);
@@ -649,6 +652,7 @@
 				3EE03659ABC653DC9C0AD06C /* BookingsViewModel.swift in Sources */,
 				F06B9DA7019B4C6B09BF44F1 /* BrandColors.swift in Sources */,
 				6112FAB16366290CBE0E37B2 /* Constants.swift in Sources */,
+				C0DE05240000000000000101 /* MobileAPIRoutes.generated.swift in Sources */,
 				6365BF3434B3056BAB4CF0AC /* CreateVisitorView.swift in Sources */,
 				7127B5512C8561B6CC8AF2EA /* Credential.swift in Sources */,
 				352BBE8BFA15FE47A28E57A0 /* DashboardTabView.swift in Sources */,
