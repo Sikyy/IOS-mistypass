@@ -195,7 +195,7 @@ struct WalletView: View {
     }
 
     private func fetchDynamicQRToken() async throws -> QRTokenResponse {
-        guard let url = URL(string: Constants.API.baseURL + "/app/qr-token") else {
+        guard let url = URL(string: Constants.API.baseURL + Constants.API.qrTokenPath) else {
             throw APIError.invalidURL
         }
         var request = URLRequest(url: url)
