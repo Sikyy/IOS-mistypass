@@ -94,7 +94,9 @@ enum Constants {
         }
 
         // Admin (place-scoped)
-        static func adminUsersPath(_ placeId: String) -> String { "/app/places/\(placeId)/users" }
+        static func adminUsersPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdUsers(placeId: placeId).path
+        }
         static func adminEventsPath(_ placeId: String) -> String {
             MobileAPIRoutes.getAppPlacesPlaceIdEvents(placeId: placeId).path
         }
