@@ -2418,7 +2418,7 @@ struct EventExportView: View {
     let placeId: String
     @State private var fromDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
     @State private var toDate = Date()
-    @State private var selectedFormat = "csv"
+    @State private var selectedFormat = "pdf"
     @State private var selectedType: ReportType = .weeklyAnalytics
     @State private var isExporting = false
     @State private var exportResult: ReportExportResponse?

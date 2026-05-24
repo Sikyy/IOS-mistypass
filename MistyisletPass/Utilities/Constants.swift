@@ -84,7 +84,11 @@ enum Constants {
         // Admin (place-scoped)
         static func adminUsersPath(_ placeId: String) -> String { "/app/places/\(placeId)/users" }
         static func adminEventsPath(_ placeId: String) -> String { "/app/places/\(placeId)/events" }
+        static func adminEventPath(_ placeId: String, _ eventId: String) -> String { "/app/places/\(placeId)/events/\(eventId)" }
+        static func adminEventRelatedPath(_ placeId: String, _ eventId: String) -> String { "/app/places/\(placeId)/events/\(eventId)/related" }
         static func adminIncidentsPath(_ placeId: String) -> String { "/app/places/\(placeId)/incidents" }
+        static func adminIncidentPath(_ placeId: String, _ incidentId: String) -> String { "/app/places/\(placeId)/incidents/\(incidentId)" }
+        static func adminIncidentOccurrencesPath(_ placeId: String, _ incidentId: String) -> String { "/app/places/\(placeId)/incidents/\(incidentId)/occurrences" }
         static func adminActivityPath(_ placeId: String) -> String { "/app/places/\(placeId)/activity" }
         static func adminSchedulesPath(_ placeId: String) -> String { "/app/places/\(placeId)/schedules" }
         static func adminZonesPath(_ placeId: String) -> String { "/app/places/\(placeId)/zones" }

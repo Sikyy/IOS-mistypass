@@ -29,4 +29,11 @@ final class ConstantsTests: XCTestCase {
     func testMinimumTouchTarget() {
         XCTAssertGreaterThanOrEqual(Constants.UI.minimumTouchTarget, 44.0)
     }
+
+    func testAdminDeepRoutePaths() {
+        XCTAssertEqual(Constants.API.adminEventPath("place-001", "evt-001"), "/app/places/place-001/events/evt-001")
+        XCTAssertEqual(Constants.API.adminEventRelatedPath("place-001", "evt-001"), "/app/places/place-001/events/evt-001/related")
+        XCTAssertEqual(Constants.API.adminIncidentPath("place-001", "inc-001"), "/app/places/place-001/incidents/inc-001")
+        XCTAssertEqual(Constants.API.adminIncidentOccurrencesPath("place-001", "inc-001"), "/app/places/place-001/incidents/inc-001/occurrences")
+    }
 }

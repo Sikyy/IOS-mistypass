@@ -49,6 +49,59 @@ final class AdminModelDecodingTests: XCTestCase {
         XCTAssertEqual(event.resultColor, "red")
     }
 
+    func testDecodeAdminEventDetailFields() throws {
+        let json = """
+        {
+            "id": "evt-003",
+            "place_id": "place-001",
+            "timestamp": "2026-05-03T10:23:00Z",
+            "actor": "user@example.com",
+            "action": "unlock",
+            "result": "denied",
+            "object_name": "Server Room",
+            "object_type": "door",
+            "object_id": "door-002",
+            "door_id": "door-002",
+            "area_id": "area-001",
+            "gateway_id": "gateway-001",
+            "detail": "Denied by policy",
+            "relation": "same_actor_same_door"
+        }
+        """.data(using: .utf8)!
+
+        let event = try decoder.decode(AdminEvent.self, from: json)
+        XCTAssertEqual(event.areaId, "area-001")
+        XCTAssertEqual(event.gatewayId, "gateway-001")
+        XCTAssertEqual(event.detail, "Denied by policy")
+        XCTAssertEqual(event.relation, "same_actor_same_door")
+    }
+
+    func testDecodeRelatedEventsResponse() throws {
+        let json = """
+        {
+            "event_id": "evt-source",
+            "items": [
+                {
+                    "id": "evt-related",
+                    "place_id": "place-001",
+                    "timestamp": "2026-05-03T10:25:00Z",
+                    "actor": "user@example.com",
+                    "action": "unlock",
+                    "result": "denied",
+                    "object_name": "Server Room",
+                    "object_type": "door",
+                    "relation": "same_actor"
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let response = try decoder.decode(RelatedEventsResponse.self, from: json)
+        XCTAssertEqual(response.eventId, "evt-source")
+        XCTAssertEqual(response.items.first?.id, "evt-related")
+        XCTAssertEqual(response.items.first?.relation, "same_actor")
+    }
+
     // MARK: - Incident
 
     func testDecodeIncident() throws {
@@ -61,13 +114,19 @@ final class AdminModelDecodingTests: XCTestCase {
             "status": "open",
             "severity": "critical",
             "description": "Door forced open",
-            "created_at": "2026-05-03T08:00:00Z"
+            "created_at": "2026-05-03T08:00:00Z",
+            "subject_type": "door",
+            "subject_id": "door-001",
+            "count": 2
         }
         """.data(using: .utf8)!
 
         let incident = try decoder.decode(Incident.self, from: json)
         XCTAssertEqual(incident.id, "inc-001")
         XCTAssertEqual(incident.severityColor, "red")
+        XCTAssertEqual(incident.subjectType, "door")
+        XCTAssertEqual(incident.subjectId, "door-001")
+        XCTAssertEqual(incident.count, 2)
     }
 
     func testIncidentSeverityColors() throws {
@@ -96,6 +155,64 @@ final class AdminModelDecodingTests: XCTestCase {
             let incident = try decoder.decode(Incident.self, from: json)
             XCTAssertEqual(incident.severityColor, expectedColor, "Severity \(severity) should be \(expectedColor)")
         }
+    }
+
+    func testDecodeIncidentDetailEvents() throws {
+        let json = """
+        {
+            "id": "inc_deny_door-001",
+            "place_id": "place-001",
+            "type": "access_denied",
+            "state": "open",
+            "status": "active",
+            "severity": "medium",
+            "subject_type": "door",
+            "subject_id": "door-001",
+            "description": "Access denied at door-001",
+            "created_at": "2026-05-03T08:00:00Z",
+            "count": 2,
+            "events": [
+                {
+                    "event_id": "evt-001",
+                    "actor": "user@example.com",
+                    "timestamp": "2026-05-03T08:00:00Z"
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let incident = try decoder.decode(Incident.self, from: json)
+        XCTAssertEqual(incident.events?.first?.eventId, "evt-001")
+        XCTAssertEqual(incident.events?.first?.id, "evt-001")
+    }
+
+    func testDecodeIncidentOccurrencesResponse() throws {
+        let json = """
+        {
+            "incident_id": "inc_deny_door-001",
+            "items": [
+                {
+                    "event_id": "evt-001",
+                    "actor": "user@example.com",
+                    "door_id": "door-001",
+                    "gateway_id": "gateway-001",
+                    "result": "denied",
+                    "occurred_at": "2026-05-03T08:00:00Z"
+                }
+            ],
+            "pagination": {
+                "offset": 0,
+                "limit": 1,
+                "total": 1
+            }
+        }
+        """.data(using: .utf8)!
+
+        let response = try decoder.decode(IncidentOccurrencesResponse.self, from: json)
+        XCTAssertEqual(response.incidentId, "inc_deny_door-001")
+        XCTAssertEqual(response.items.first?.doorId, "door-001")
+        XCTAssertEqual(response.items.first?.id, "evt-001")
+        XCTAssertEqual(response.pagination?.total, 1)
     }
 
     // MARK: - AnalyticsSummary

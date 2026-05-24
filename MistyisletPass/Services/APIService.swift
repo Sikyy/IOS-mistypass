@@ -452,8 +452,30 @@ final class APIService: @unchecked Sendable {
         return response.items
     }
 
+    func fetchAdminEvent(placeId: String, eventId: String) async throws -> AdminEvent {
+        try await get(path: Constants.API.adminEventPath(placeId, eventId))
+    }
+
+    func fetchRelatedAdminEvents(placeId: String, eventId: String) async throws -> [AdminEvent] {
+        let response: RelatedEventsResponse = try await get(
+            path: Constants.API.adminEventRelatedPath(placeId, eventId)
+        )
+        return response.items
+    }
+
     func fetchAdminIncidents(placeId: String) async throws -> [Incident] {
         let response: AdminListResponse<Incident> = try await get(path: Constants.API.adminIncidentsPath(placeId))
+        return response.items
+    }
+
+    func fetchAdminIncident(placeId: String, incidentId: String) async throws -> Incident {
+        try await get(path: Constants.API.adminIncidentPath(placeId, incidentId))
+    }
+
+    func fetchAdminIncidentOccurrences(placeId: String, incidentId: String) async throws -> [IncidentOccurrence] {
+        let response: IncidentOccurrencesResponse = try await get(
+            path: Constants.API.adminIncidentOccurrencesPath(placeId, incidentId)
+        )
         return response.items
     }
 
@@ -616,7 +638,7 @@ final class APIService: @unchecked Sendable {
         return response.items
     }
 
-    func exportReport(placeId: String, type: String, from: String, to: String, format: String = "csv") async throws -> ReportExportResponse {
+    func exportReport(placeId: String, type: String, from: String, to: String, format: String = "pdf") async throws -> ReportExportResponse {
         let body: [String: String] = [
             "type": type,
             "from": from,
