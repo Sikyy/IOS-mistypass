@@ -90,25 +90,53 @@ enum Constants {
 
         // Schedule CRUD
         static func adminSchedulePath(_ placeId: String, _ scheduleId: String) -> String {
-            "/app/places/\(placeId)/schedules/\(scheduleId)"
+            MobileAPIRoutes.putAppPlacesPlaceIdSchedulesScheduleId(placeId: placeId, scheduleId: scheduleId).path
         }
 
         // Admin (place-scoped)
         static func adminUsersPath(_ placeId: String) -> String { "/app/places/\(placeId)/users" }
-        static func adminEventsPath(_ placeId: String) -> String { "/app/places/\(placeId)/events" }
-        static func adminEventPath(_ placeId: String, _ eventId: String) -> String { "/app/places/\(placeId)/events/\(eventId)" }
-        static func adminEventRelatedPath(_ placeId: String, _ eventId: String) -> String { "/app/places/\(placeId)/events/\(eventId)/related" }
-        static func adminIncidentsPath(_ placeId: String) -> String { "/app/places/\(placeId)/incidents" }
-        static func adminIncidentPath(_ placeId: String, _ incidentId: String) -> String { "/app/places/\(placeId)/incidents/\(incidentId)" }
-        static func adminIncidentOccurrencesPath(_ placeId: String, _ incidentId: String) -> String { "/app/places/\(placeId)/incidents/\(incidentId)/occurrences" }
-        static func adminActivityPath(_ placeId: String) -> String { "/app/places/\(placeId)/activity" }
-        static func adminSchedulesPath(_ placeId: String) -> String { "/app/places/\(placeId)/schedules" }
-        static func adminZonesPath(_ placeId: String) -> String { "/app/places/\(placeId)/zones" }
-        static func adminCardsPath(_ placeId: String) -> String { "/app/places/\(placeId)/cards" }
-        static func adminCardUnassignPath(_ placeId: String, _ cardUid: String) -> String { "/app/places/\(placeId)/cards/\(cardUid)" }
-        static func adminCredentialsPath(_ placeId: String) -> String { "/app/places/\(placeId)/credentials" }
-        static func adminCredentialSearchPath(_ placeId: String) -> String { "/app/places/\(placeId)/credentials/search" }
-        static func adminCredentialPath(_ placeId: String, _ credId: String) -> String { "/app/places/\(placeId)/credentials/\(credId)" }
+        static func adminEventsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdEvents(placeId: placeId).path
+        }
+        static func adminEventPath(_ placeId: String, _ eventId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdEventsEventId(placeId: placeId, eventId: eventId).path
+        }
+        static func adminEventRelatedPath(_ placeId: String, _ eventId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdEventsEventIdRelated(placeId: placeId, eventId: eventId).path
+        }
+        static func adminIncidentsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdIncidents(placeId: placeId).path
+        }
+        static func adminIncidentPath(_ placeId: String, _ incidentId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdIncidentsIncidentId(placeId: placeId, incidentId: incidentId).path
+        }
+        static func adminIncidentOccurrencesPath(_ placeId: String, _ incidentId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdIncidentsIncidentIdOccurrences(placeId: placeId, incidentId: incidentId).path
+        }
+        static func adminActivityPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdActivity(placeId: placeId).path
+        }
+        static func adminSchedulesPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdSchedules(placeId: placeId).path
+        }
+        static func adminZonesPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdZones(placeId: placeId).path
+        }
+        static func adminCardsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdCards(placeId: placeId).path
+        }
+        static func adminCardUnassignPath(_ placeId: String, _ cardUid: String) -> String {
+            MobileAPIRoutes.deleteAppPlacesPlaceIdCardsCardUid(placeId: placeId, cardUid: cardUid).path
+        }
+        static func adminCredentialsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdCredentials(placeId: placeId).path
+        }
+        static func adminCredentialSearchPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdCredentialsSearch(placeId: placeId).path
+        }
+        static func adminCredentialPath(_ placeId: String, _ credId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdCredentialsCredentialId(placeId: placeId, credentialId: credId).path
+        }
         private static func queryValue(_ value: String) -> String {
             value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
         }
@@ -122,93 +150,161 @@ enum Constants {
         static func walletPassRevokePath(_ passId: String, tenantId: String) -> String {
             "/wallet/passes/\(passId)/revoke?tenant_id=\(queryValue(tenantId))"
         }
-        static func adminTeamsPath(_ placeId: String) -> String { "/app/places/\(placeId)/teams" }
+        static func adminTeamsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdTeams(placeId: placeId).path
+        }
 
         // User management
-        static func adminUserPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)" }
-        static func adminUserRolePath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/role" }
-        static func adminUserSignOutPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/sign-out" }
-        static func adminInviteUserPath(_ placeId: String) -> String { "/app/places/\(placeId)/users/invite" }
-        static func adminUserLoginsPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/logins" }
-        static func adminUserAccessRightsPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/access-rights" }
-        static func adminUserShareAccessPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/share-access" }
+        static func adminUserPath(_ placeId: String, _ userId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdUsersUserId(placeId: placeId, userId: userId).path
+        }
+        static func adminUserRolePath(_ placeId: String, _ userId: String) -> String {
+            MobileAPIRoutes.patchAppPlacesPlaceIdUsersUserIdRole(placeId: placeId, userId: userId).path
+        }
+        static func adminUserSignOutPath(_ placeId: String, _ userId: String) -> String {
+            MobileAPIRoutes.postAppPlacesPlaceIdUsersUserIdSignOut(placeId: placeId, userId: userId).path
+        }
+        static func adminInviteUserPath(_ placeId: String) -> String {
+            MobileAPIRoutes.postAppPlacesPlaceIdUsersInvite(placeId: placeId).path
+        }
+        static func adminUserLoginsPath(_ placeId: String, _ userId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdUsersUserIdLogins(placeId: placeId, userId: userId).path
+        }
+        static func adminUserAccessRightsPath(_ placeId: String, _ userId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdUsersUserIdAccessRights(placeId: placeId, userId: userId).path
+        }
+        static func adminUserShareAccessPath(_ placeId: String, _ userId: String) -> String {
+            MobileAPIRoutes.postAppPlacesPlaceIdUsersUserIdShareAccess(placeId: placeId, userId: userId).path
+        }
 
         // Groups
-        static func adminGroupsPath(_ placeId: String) -> String { "/app/places/\(placeId)/groups" }
-        static func adminGroupPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/groups/\(groupId)" }
-        static func adminGroupMembersPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/groups/\(groupId)/members" }
-        static func adminGroupDoorsPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/groups/\(groupId)/doors" }
+        static func adminGroupsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdGroups(placeId: placeId).path
+        }
+        static func adminGroupPath(_ placeId: String, _ groupId: String) -> String {
+            MobileAPIRoutes.patchAppPlacesPlaceIdGroupsGroupId(placeId: placeId, groupId: groupId).path
+        }
+        static func adminGroupMembersPath(_ placeId: String, _ groupId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdGroupsGroupIdMembers(placeId: placeId, groupId: groupId).path
+        }
+        static func adminGroupDoorsPath(_ placeId: String, _ groupId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdGroupsGroupIdDoors(placeId: placeId, groupId: groupId).path
+        }
 
         // Team management
-        static func adminTeamPath(_ placeId: String, _ teamId: String) -> String { "/app/places/\(placeId)/teams/\(teamId)" }
-        static func adminTeamMembersPath(_ placeId: String, _ teamId: String) -> String { "/app/places/\(placeId)/teams/\(teamId)/members" }
-        static func adminTeamAccessPath(_ placeId: String, _ teamId: String) -> String { "/app/places/\(placeId)/teams/\(teamId)/access-rights" }
+        static func adminTeamPath(_ placeId: String, _ teamId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdTeamsTeamId(placeId: placeId, teamId: teamId).path
+        }
+        static func adminTeamMembersPath(_ placeId: String, _ teamId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdTeamsTeamIdMembers(placeId: placeId, teamId: teamId).path
+        }
+        static func adminTeamAccessPath(_ placeId: String, _ teamId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdTeamsTeamIdAccessRights(placeId: placeId, teamId: teamId).path
+        }
 
         // Organization settings
-        static func orgSettingsPath(_ orgId: String) -> String { "/app/orgs/\(orgId)/settings" }
+        static func orgSettingsPath(_ orgId: String) -> String {
+            MobileAPIRoutes.getAppOrgsOrgIdSettings(orgId: orgId).path
+        }
 
         // Zones
-        static func adminZonePath(_ placeId: String, _ zoneId: String) -> String { "/app/places/\(placeId)/zones/\(zoneId)" }
-        static func adminZoneHolidayRegionsPath(_ placeId: String, _: String) -> String { "/app/places/\(placeId)/holiday-regions" }
+        static func adminZonePath(_ placeId: String, _ zoneId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdZonesZoneId(placeId: placeId, zoneId: zoneId).path
+        }
+        static func adminZoneHolidayRegionsPath(_ placeId: String, _: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdHolidayRegions(placeId: placeId).path
+        }
 
         // Place management
-        static func placeSettingsPath(_ placeId: String) -> String { "/app/places/\(placeId)/settings" }
+        static func placeSettingsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.putAppPlacesPlaceIdSettings(placeId: placeId).path
+        }
 
         // Analytics & Reports (place-scoped)
-        static func analyticsSummaryPath(_ placeId: String) -> String { "/app/places/\(placeId)/analytics/summary" }
-        static func userPresencePath(_ placeId: String) -> String { "/app/places/\(placeId)/analytics/presence" }
+        static func analyticsSummaryPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdAnalyticsSummary(placeId: placeId).path
+        }
+        static func userPresencePath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdAnalyticsPresence(placeId: placeId).path
+        }
         static func reportExportPath(_ placeId: String) -> String {
             MobileAPIRoutes.postAppPlacesPlaceIdReportsExport(placeId: placeId).path
         }
 
         // Profile
-        static let avatarPath = "/app/me/avatar"
-        static let changePasswordPath = "/app/me/change-password"
-        static let myLoginsPath = "/app/me/logins"
+        static let avatarPath = MobileAPIRoutes.postAppMeAvatar.path
+        static let changePasswordPath = MobileAPIRoutes.postAppMeChangePassword.path
+        static let myLoginsPath = MobileAPIRoutes.getAppMeLogins.path
 
         // Visitor passes
-        static let visitorPassesPath = "/app/visitor-passes"
-        static func visitorGroupsPath(_ placeId: String) -> String { "/app/places/\(placeId)/visitor-groups" }
-        static func visitorGroupMembersPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)/members" }
-        static func visitorGroupCleanupPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)/cleanup-expired" }
+        static let visitorPassesPath = MobileAPIRoutes.getAppVisitorPasses.path
+        static func visitorGroupsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdVisitorGroups(placeId: placeId).path
+        }
+        static func visitorGroupMembersPath(_ placeId: String, _ groupId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdVisitorGroupsGroupIdMembers(placeId: placeId, groupId: groupId).path
+        }
+        static func visitorGroupCleanupPath(_ placeId: String, _ groupId: String) -> String {
+            MobileAPIRoutes.postAppPlacesPlaceIdVisitorGroupsGroupIdCleanupExpired(placeId: placeId, groupId: groupId).path
+        }
 
         // Guests (place-scoped)
-        static func guestsPath(_ placeId: String) -> String { "/app/places/\(placeId)/guests" }
-        static func guestPath(_ placeId: String, _ guestId: String) -> String { "/app/places/\(placeId)/guests/\(guestId)" }
+        static func guestsPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdGuests(placeId: placeId).path
+        }
+        static func guestPath(_ placeId: String, _ guestId: String) -> String {
+            MobileAPIRoutes.patchAppPlacesPlaceIdGuestsGuestId(placeId: placeId, guestId: guestId).path
+        }
 
         // Mobile credentials
-        static let credentialsPath = "/app/credentials"
-        static let mobileCredentialRegisterPath = "/app/credentials/register"
-        static let mobileCredentialsPath = "/app/credentials/mobile"
-        static let primaryDevicePath = "/app/me/primary-device"
-        static let apnsDevicePath = "/app/devices/apns"
-        static let nfcCredentialPath = "/app/credentials/nfc"
+        static let credentialsPath = MobileAPIRoutes.fetchAppCredentials.path
+        static let mobileCredentialRegisterPath = MobileAPIRoutes.registerMobileCredential.path
+        static let mobileCredentialsPath = MobileAPIRoutes.listMobileCredentials.path
+        static let primaryDevicePath = MobileAPIRoutes.postAppMePrimaryDevice.path
+        static let apnsDevicePath = MobileAPIRoutes.postAppDevicesApns.path
+        static let nfcCredentialPath = MobileAPIRoutes.getAppCredentialsNfc.path
         static let qrTokenPath = MobileAPIRoutes.postAppQrToken.path
 
         // Hardware rename
         static func doorRenamePath(_ placeId: String, _ doorId: String) -> String {
-            "/app/places/\(placeId)/doors/\(doorId)"
+            MobileAPIRoutes.patchAppPlacesPlaceIdDoorsDoorId(placeId: placeId, doorId: doorId).path
         }
-        static func gatewayRenamePath(_ gatewayId: String) -> String { "/app/gateways/\(gatewayId)" }
-        static func cameraRenamePath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)" }
+        static func gatewayRenamePath(_ gatewayId: String) -> String {
+            MobileAPIRoutes.patchAppGatewaysGatewayId(gatewayId: gatewayId).path
+        }
+        static func cameraRenamePath(_ cameraId: String) -> String {
+            MobileAPIRoutes.patchAppCamerasCameraId(cameraId: cameraId).path
+        }
 
         // Alarms
-        static let alarmsPath = "/app/alarms"
-        static let alarmsStreamPath = "/app/alarms/stream"
-        static func alarmStatusPath(_ alarmId: String) -> String { "/app/alarms/\(alarmId)/status" }
-        static let alarmSchedulesPath = "/app/alarm-schedules"
-        static let alarmCalendarPath = "/app/alarm-schedules/calendar"
+        static let alarmsPath = MobileAPIRoutes.getAppAlarms.path
+        static let alarmsStreamPath = MobileAPIRoutes.getAppAlarmsStream.path
+        static func alarmStatusPath(_ alarmId: String) -> String {
+            MobileAPIRoutes.patchAppAlarmsAlarmIDStatus(alarmID: alarmId).path
+        }
+        static let alarmSchedulesPath = MobileAPIRoutes.getAppAlarmSchedules.path
+        static let alarmCalendarPath = MobileAPIRoutes.getAppAlarmSchedulesCalendar.path
 
         // Activity
-        static func activityPath(_ placeId: String) -> String { "/app/places/\(placeId)/activity" }
+        static func activityPath(_ placeId: String) -> String {
+            MobileAPIRoutes.getAppPlacesPlaceIdActivity(placeId: placeId).path
+        }
 
         // Bookings
-        static let bookableSpacesPath = "/app/bookable-spaces"
-        static func bookableSpaceStatusPath(_ spaceId: String) -> String { "/app/bookable-spaces/\(spaceId)/status" }
-        static let bookingsPath = "/app/bookings"
-        static func cancelBookingPath(_ bookingId: String) -> String { "/app/bookings/\(bookingId)/cancel" }
-        static func checkInBookingPath(_ bookingId: String) -> String { "/app/bookings/\(bookingId)/check-in" }
-        static func checkOutBookingPath(_ bookingId: String) -> String { "/app/bookings/\(bookingId)/check-out" }
+        static let bookableSpacesPath = MobileAPIRoutes.getAppBookableSpaces.path
+        static func bookableSpaceStatusPath(_ spaceId: String) -> String {
+            MobileAPIRoutes.getAppBookableSpacesSpaceIDStatus(spaceID: spaceId).path
+        }
+        static let bookingsPath = MobileAPIRoutes.getAppBookings.path
+        static func cancelBookingPath(_ bookingId: String) -> String {
+            MobileAPIRoutes.postAppBookingsBookingIDCancel(bookingID: bookingId).path
+        }
+        static func checkInBookingPath(_ bookingId: String) -> String {
+            MobileAPIRoutes.postAppBookingsBookingIDCheckIn(bookingID: bookingId).path
+        }
+        static func checkOutBookingPath(_ bookingId: String) -> String {
+            MobileAPIRoutes.postAppBookingsBookingIDCheckOut(bookingID: bookingId).path
+        }
 
         // Cameras / Monitoring
         static let camerasPath = MobileAPIRoutes.getAppCameras.path
@@ -225,7 +321,7 @@ enum Constants {
             MobileAPIRoutes.getAppCamerasCameraIDCloudRecordings(cameraID: cameraId).path
         }
         static func eventMediaPath(_ placeId: String, _ eventId: String) -> String {
-            "/app/places/\(placeId)/events/\(eventId)/media"
+            MobileAPIRoutes.getAppPlacesPlaceIdEventsEventIdMedia(placeId: placeId, eventId: eventId).path
         }
     }
 
