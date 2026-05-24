@@ -12,6 +12,12 @@ struct UserDetailView: View {
     @State private var showSignOutConfirm = false
     @State private var errorMessage: String?
     @State private var successMessage: String?
+    @State private var logins: [UserLogin] = []
+    @State private var accessRights: [UserAccessRight] = []
+    @State private var shareAccess: UserAccessShare?
+    @State private var detailsErrorMessage: String?
+    @State private var isLoadingDetails = false
+    @State private var isSharingAccess = false
     @Environment(\.dismiss) private var dismiss
     var onUpdate: ((PlaceUser) -> Void)?
     var onRemove: (() -> Void)?
@@ -66,6 +72,59 @@ struct UserDetailView: View {
                 }
             }
 
+            Section("Active Logins") {
+                if isLoadingDetails {
+                    HStack { Spacer(); ProgressView(); Spacer() }
+                } else if logins.isEmpty {
+                    ContentUnavailableView("No Active Logins", systemImage: "iphone.slash")
+                } else {
+                    ForEach(logins) { login in
+                        userLoginRow(login)
+                    }
+                }
+            }
+
+            Section(settings.L("admin.access_rights")) {
+                if isLoadingDetails {
+                    HStack { Spacer(); ProgressView(); Spacer() }
+                } else if accessRights.isEmpty {
+                    ContentUnavailableView(settings.L("admin.no_access_rights"), systemImage: "lock.shield")
+                } else {
+                    ForEach(accessRights) { right in
+                        userAccessRightRow(right)
+                    }
+                }
+            }
+
+            Section("Share Access") {
+                Button {
+                    Task { await shareAccessLink() }
+                } label: {
+                    if isSharingAccess {
+                        HStack {
+                            Text("Generating Link")
+                            Spacer()
+                            ProgressView()
+                        }
+                    } else {
+                        Label("Generate Access Link", systemImage: "square.and.arrow.up")
+                    }
+                }
+                .disabled(isSharingAccess)
+
+                if let shareAccess {
+                    if let url = shareAccess.url, !url.isEmpty {
+                        LabeledContent("URL", value: url)
+                    }
+                    if let token = shareAccess.token, !token.isEmpty {
+                        LabeledContent("Token", value: token)
+                    }
+                    if let expiresAt = shareAccess.expiresAt, !expiresAt.isEmpty {
+                        LabeledContent("Expires", value: expiresAt)
+                    }
+                }
+            }
+
             Section(settings.L("admin.change_role")) {
                 Picker(settings.L("admin.role"), selection: $selectedRole) {
                     ForEach(availableRoles, id: \.self) { role in
@@ -99,6 +158,14 @@ struct UserDetailView: View {
                 }
             }
 
+            if let detailsErrorMessage {
+                Section {
+                    Label(detailsErrorMessage, systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                        .font(.callout)
+                }
+            }
+
             Section {
                 Button(settings.L("admin.force_sign_out")) {
                     showSignOutConfirm = true
@@ -128,6 +195,88 @@ struct UserDetailView: View {
                 Task { await remove() }
             }
         }
+        .task(id: user.id) { await loadDetails() }
+    }
+
+    private func userLoginRow(_ login: UserLogin) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: loginPlatformIcon(login.platform))
+                .foregroundStyle(.brandPrimary)
+                .frame(width: 28)
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(login.deviceName)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    if login.isCurrent {
+                        Text("Current")
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.15))
+                            .foregroundStyle(.green)
+                            .clipShape(Capsule())
+                    }
+                }
+                Text("\(loginPlatformLabel(login.platform)) · \(login.lastActive)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func userAccessRightRow(_ right: UserAccessRight) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "shield.checkered")
+                .foregroundStyle(.purple)
+                .frame(width: 28)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(right.role.replacingOccurrences(of: "_", with: " ").capitalized)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                HStack(spacing: 4) {
+                    Text(right.scope.capitalized)
+                    if let scopeName = right.scopeName {
+                        Text("·")
+                        Text(scopeName)
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                if let grantedAt = right.grantedAt {
+                    Text(grantedAt)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func loginPlatformIcon(_ platform: String) -> String {
+        switch platform.lowercased() {
+        case "ios": return "iphone"
+        case "ipados": return "ipad"
+        case "android": return "apps.iphone"
+        case "macos", "mac": return "macbook"
+        case "windows": return "pc"
+        case "web": return "globe"
+        default: return "desktopcomputer"
+        }
+    }
+
+    private func loginPlatformLabel(_ platform: String) -> String {
+        switch platform.lowercased() {
+        case "ios": return "iOS"
+        case "ipados": return "iPadOS"
+        case "android": return "Android"
+        case "macos", "mac": return "macOS"
+        case "windows": return "Windows"
+        case "web": return "Web"
+        default: return platform
+        }
     }
 
     private func changeRole() async {
@@ -139,6 +288,36 @@ struct UserDetailView: View {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func loadDetails() async {
+        isLoadingDetails = true
+        detailsErrorMessage = nil
+        do {
+            async let detailResult = APIService.shared.fetchAdminUser(placeId: placeId, userId: user.id)
+            async let loginsResult = APIService.shared.fetchUserLogins(placeId: placeId, userId: user.id)
+            async let rightsResult = APIService.shared.fetchUserAccessRights(placeId: placeId, userId: user.id)
+            let (freshUser, freshLogins, freshRights) = try await (detailResult, loginsResult, rightsResult)
+            user = freshUser
+            selectedRole = freshUser.role
+            logins = freshLogins
+            accessRights = freshRights
+            onUpdate?(freshUser)
+        } catch {
+            detailsErrorMessage = error.localizedDescription
+        }
+        isLoadingDetails = false
+    }
+
+    private func shareAccessLink() async {
+        isSharingAccess = true
+        errorMessage = nil
+        do {
+            shareAccess = try await APIService.shared.createUserAccessShare(placeId: placeId, userId: user.id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isSharingAccess = false
     }
 
     private func signOut() async {

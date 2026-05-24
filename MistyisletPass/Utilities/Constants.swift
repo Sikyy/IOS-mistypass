@@ -84,7 +84,11 @@ enum Constants {
         // Admin (place-scoped)
         static func adminUsersPath(_ placeId: String) -> String { "/app/places/\(placeId)/users" }
         static func adminEventsPath(_ placeId: String) -> String { "/app/places/\(placeId)/events" }
+        static func adminEventPath(_ placeId: String, _ eventId: String) -> String { "/app/places/\(placeId)/events/\(eventId)" }
+        static func adminEventRelatedPath(_ placeId: String, _ eventId: String) -> String { "/app/places/\(placeId)/events/\(eventId)/related" }
         static func adminIncidentsPath(_ placeId: String) -> String { "/app/places/\(placeId)/incidents" }
+        static func adminIncidentPath(_ placeId: String, _ incidentId: String) -> String { "/app/places/\(placeId)/incidents/\(incidentId)" }
+        static func adminIncidentOccurrencesPath(_ placeId: String, _ incidentId: String) -> String { "/app/places/\(placeId)/incidents/\(incidentId)/occurrences" }
         static func adminActivityPath(_ placeId: String) -> String { "/app/places/\(placeId)/activity" }
         static func adminSchedulesPath(_ placeId: String) -> String { "/app/places/\(placeId)/schedules" }
         static func adminZonesPath(_ placeId: String) -> String { "/app/places/\(placeId)/zones" }
@@ -93,9 +97,19 @@ enum Constants {
         static func adminCredentialsPath(_ placeId: String) -> String { "/app/places/\(placeId)/credentials" }
         static func adminCredentialSearchPath(_ placeId: String) -> String { "/app/places/\(placeId)/credentials/search" }
         static func adminCredentialPath(_ placeId: String, _ credId: String) -> String { "/app/places/\(placeId)/credentials/\(credId)" }
-        static func walletPassSuspendPath(_ passId: String) -> String { "/wallet/passes/\(passId)/suspend" }
-        static func walletPassActivatePath(_ passId: String) -> String { "/wallet/passes/\(passId)/activate" }
-        static func walletPassRevokePath(_ passId: String) -> String { "/wallet/passes/\(passId)/revoke" }
+        private static func queryValue(_ value: String) -> String {
+            value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
+        }
+
+        static func walletPassSuspendPath(_ passId: String, tenantId: String) -> String {
+            "/wallet/passes/\(passId)/suspend?tenant_id=\(queryValue(tenantId))"
+        }
+        static func walletPassActivatePath(_ passId: String, tenantId: String) -> String {
+            "/wallet/passes/\(passId)/activate?tenant_id=\(queryValue(tenantId))"
+        }
+        static func walletPassRevokePath(_ passId: String, tenantId: String) -> String {
+            "/wallet/passes/\(passId)/revoke?tenant_id=\(queryValue(tenantId))"
+        }
         static func adminTeamsPath(_ placeId: String) -> String { "/app/places/\(placeId)/teams" }
 
         // User management
@@ -103,6 +117,9 @@ enum Constants {
         static func adminUserRolePath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/role" }
         static func adminUserSignOutPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/sign-out" }
         static func adminInviteUserPath(_ placeId: String) -> String { "/app/places/\(placeId)/users/invite" }
+        static func adminUserLoginsPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/logins" }
+        static func adminUserAccessRightsPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/access-rights" }
+        static func adminUserShareAccessPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/share-access" }
 
         // Groups
         static func adminGroupsPath(_ placeId: String) -> String { "/app/places/\(placeId)/groups" }
@@ -117,6 +134,10 @@ enum Constants {
 
         // Organization settings
         static func orgSettingsPath(_ orgId: String) -> String { "/app/orgs/\(orgId)/settings" }
+
+        // Zones
+        static func adminZonePath(_ placeId: String, _ zoneId: String) -> String { "/app/places/\(placeId)/zones/\(zoneId)" }
+        static func adminZoneHolidayRegionsPath(_ placeId: String, _ zoneId: String) -> String { "/app/places/\(placeId)/zones/\(zoneId)/holiday-regions" }
 
         // Place management
         static func placeSettingsPath(_ placeId: String) -> String { "/app/places/\(placeId)/settings" }
@@ -134,14 +155,12 @@ enum Constants {
         // Visitor passes
         static let visitorPassesPath = "/app/visitor-passes"
         static func visitorGroupsPath(_ placeId: String) -> String { "/app/places/\(placeId)/visitor-groups" }
-        static func visitorGroupPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)" }
         static func visitorGroupMembersPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)/members" }
         static func visitorGroupCleanupPath(_ placeId: String, _ groupId: String) -> String { "/app/places/\(placeId)/visitor-groups/\(groupId)/cleanup-expired" }
 
-        // Guests (admin-scoped)
-        static let guestsPath = "/guests"
-        static func guestPath(_ guestId: String) -> String { "/guests/\(guestId)" }
-        static func guestStatusPath(_ guestId: String) -> String { "/guests/\(guestId)/status" }
+        // Guests (place-scoped)
+        static func guestsPath(_ placeId: String) -> String { "/app/places/\(placeId)/guests" }
+        static func guestPath(_ placeId: String, _ guestId: String) -> String { "/app/places/\(placeId)/guests/\(guestId)" }
 
         // Mobile credentials
         static let credentialsPath = "/app/credentials"
@@ -181,8 +200,33 @@ enum Constants {
         static let camerasPath = "/app/cameras"
         static func cameraVideoLinkPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/video-link" }
         static func cameraSnapshotPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/snapshot" }
+        static func cameraCloudTokenPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/cloud-token" }
+        static func cameraRecordingsPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/recordings" }
         static func eventMediaPath(_ placeId: String, _ eventId: String) -> String {
             "/app/places/\(placeId)/events/\(eventId)/media"
+        }
+    }
+
+    // MARK: - Security
+    enum Security {
+        static let apiPinnedHost = "api.mistyislet.com"
+
+        /// Comma or newline separated SHA-256 hashes of allowed API certificate
+        /// SubjectPublicKeyInfo values, encoded with base64.
+        static var apiPinnedSPKIHashes: Set<String> {
+            let raw = (Bundle.main.object(forInfoDictionaryKey: "API_PINNED_SPKI_HASHES") as? String)
+                ?? ProcessInfo.processInfo.environment["API_PINNED_SPKI_HASHES"]
+                ?? ""
+            let separators = CharacterSet(charactersIn: ",\n")
+            return Set(
+                raw.components(separatedBy: separators)
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+            )
+        }
+
+        static var requiresProductionPinning: Bool {
+            AppEnvironment.current == .production
         }
     }
 

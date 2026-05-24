@@ -35,7 +35,11 @@ struct AdminEventsListView: View {
                 emptyView(title: settings.L("admin.no_events"), icon: "list.bullet.clipboard")
             } else {
                 ForEach(vm.items) { event in
-                    eventRow(event)
+                    NavigationLink {
+                        AdminEventDetailView(placeId: placeId, eventSummary: event)
+                    } label: {
+                        eventRow(event)
+                    }
                 }
             }
 
@@ -90,7 +94,11 @@ struct AdminIncidentsListView: View {
                 emptyView(title: settings.L("admin.no_incidents"), icon: "exclamationmark.shield")
             } else {
                 ForEach(vm.items) { incident in
-                    incidentRow(incident)
+                    NavigationLink {
+                        AdminIncidentDetailView(placeId: placeId, incidentSummary: incident)
+                    } label: {
+                        incidentRow(incident)
+                    }
                 }
             }
 
@@ -133,6 +141,240 @@ struct AdminIncidentsListView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
                 Text(incident.state.capitalized)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Event Detail
+
+private struct AdminEventDetailView: View {
+    let placeId: String
+    let eventSummary: AdminEvent
+    @State private var event: AdminEvent
+    @State private var relatedEvents: [AdminEvent] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+
+    init(placeId: String, eventSummary: AdminEvent) {
+        self.placeId = placeId
+        self.eventSummary = eventSummary
+        self._event = State(initialValue: eventSummary)
+    }
+
+    var body: some View {
+        List {
+            Section("Event") {
+                HStack {
+                    Label(event.result.capitalized, systemImage: event.resultIcon)
+                        .foregroundStyle(colorForResult(event.resultColor))
+                    Spacer()
+                    Text(event.displayTime)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                detailRow("Actor", event.actor)
+                detailRow("Action", event.action)
+                detailRow("Object", event.objectName)
+                detailRow("Object Type", event.objectType)
+                detailRow("Object ID", event.objectId)
+                detailRow("Door ID", event.doorId)
+                detailRow("Area ID", event.areaId)
+                detailRow("Gateway ID", event.gatewayId)
+                detailRow("Detail", event.detail)
+            }
+
+            Section("Related Events") {
+                if isLoading {
+                    loadingRow
+                } else if relatedEvents.isEmpty {
+                    emptyView(title: "No Related Events", icon: "point.3.connected.trianglepath.dotted")
+                } else {
+                    ForEach(relatedEvents) { related in
+                        relatedEventRow(related)
+                    }
+                }
+            }
+
+            errorSection(errorMessage)
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle(event.objectName)
+        .navigationBarTitleDisplayMode(.inline)
+        .refreshable { await loadData() }
+        .task(id: eventSummary.id) { await loadData() }
+    }
+
+    private func loadData() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            event = try await APIService.shared.fetchAdminEvent(placeId: placeId, eventId: eventSummary.id)
+            relatedEvents = try await APIService.shared.fetchRelatedAdminEvents(placeId: placeId, eventId: eventSummary.id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+
+    @ViewBuilder
+    private func detailRow(_ label: String, _ value: String?) -> some View {
+        if let value, !value.isEmpty {
+            LabeledContent(label, value: value)
+        }
+    }
+
+    private func relatedEventRow(_ event: AdminEvent) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: event.resultIcon)
+                .foregroundStyle(colorForResult(event.resultColor))
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("\(event.actor) · \(event.action)")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                Text(event.objectName)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Text(event.displayTime)
+                    if let relation = event.relation {
+                        Text(relation.replacingOccurrences(of: "_", with: " ").capitalized)
+                    }
+                }
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Incident Detail
+
+private struct AdminIncidentDetailView: View {
+    let placeId: String
+    let incidentSummary: Incident
+    @State private var incident: Incident
+    @State private var occurrences: [IncidentOccurrence] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+
+    init(placeId: String, incidentSummary: Incident) {
+        self.placeId = placeId
+        self.incidentSummary = incidentSummary
+        self._incident = State(initialValue: incidentSummary)
+    }
+
+    var body: some View {
+        List {
+            Section("Incident") {
+                HStack {
+                    Text(incident.severity.uppercased())
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(colorForResult(incident.severityColor).opacity(0.15))
+                        .foregroundStyle(colorForResult(incident.severityColor))
+                        .clipShape(Capsule())
+                    Spacer()
+                    Text(incident.status.capitalized)
+                        .foregroundStyle(.secondary)
+                }
+                Text(incident.description)
+                    .font(.subheadline)
+                detailRow("Type", incident.type.replacingOccurrences(of: "_", with: " ").capitalized)
+                detailRow("State", incident.state.capitalized)
+                detailRow("Subject Type", incident.subjectType?.capitalized)
+                detailRow("Subject ID", incident.subjectId)
+                if let count = incident.count {
+                    LabeledContent("Count", value: "\(count)")
+                }
+                detailRow("Created", incident.createdAt)
+            }
+
+            if let events = incident.events, !events.isEmpty {
+                Section("Events") {
+                    ForEach(events) { event in
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(event.actor)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Text(event.eventId)
+                                .font(.caption)
+                                .monospaced()
+                                .foregroundStyle(.secondary)
+                            Text(event.timestamp)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+            }
+
+            Section("Occurrences") {
+                if isLoading {
+                    loadingRow
+                } else if occurrences.isEmpty {
+                    emptyView(title: "No Occurrences", icon: "clock.badge.exclamationmark")
+                } else {
+                    ForEach(occurrences) { occurrence in
+                        occurrenceRow(occurrence)
+                    }
+                }
+            }
+
+            errorSection(errorMessage)
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle(incident.type.replacingOccurrences(of: "_", with: " ").capitalized)
+        .navigationBarTitleDisplayMode(.inline)
+        .refreshable { await loadData() }
+        .task(id: incidentSummary.id) { await loadData() }
+    }
+
+    private func loadData() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            incident = try await APIService.shared.fetchAdminIncident(placeId: placeId, incidentId: incidentSummary.id)
+            occurrences = try await APIService.shared.fetchAdminIncidentOccurrences(placeId: placeId, incidentId: incidentSummary.id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
+    }
+
+    @ViewBuilder
+    private func detailRow(_ label: String, _ value: String?) -> some View {
+        if let value, !value.isEmpty {
+            LabeledContent(label, value: value)
+        }
+    }
+
+    private func occurrenceRow(_ occurrence: IncidentOccurrence) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: occurrence.result == "denied" ? "xmark.circle.fill" : "clock.badge.exclamationmark")
+                .foregroundStyle(occurrence.result == "denied" ? .red : .orange)
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(occurrence.actor ?? occurrence.gatewayId ?? occurrence.eventId)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                Text(occurrence.doorId ?? occurrence.detail ?? occurrence.gatewayId ?? occurrence.eventId)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Text(occurrence.occurredAt)
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -622,7 +864,11 @@ struct AdminZonesListView: View {
                 emptyView(title: settings.L("admin.no_zones"), icon: "map")
             } else {
                 ForEach(vm.items) { zone in
-                    zoneRow(zone)
+                    NavigationLink {
+                        ZoneDetailView(placeId: placeId, zoneSummary: zone)
+                    } label: {
+                        zoneRow(zone)
+                    }
                 }
             }
 
@@ -664,6 +910,100 @@ struct AdminZonesListView: View {
                 .foregroundStyle(.secondary)
         }
         .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Zone Detail
+
+private struct ZoneDetailView: View {
+    let placeId: String
+    let zoneSummary: Zone
+    @State private var zone: Zone
+    @State private var holidayRegions: [HolidayRegion] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+
+    init(placeId: String, zoneSummary: Zone) {
+        self.placeId = placeId
+        self.zoneSummary = zoneSummary
+        self._zone = State(initialValue: zoneSummary)
+    }
+
+    var body: some View {
+        List {
+            Section("Zone") {
+                Label(zone.status.capitalized, systemImage: "map.fill")
+                    .foregroundStyle(zone.status == "active" ? .green : .secondary)
+                detailRow("Description", zone.description)
+                LabeledContent("Doors", value: "\(zone.doorCount)")
+                if let cameraCount = zone.cameraCount {
+                    LabeledContent("Cameras", value: "\(cameraCount)")
+                }
+                if let count = zone.holidayRegionCount {
+                    LabeledContent("Holiday Regions", value: "\(count)")
+                }
+                detailRow("Created", zone.createdAt)
+            }
+
+            Section("Holiday Regions") {
+                if isLoading {
+                    loadingRow
+                } else if holidayRegions.isEmpty {
+                    emptyView(title: "No Holiday Regions", icon: "calendar.badge.exclamationmark")
+                } else {
+                    ForEach(holidayRegions) { region in
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(region.name)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            HStack(spacing: 6) {
+                                if let countryCode = region.countryCode {
+                                    Text(countryCode)
+                                }
+                                if let regionCode = region.regionCode {
+                                    Text(regionCode)
+                                }
+                                if let timezone = region.timezone {
+                                    Text(timezone)
+                                }
+                            }
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+            }
+
+            errorSection(errorMessage)
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle(zone.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .refreshable { await loadData() }
+        .task(id: zoneSummary.id) { await loadData() }
+    }
+
+    @ViewBuilder
+    private func detailRow(_ label: String, _ value: String?) -> some View {
+        if let value, !value.isEmpty {
+            LabeledContent(label, value: value)
+        }
+    }
+
+    private func loadData() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            async let zoneResult = APIService.shared.fetchAdminZone(placeId: placeId, zoneId: zoneSummary.id)
+            async let regionsResult = APIService.shared.fetchZoneHolidayRegions(placeId: placeId, zoneId: zoneSummary.id)
+            let (freshZone, regions) = try await (zoneResult, regionsResult)
+            zone = freshZone
+            holidayRegions = regions
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
     }
 }
 
@@ -1030,7 +1370,11 @@ private struct UserCredentialsDetailView: View {
             Button(settings.L("profile.revoke"), role: .destructive) {
                 Task {
                     do {
-                        try await APIService.shared.revokeWalletPass(passId: cred.id)
+                        guard let tenantId = settings.selectedOrgId, !tenantId.isEmpty else {
+                            actionError = "Missing selected organization"
+                            return
+                        }
+                        try await APIService.shared.revokeWalletPass(passId: cred.id, tenantId: tenantId)
                         if let idx = credentials.firstIndex(where: { $0.id == cred.id }) {
                             credentials.remove(at: idx)
                         }

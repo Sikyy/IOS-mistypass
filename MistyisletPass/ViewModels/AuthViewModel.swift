@@ -15,11 +15,15 @@ final class AuthViewModel {
     var orgDomain = ""
     var orgConfig: OrgAuthConfig?
     var magicLinkSent = false
+    var mfaCode = ""
+    private var pendingMFAEmail: String?
+    private var pendingMFAPassword: String?
 
     enum AuthStep {
         case emailEntry
         case domainEntry
         case credentials
+        case mfaCode
         case magicLinkSent
     }
 
@@ -88,17 +92,28 @@ final class AuthViewModel {
 
     // MARK: - Step 3: Login
 
-    func login(email: String, password: String) async {
+    func login(email: String, password: String, mfaCode: String? = nil) async {
         isLoading = true
         errorMessage = nil
 
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedMFA = mfaCode?.trimmingCharacters(in: .whitespacesAndNewlines)
+
         do {
-            let response = try await APIService.shared.login(email: email, password: password)
+            let response = try await APIService.shared.login(
+                email: trimmedEmail,
+                password: password,
+                mfaCode: trimmedMFA?.isEmpty == true ? nil : trimmedMFA
+            )
 
             try KeychainService.shared.save(response.accessToken, forKey: Constants.Keychain.accessTokenKey)
             try KeychainService.shared.save(response.refreshToken, forKey: Constants.Keychain.refreshTokenKey)
 
             user = response.user
+            self.email = trimmedEmail
+            pendingMFAEmail = nil
+            pendingMFAPassword = nil
+            self.mfaCode = ""
 
             if SecureEnclaveService.shared.getPrivateKey() == nil {
                 do {
@@ -110,10 +125,32 @@ final class AuthViewModel {
 
             isAuthenticated = true
         } catch {
-            errorMessage = error.localizedDescription
+            if isMFARequired(error) {
+                pendingMFAEmail = trimmedEmail
+                pendingMFAPassword = password
+                self.mfaCode = ""
+                authStep = .mfaCode
+                errorMessage = nil
+            } else if isInvalidMFACode(error) {
+                authStep = .mfaCode
+                errorMessage = (error as? APIError)?.serverMessage ?? error.localizedDescription
+            } else {
+                errorMessage = error.localizedDescription
+            }
         }
 
         isLoading = false
+    }
+
+    func submitMFA(code: String) async {
+        let trimmedCode = code.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedCode.isEmpty else { return }
+        guard let email = pendingMFAEmail, let password = pendingMFAPassword else {
+            authStep = .credentials
+            errorMessage = "Please sign in again."
+            return
+        }
+        await login(email: email, password: password, mfaCode: trimmedCode)
     }
 
     // MARK: - Password Recovery
@@ -141,6 +178,11 @@ final class AuthViewModel {
             authStep = .emailEntry
         case .credentials:
             authStep = .domainEntry
+        case .mfaCode:
+            authStep = .credentials
+            mfaCode = ""
+            pendingMFAEmail = nil
+            pendingMFAPassword = nil
         case .magicLinkSent:
             authStep = .emailEntry
             magicLinkSent = false
@@ -155,6 +197,9 @@ final class AuthViewModel {
         orgDomain = ""
         orgConfig = nil
         magicLinkSent = false
+        mfaCode = ""
+        pendingMFAEmail = nil
+        pendingMFAPassword = nil
         errorMessage = nil
     }
 
@@ -211,5 +256,15 @@ final class AuthViewModel {
             publicKey: publicKeyPEM,
             deviceName: deviceName
         )
+    }
+
+    private func isMFARequired(_ error: Error) -> Bool {
+        guard let apiError = error as? APIError else { return false }
+        return apiError.serverCode == "mfa_required"
+    }
+
+    private func isInvalidMFACode(_ error: Error) -> Bool {
+        guard let apiError = error as? APIError else { return false }
+        return apiError.serverCode == "invalid_mfa_code"
     }
 }

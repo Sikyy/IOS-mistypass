@@ -57,7 +57,9 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Mistyislet uses Face ID to protect your access credentials.</string>
 	<key>APP_ENV</key>
-	<string>dev</string>
+	<string>$(APP_ENV)</string>
+	<key>API_PINNED_SPKI_HASHES</key>
+	<string>$(API_PINNED_SPKI_HASHES)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleURLTypes</key>

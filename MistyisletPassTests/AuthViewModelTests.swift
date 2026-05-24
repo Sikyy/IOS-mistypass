@@ -56,6 +56,14 @@ final class AuthViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.authStep, .domainEntry)
     }
 
+    func testGoBackFromMFAToCredentials() {
+        viewModel.authStep = .mfaCode
+        viewModel.mfaCode = "123456"
+        viewModel.goBack()
+        XCTAssertEqual(viewModel.authStep, .credentials)
+        XCTAssertTrue(viewModel.mfaCode.isEmpty)
+    }
+
     func testGoBackFromMagicLinkToEmail() {
         viewModel.authStep = .magicLinkSent
         viewModel.magicLinkSent = true
@@ -84,6 +92,7 @@ final class AuthViewModelTests: XCTestCase {
         viewModel.email = "test@example.com"
         viewModel.orgDomain = "example.com"
         viewModel.magicLinkSent = true
+        viewModel.mfaCode = "123456"
         viewModel.errorMessage = "Error"
 
         viewModel.resetFlow()
@@ -93,6 +102,7 @@ final class AuthViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.orgDomain.isEmpty)
         XCTAssertNil(viewModel.orgConfig)
         XCTAssertFalse(viewModel.magicLinkSent)
+        XCTAssertTrue(viewModel.mfaCode.isEmpty)
         XCTAssertNil(viewModel.errorMessage)
     }
 

@@ -12,10 +12,43 @@ enum APIError: Error, LocalizedError {
         switch self {
         case .invalidURL: return "Invalid URL"
         case .unauthorized: return "Session expired. Please log in again."
-        case .serverError(let code, let msg): return "Server error (\(code)): \(msg ?? "Unknown")"
+        case .serverError(let code, let msg):
+            if let payload = Self.decodeServerError(msg) {
+                return payload.message ?? payload.error ?? "Server error (\(code))"
+            }
+            return "Server error (\(code)): \(msg ?? "Unknown")"
         case .networkError(let err): return "Network error: \(err.localizedDescription)"
         case .decodingError(let err): return "Data error: \(err.localizedDescription)"
         }
+    }
+
+    var serverCode: String? {
+        guard case .serverError(_, let msg) = self else { return nil }
+        return Self.decodeServerError(msg)?.code
+    }
+
+    var serverMessage: String? {
+        guard case .serverError(_, let msg) = self else { return nil }
+        let payload = Self.decodeServerError(msg)
+        return payload?.message ?? payload?.error ?? msg
+    }
+
+    private static func decodeServerError(_ message: String?) -> APIErrorResponse? {
+        guard let message, let data = message.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(APIErrorResponse.self, from: data)
+    }
+}
+
+struct APIErrorResponse: Decodable {
+    let error: String?
+    let message: String?
+    let code: String?
+    let status: String?
+    let mfaRequired: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case error, message, code, status
+        case mfaRequired = "mfa_required"
     }
 }
 
@@ -53,8 +86,8 @@ final class APIService: @unchecked Sendable {
 
     // MARK: - Auth
 
-    func login(email: String, password: String) async throws -> LoginResponse {
-        let body = LoginRequest(email: email, password: password)
+    func login(email: String, password: String, mfaCode: String? = nil) async throws -> LoginResponse {
+        let body = LoginRequest(email: email, password: password, mfaCode: mfaCode)
         return try await post(path: Constants.API.loginPath, body: body, authenticated: false)
     }
 
@@ -331,23 +364,23 @@ final class APIService: @unchecked Sendable {
         try await post(path: Constants.API.visitorGroupCleanupPath(placeId, groupId), body: Optional<String>.none)
     }
 
-    // MARK: - Guests (admin)
+    // MARK: - Guests (place-scoped)
 
-    func fetchGuests() async throws -> [Guest] {
-        let response: AdminListResponse<Guest> = try await get(path: Constants.API.guestsPath)
+    func fetchGuests(placeId: String) async throws -> [Guest] {
+        let response: AdminListResponse<Guest> = try await get(path: Constants.API.guestsPath(placeId))
         return response.items
     }
 
-    func createGuest(_ request: CreateGuestRequest) async throws -> Guest {
-        try await post(path: Constants.API.guestsPath, body: request)
+    func createGuest(placeId: String, _ request: CreateGuestRequest) async throws -> Guest {
+        try await post(path: Constants.API.guestsPath(placeId), body: request)
     }
 
-    func updateGuestStatus(guestId: String, status: String) async throws -> Guest {
-        try await patch(path: Constants.API.guestStatusPath(guestId), body: ["status": status])
+    func updateGuestStatus(placeId: String, guestId: String, status: String) async throws -> Guest {
+        try await patch(path: Constants.API.guestPath(placeId, guestId), body: ["status": status])
     }
 
-    func deleteGuest(guestId: String) async throws {
-        let _: Empty = try await delete(path: Constants.API.guestPath(guestId))
+    func deleteGuest(placeId: String, guestId: String) async throws {
+        let _: Empty = try await delete(path: Constants.API.guestPath(placeId, guestId))
     }
 
     // MARK: - Profile
@@ -419,8 +452,30 @@ final class APIService: @unchecked Sendable {
         return response.items
     }
 
+    func fetchAdminEvent(placeId: String, eventId: String) async throws -> AdminEvent {
+        try await get(path: Constants.API.adminEventPath(placeId, eventId))
+    }
+
+    func fetchRelatedAdminEvents(placeId: String, eventId: String) async throws -> [AdminEvent] {
+        let response: RelatedEventsResponse = try await get(
+            path: Constants.API.adminEventRelatedPath(placeId, eventId)
+        )
+        return response.items
+    }
+
     func fetchAdminIncidents(placeId: String) async throws -> [Incident] {
         let response: AdminListResponse<Incident> = try await get(path: Constants.API.adminIncidentsPath(placeId))
+        return response.items
+    }
+
+    func fetchAdminIncident(placeId: String, incidentId: String) async throws -> Incident {
+        try await get(path: Constants.API.adminIncidentPath(placeId, incidentId))
+    }
+
+    func fetchAdminIncidentOccurrences(placeId: String, incidentId: String) async throws -> [IncidentOccurrence] {
+        let response: IncidentOccurrencesResponse = try await get(
+            path: Constants.API.adminIncidentOccurrencesPath(placeId, incidentId)
+        )
         return response.items
     }
 
@@ -439,6 +494,17 @@ final class APIService: @unchecked Sendable {
         return response.items
     }
 
+    func fetchAdminZone(placeId: String, zoneId: String) async throws -> Zone {
+        try await get(path: Constants.API.adminZonePath(placeId, zoneId))
+    }
+
+    func fetchZoneHolidayRegions(placeId: String, zoneId: String) async throws -> [HolidayRegion] {
+        let response: AdminListResponse<HolidayRegion> = try await get(
+            path: Constants.API.adminZoneHolidayRegionsPath(placeId, zoneId)
+        )
+        return response.items
+    }
+
     func fetchAdminCards(placeId: String) async throws -> [CardAssignment] {
         let response: AdminListResponse<CardAssignment> = try await get(path: Constants.API.adminCardsPath(placeId))
         return response.items
@@ -453,16 +519,16 @@ final class APIService: @unchecked Sendable {
         let _: Empty = try await delete(path: Constants.API.adminCardUnassignPath(placeId, cardUid))
     }
 
-    func suspendWalletPass(passId: String) async throws {
-        let _: Empty = try await patch(path: Constants.API.walletPassSuspendPath(passId), body: Optional<String>.none)
+    func suspendWalletPass(passId: String, tenantId: String) async throws {
+        let _: Empty = try await patch(path: Constants.API.walletPassSuspendPath(passId, tenantId: tenantId), body: Optional<String>.none)
     }
 
-    func activateWalletPass(passId: String) async throws {
-        let _: Empty = try await patch(path: Constants.API.walletPassActivatePath(passId), body: Optional<String>.none)
+    func activateWalletPass(passId: String, tenantId: String) async throws {
+        let _: Empty = try await patch(path: Constants.API.walletPassActivatePath(passId, tenantId: tenantId), body: Optional<String>.none)
     }
 
-    func revokeWalletPass(passId: String) async throws {
-        let _: Empty = try await patch(path: Constants.API.walletPassRevokePath(passId), body: Optional<String>.none)
+    func revokeWalletPass(passId: String, tenantId: String) async throws {
+        let _: Empty = try await patch(path: Constants.API.walletPassRevokePath(passId, tenantId: tenantId), body: Optional<String>.none)
     }
 
     // MARK: - User Management
@@ -482,6 +548,26 @@ final class APIService: @unchecked Sendable {
 
     func signOutUser(placeId: String, userId: String) async throws {
         let _: Empty = try await post(path: Constants.API.adminUserSignOutPath(placeId, userId), body: Optional<String>.none)
+    }
+
+    func fetchAdminUser(placeId: String, userId: String) async throws -> PlaceUser {
+        try await get(path: Constants.API.adminUserPath(placeId, userId))
+    }
+
+    func fetchUserLogins(placeId: String, userId: String) async throws -> [UserLogin] {
+        let response: UserLoginListResponse = try await get(path: Constants.API.adminUserLoginsPath(placeId, userId))
+        return response.items
+    }
+
+    func fetchUserAccessRights(placeId: String, userId: String) async throws -> [UserAccessRight] {
+        let response: AdminListResponse<UserAccessRight> = try await get(
+            path: Constants.API.adminUserAccessRightsPath(placeId, userId)
+        )
+        return response.items
+    }
+
+    func createUserAccessShare(placeId: String, userId: String) async throws -> UserAccessShare {
+        try await post(path: Constants.API.adminUserShareAccessPath(placeId, userId), body: Empty())
     }
 
     // MARK: - Groups
@@ -583,7 +669,7 @@ final class APIService: @unchecked Sendable {
         return response.items
     }
 
-    func exportReport(placeId: String, type: String, from: String, to: String, format: String = "csv") async throws -> ReportExportResponse {
+    func exportReport(placeId: String, type: String, from: String, to: String, format: String = "pdf") async throws -> ReportExportResponse {
         let body: [String: String] = [
             "type": type,
             "from": from,
@@ -722,6 +808,17 @@ final class APIService: @unchecked Sendable {
         try await post(path: Constants.API.cameraSnapshotPath(cameraId), body: Empty())
     }
 
+    func fetchCameraCloudToken(cameraId: String) async throws -> CameraCloudToken {
+        try await post(path: Constants.API.cameraCloudTokenPath(cameraId), body: Empty())
+    }
+
+    func fetchCameraRecordings(cameraId: String) async throws -> [CameraRecording] {
+        let response: AdminListResponse<CameraRecording> = try await get(
+            path: Constants.API.cameraRecordingsPath(cameraId)
+        )
+        return response.items
+    }
+
     func fetchEventMedia(placeId: String, eventId: String) async throws -> [EventMedia] {
         try await get(path: Constants.API.eventMediaPath(placeId, eventId))
     }
@@ -755,7 +852,7 @@ final class APIService: @unchecked Sendable {
 
     private func get<T: Decodable>(path: String, authenticated: Bool = true) async throws -> T {
         let request = try buildRequest(path: path, method: "GET", authenticated: authenticated)
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func post<T: Decodable, B: Encodable>(
@@ -768,12 +865,12 @@ final class APIService: @unchecked Sendable {
             request.httpBody = try encoder.encode(body)
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func put<T: Decodable>(path: String, authenticated: Bool = true) async throws -> T {
         let request = try buildRequest(path: path, method: "PUT", authenticated: authenticated)
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func put<T: Decodable, B: Encodable>(
@@ -784,7 +881,7 @@ final class APIService: @unchecked Sendable {
         var request = try buildRequest(path: path, method: "PUT", authenticated: authenticated)
         request.httpBody = try encoder.encode(body)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func patch<T: Decodable, B: Encodable>(
@@ -795,12 +892,12 @@ final class APIService: @unchecked Sendable {
         var request = try buildRequest(path: path, method: "PATCH", authenticated: authenticated)
         request.httpBody = try encoder.encode(body)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func delete<T: Decodable>(path: String, authenticated: Bool = true) async throws -> T {
         let request = try buildRequest(path: path, method: "DELETE", authenticated: authenticated)
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func uploadMultipart<T: Decodable>(
@@ -823,7 +920,7 @@ final class APIService: @unchecked Sendable {
         body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
         request.httpBody = body
 
-        return try await execute(request)
+        return try await execute(request, retryOnUnauthorized: authenticated)
     }
 
     private func buildRequest(path: String, method: String, authenticated: Bool) throws -> URLRequest {
@@ -866,8 +963,8 @@ final class APIService: @unchecked Sendable {
                 throw APIError.decodingError(error)
             }
         case 401:
-            AppLogger.api.warning("401 received, attempting token refresh")
             if retryOnUnauthorized {
+                AppLogger.api.warning("401 received, attempting token refresh")
                 let refreshed = await refreshLock.refresh { [weak self] in
                     await self?.performTokenRefresh() ?? false
                 }
@@ -878,8 +975,10 @@ final class APIService: @unchecked Sendable {
                     }
                     return try await execute(retryRequest, retryOnUnauthorized: false)
                 }
+                throw APIError.unauthorized
             }
-            throw APIError.unauthorized
+            let message = String(data: data, encoding: .utf8)
+            throw APIError.serverError(httpResponse.statusCode, message)
         default:
             let message = String(data: data, encoding: .utf8)
             AppLogger.api.error("Server error \(httpResponse.statusCode): \(message ?? "")")
@@ -938,6 +1037,7 @@ private struct Empty: Codable {}
 private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
 
     /// SHA-256 hashes of the SubjectPublicKeyInfo (SPKI) for pinned certificates.
+    /// Configure `API_PINNED_SPKI_HASHES` in Info.plist or the scheme environment.
     /// To obtain the pin hash for your production certificate, run:
     ///
     ///   openssl s_client -connect api.mistyislet.com:443 -servername api.mistyislet.com </dev/null 2>/dev/null \
@@ -946,19 +1046,15 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
     ///     | openssl dgst -sha256 -binary \
     ///     | base64
     ///
-    /// Add the resulting base64 string below. Include both the leaf and a backup pin
-    /// (e.g. an intermediate CA) to allow certificate rotation without app updates.
-    ///
-    /// IMPORTANT: Replace these placeholder values before shipping to production.
-    private static let pinnedSPKIHashes: Set<String> = [
-        // TODO: Insert production SPKI SHA-256 base64 hash (leaf cert)
-        // "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-        // TODO: Insert backup SPKI SHA-256 base64 hash (intermediate CA)
-        // "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
-    ]
+    /// Set the resulting base64 values as a comma or newline separated list.
+    /// Include both the leaf and a backup pin, such as the issuing intermediate,
+    /// to allow certificate rotation without app updates.
+    private static var pinnedSPKIHashes: Set<String> {
+        Constants.Security.apiPinnedSPKIHashes
+    }
 
     /// The host to pin against. Only connections to this host are subject to pinning.
-    private static let pinnedHost = "api.mistyislet.com"
+    private static let pinnedHost = Constants.Security.apiPinnedHost
 
     func urlSession(
         _ session: URLSession,
@@ -982,11 +1078,14 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
             return
         }
 
-        // If no pins are configured yet, fall through to default validation.
-        // This allows shipping before the production pin hash is known, while still
-        // enforcing pinning once configured.
-        guard !Self.pinnedSPKIHashes.isEmpty else {
-            completionHandler(.performDefaultHandling, nil)
+        let pins = Self.pinnedSPKIHashes
+        guard !pins.isEmpty else {
+            if Constants.Security.requiresProductionPinning {
+                AppLogger.api.error("Certificate pinning failed: no production SPKI pins configured for \(Self.pinnedHost)")
+                completionHandler(.cancelAuthenticationChallenge, nil)
+            } else {
+                completionHandler(.performDefaultHandling, nil)
+            }
             return
         }
 
@@ -1002,11 +1101,12 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
         }
 
         // Check each certificate in the chain for a matching SPKI hash.
-        let certCount = SecTrustGetCertificateCount(serverTrust)
-        for index in 0..<certCount {
-            guard let certificate = SecTrustCopyCertificateChain(serverTrust)?[index] as? SecCertificate else {
-                continue
-            }
+        guard let certificates = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate] else {
+            AppLogger.api.error("Certificate pinning failed: unable to read certificate chain for \(Self.pinnedHost)")
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+        for certificate in certificates {
             guard let publicKey = SecCertificateCopyKey(certificate) else {
                 continue
             }
@@ -1014,10 +1114,21 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
             guard let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, &error) as Data? else {
                 continue
             }
-            let hash = SHA256.hash(data: publicKeyData)
+            let keyType = SecKeyCopyAttributes(publicKey).flatMap {
+                ($0 as NSDictionary)[kSecAttrKeyType as String] as? String
+            }
+            let keySize = SecKeyCopyAttributes(publicKey).flatMap {
+                ($0 as NSDictionary)[kSecAttrKeySizeInBits as String] as? Int
+            }
+            let spkiData = Self.subjectPublicKeyInfoData(
+                publicKeyData: publicKeyData,
+                keyType: keyType,
+                keySize: keySize
+            )
+            let hash = SHA256.hash(data: spkiData)
             let hashBase64 = Data(hash).base64EncodedString()
 
-            if Self.pinnedSPKIHashes.contains(hashBase64) {
+            if pins.contains(hashBase64) {
                 completionHandler(.useCredential, URLCredential(trust: serverTrust))
                 return
             }
@@ -1027,6 +1138,71 @@ private final class CertificatePinningDelegate: NSObject, URLSessionDelegate {
         AppLogger.api.error("Certificate pinning failed: no SPKI hash matched for \(Self.pinnedHost)")
         completionHandler(.cancelAuthenticationChallenge, nil)
         #endif
+    }
+
+    private static func subjectPublicKeyInfoData(
+        publicKeyData: Data,
+        keyType: String?,
+        keySize: Int?
+    ) -> Data {
+        let algorithmIdentifier: Data
+        if keyType == kSecAttrKeyTypeECSECPrimeRandom as String {
+            algorithmIdentifier = ecAlgorithmIdentifier(keySize: keySize)
+        } else {
+            algorithmIdentifier = Data([
+                0x30, 0x0d,
+                0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01,
+                0x05, 0x00,
+            ])
+        }
+
+        let bitString = Data([0x00]) + publicKeyData
+        return derSequence(algorithmIdentifier + der(tag: 0x03, value: bitString))
+    }
+
+    private static func ecAlgorithmIdentifier(keySize: Int?) -> Data {
+        switch keySize {
+        case 384:
+            return Data([
+                0x30, 0x10,
+                0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
+                0x06, 0x05, 0x2b, 0x81, 0x04, 0x00, 0x22,
+            ])
+        case 521:
+            return Data([
+                0x30, 0x10,
+                0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
+                0x06, 0x05, 0x2b, 0x81, 0x04, 0x00, 0x23,
+            ])
+        default:
+            return Data([
+                0x30, 0x13,
+                0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
+                0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07,
+            ])
+        }
+    }
+
+    private static func derSequence(_ value: Data) -> Data {
+        der(tag: 0x30, value: value)
+    }
+
+    private static func der(tag: UInt8, value: Data) -> Data {
+        Data([tag]) + derLength(value.count) + value
+    }
+
+    private static func derLength(_ length: Int) -> Data {
+        if length < 128 {
+            return Data([UInt8(length)])
+        }
+
+        var value = length
+        var bytes: [UInt8] = []
+        while value > 0 {
+            bytes.insert(UInt8(value & 0xff), at: 0)
+            value >>= 8
+        }
+        return Data([0x80 | UInt8(bytes.count)] + bytes)
     }
 }
 

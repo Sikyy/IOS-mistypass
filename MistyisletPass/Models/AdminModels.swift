@@ -20,6 +20,19 @@ struct PlaceUser: Codable, Identifiable {
     }
 }
 
+struct UserAccessShare: Codable {
+    let userId: String?
+    let url: String?
+    let token: String?
+    let expiresAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case url, token
+        case userId = "user_id"
+        case expiresAt = "expires_at"
+    }
+}
+
 // MARK: - Events (admin-scoped, not same as access logs)
 
 struct AdminEvent: Codable, Identifiable {
@@ -33,14 +46,52 @@ struct AdminEvent: Codable, Identifiable {
     let objectType: String
     let objectId: String?
     let doorId: String?
+    let areaId: String?
+    let gatewayId: String?
+    let detail: String?
+    let relation: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, timestamp, actor, action, result
+        case id, timestamp, actor, action, result, detail, relation
         case placeId = "place_id"
         case objectName = "object_name"
         case objectType = "object_type"
         case objectId = "object_id"
         case doorId = "door_id"
+        case areaId = "area_id"
+        case gatewayId = "gateway_id"
+    }
+
+    init(
+        id: String,
+        placeId: String,
+        timestamp: String,
+        actor: String,
+        action: String,
+        result: String,
+        objectName: String,
+        objectType: String,
+        objectId: String? = nil,
+        doorId: String? = nil,
+        areaId: String? = nil,
+        gatewayId: String? = nil,
+        detail: String? = nil,
+        relation: String? = nil
+    ) {
+        self.id = id
+        self.placeId = placeId
+        self.timestamp = timestamp
+        self.actor = actor
+        self.action = action
+        self.result = result
+        self.objectName = objectName
+        self.objectType = objectType
+        self.objectId = objectId
+        self.doorId = doorId
+        self.areaId = areaId
+        self.gatewayId = gatewayId
+        self.detail = detail
+        self.relation = relation
     }
 
     var displayTime: String {
@@ -86,11 +137,46 @@ struct Incident: Codable, Identifiable {
     let severity: String
     let description: String
     let createdAt: String
+    let subjectType: String?
+    let subjectId: String?
+    let count: Int?
+    let events: [IncidentEventSummary]?
 
     enum CodingKeys: String, CodingKey {
         case id, type, state, status, severity, description
         case placeId = "place_id"
         case createdAt = "created_at"
+        case subjectType = "subject_type"
+        case subjectId = "subject_id"
+        case count, events
+    }
+
+    init(
+        id: String,
+        placeId: String,
+        type: String,
+        state: String,
+        status: String,
+        severity: String,
+        description: String,
+        createdAt: String,
+        subjectType: String? = nil,
+        subjectId: String? = nil,
+        count: Int? = nil,
+        events: [IncidentEventSummary]? = nil
+    ) {
+        self.id = id
+        self.placeId = placeId
+        self.type = type
+        self.state = state
+        self.status = status
+        self.severity = severity
+        self.description = description
+        self.createdAt = createdAt
+        self.subjectType = subjectType
+        self.subjectId = subjectId
+        self.count = count
+        self.events = events
     }
 
     var severityColor: String {
@@ -102,6 +188,66 @@ struct Incident: Codable, Identifiable {
         default: return "gray"
         }
     }
+}
+
+struct RelatedEventsResponse: Codable {
+    let eventId: String
+    let items: [AdminEvent]
+
+    enum CodingKeys: String, CodingKey {
+        case eventId = "event_id"
+        case items
+    }
+}
+
+struct IncidentEventSummary: Codable, Identifiable {
+    let eventId: String
+    let actor: String
+    let timestamp: String
+
+    var id: String { eventId }
+
+    enum CodingKeys: String, CodingKey {
+        case eventId = "event_id"
+        case actor, timestamp
+    }
+}
+
+struct IncidentOccurrence: Codable, Identifiable {
+    let eventId: String
+    let actor: String?
+    let doorId: String?
+    let gatewayId: String?
+    let detail: String?
+    let result: String?
+    let occurredAt: String
+
+    var id: String { eventId }
+
+    enum CodingKeys: String, CodingKey {
+        case eventId = "event_id"
+        case actor, detail, result
+        case doorId = "door_id"
+        case gatewayId = "gateway_id"
+        case occurredAt = "occurred_at"
+    }
+}
+
+struct IncidentOccurrencesResponse: Codable {
+    let incidentId: String
+    let items: [IncidentOccurrence]
+    let pagination: AdminPagination?
+
+    enum CodingKeys: String, CodingKey {
+        case incidentId = "incident_id"
+        case items, pagination
+    }
+}
+
+struct AdminPagination: Codable {
+    let offset: Int
+    let limit: Int
+    let total: Int
 }
 
 // MARK: - Groups
@@ -187,6 +333,22 @@ struct AccessRightAssignment: Codable, Identifiable {
         case id, role, scope
         case scopeName = "scope_name"
         case scopeId = "scope_id"
+    }
+}
+
+struct UserAccessRight: Codable, Identifiable {
+    let id: String
+    let role: String
+    let scope: String
+    let scopeName: String?
+    let scopeId: String?
+    let grantedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, role, scope
+        case scopeName = "scope_name"
+        case scopeId = "scope_id"
+        case grantedAt = "granted_at"
     }
 }
 
@@ -283,11 +445,31 @@ struct Zone: Codable, Identifiable {
     let description: String
     let status: String
     let doorCount: Int
+    let cameraCount: Int?
+    let holidayRegionCount: Int?
+    let createdAt: String?
 
     enum CodingKeys: String, CodingKey {
         case id, name, description, status
         case placeId = "place_id"
         case doorCount = "door_count"
+        case cameraCount = "camera_count"
+        case holidayRegionCount = "holiday_region_count"
+        case createdAt = "created_at"
+    }
+}
+
+struct HolidayRegion: Codable, Identifiable {
+    let id: String
+    let name: String
+    let countryCode: String?
+    let regionCode: String?
+    let timezone: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, timezone
+        case countryCode = "country_code"
+        case regionCode = "region_code"
     }
 }
 
@@ -397,6 +579,40 @@ struct CameraSnapshot: Codable, Identifiable {
         case snapshotUrl = "snapshot_url"
         case triggeredBy = "triggered_by"
         case createdAt = "created_at"
+    }
+}
+
+struct CameraCloudToken: Codable {
+    let cameraId: String?
+    let token: String?
+    let provider: String?
+    let expiresAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case token, provider
+        case cameraId = "camera_id"
+        case expiresAt = "expires_at"
+    }
+}
+
+struct CameraRecording: Codable, Identifiable {
+    let id: String
+    let cameraId: String?
+    let startedAt: String
+    let endedAt: String?
+    let durationSeconds: Int?
+    let playbackUrl: String?
+    let thumbnailUrl: String?
+    let status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, status
+        case cameraId = "camera_id"
+        case startedAt = "started_at"
+        case endedAt = "ended_at"
+        case durationSeconds = "duration_seconds"
+        case playbackUrl = "playback_url"
+        case thumbnailUrl = "thumbnail_url"
     }
 }
 

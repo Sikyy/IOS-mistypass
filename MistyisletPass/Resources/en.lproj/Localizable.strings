@@ -279,6 +279,10 @@
 "auth.magic_link_sent" = "We sent a sign-in link to **%@**";
 "auth.resend_link" = "Resend link";
 "auth.back_to_sign_in" = "Back to sign in";
+"auth.mfa_title" = "Enter verification code";
+"auth.mfa_description" = "Enter the code from your authenticator app to complete sign in.";
+"auth.mfa_code" = "Verification code";
+"auth.verify" = "Verify";
 
 /* Visitors - Additional */
 "visitors.visitor_info" = "Visitor Information";

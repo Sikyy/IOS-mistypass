@@ -42,6 +42,12 @@ struct AuthTokens: Codable {
 struct LoginRequest: Codable {
     let email: String
     let password: String
+    let mfaCode: String?
+
+    enum CodingKeys: String, CodingKey {
+        case email, password
+        case mfaCode = "mfa_code"
+    }
 }
 
 struct UserLogin: Codable, Identifiable {

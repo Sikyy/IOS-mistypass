@@ -97,7 +97,7 @@ private struct DashboardContent: View {
 
             Section(settings.L("dashboard.visitors_section")) {
                 NavigationLink {
-                    AdminGuestManagementView()
+                    AdminGuestManagementView(placeId: placeId)
                 } label: {
                     dashboardRow(title: settings.L("dashboard.guest_management"), icon: "person.badge.clock", color: .orange)
                 }
@@ -1103,6 +1103,12 @@ struct CameraDetailView: View {
     @State private var streamError: String?
     @State private var isCapturingSnapshot = false
     @State private var snapshotMessage: String?
+    @State private var cloudToken: CameraCloudToken?
+    @State private var cloudTokenError: String?
+    @State private var isLoadingCloudToken = false
+    @State private var recordings: [CameraRecording] = []
+    @State private var recordingsError: String?
+    @State private var isLoadingRecordings = false
     @State private var settings = SettingsService.shared
 
     var body: some View {
@@ -1198,6 +1204,8 @@ struct CameraDetailView: View {
                 // Camera info
                 VStack(spacing: 0) {
                     cameraInfoSection
+                    cloudAccessSection
+                    recordingsSection
                 }
                 .padding(.top, 8)
             }
@@ -1208,6 +1216,7 @@ struct CameraDetailView: View {
             if camera.status == "online" {
                 await loadVideoLink()
             }
+            await loadRecordings()
         }
     }
 
@@ -1247,6 +1256,148 @@ struct CameraDetailView: View {
         }
     }
 
+    private var cloudAccessSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("Cloud Access")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+
+            VStack(spacing: 0) {
+                Button {
+                    Task { await loadCloudToken() }
+                } label: {
+                    HStack {
+                        Label("Request Cloud Token", systemImage: "cloud")
+                        Spacer()
+                        if isLoadingCloudToken {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .font(.callout)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                }
+                .disabled(isLoadingCloudToken)
+
+                if let cloudToken {
+                    Divider().padding(.leading, 20)
+                    infoRow(label: "Provider", value: cloudToken.provider ?? "Cloud")
+                    Divider().padding(.leading, 20)
+                    infoRow(label: "Expires", value: cloudToken.expiresAt ?? "Session")
+                    if let token = cloudToken.token {
+                        Divider().padding(.leading, 20)
+                        infoRow(label: "Token", value: token)
+                    }
+                } else if let cloudTokenError {
+                    Divider().padding(.leading, 20)
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .foregroundStyle(.orange)
+                        Text(cloudTokenError)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
+                    .font(.caption)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                }
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, 16)
+        }
+        .padding(.top, 8)
+    }
+
+    private var recordingsSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("Recordings")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+                Spacer()
+                if isLoadingRecordings {
+                    ProgressView()
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+
+            VStack(spacing: 0) {
+                if recordings.isEmpty {
+                    HStack(spacing: 8) {
+                        Image(systemName: recordingsError == nil ? "video.badge.ellipsis" : "exclamationmark.triangle")
+                            .foregroundStyle(recordingsError == nil ? Color.secondary : Color.orange)
+                        Text(recordingsError ?? "No recordings available")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                } else {
+                    ForEach(recordings) { recording in
+                        recordingRow(recording)
+                        if recording.id != recordings.last?.id {
+                            Divider().padding(.leading, 20)
+                        }
+                    }
+                }
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, 16)
+        }
+        .padding(.top, 8)
+    }
+
+    private func recordingRow(_ recording: CameraRecording) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(recording.startedAt)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Spacer()
+                if let status = recording.status {
+                    Text(status.capitalized)
+                        .font(.caption2)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color(.tertiarySystemBackground))
+                        .clipShape(Capsule())
+                }
+            }
+            HStack(spacing: 6) {
+                if let endedAt = recording.endedAt {
+                    Text(endedAt)
+                }
+                if let duration = recording.durationSeconds {
+                    Text("\(duration)s")
+                }
+                if recording.playbackUrl != nil {
+                    Text("Playback ready")
+                }
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+    }
+
     private func infoRow(label: String, value: String, color: Color? = nil) -> some View {
         HStack {
             Text(label)
@@ -1279,7 +1430,19 @@ struct CameraDetailView: View {
         isLoadingStream = true
         streamError = nil
         do {
-            videoLink = try await APIService.shared.fetchCameraVideoLink(cameraId: camera.id)
+            var link = try await APIService.shared.fetchCameraVideoLink(cameraId: camera.id)
+            #if DEBUG
+            // AVPlayer doesn't support RTSP; proxy through local HLS relay in dev
+            if link.videoUrl.hasPrefix("rtsp://") {
+                link = CameraVideoLink(
+                    cameraId: link.cameraId,
+                    videoUrl: "http://localhost:8888/stream.m3u8",
+                    protocol: "hls",
+                    expiresAt: link.expiresAt
+                )
+            }
+            #endif
+            videoLink = link
             isPlaying = true
         } catch {
             streamError = error.localizedDescription
@@ -1297,6 +1460,28 @@ struct CameraDetailView: View {
             snapshotMessage = error.localizedDescription
         }
         isCapturingSnapshot = false
+    }
+
+    private func loadCloudToken() async {
+        isLoadingCloudToken = true
+        cloudTokenError = nil
+        do {
+            cloudToken = try await APIService.shared.fetchCameraCloudToken(cameraId: camera.id)
+        } catch {
+            cloudTokenError = error.localizedDescription
+        }
+        isLoadingCloudToken = false
+    }
+
+    private func loadRecordings() async {
+        isLoadingRecordings = true
+        recordingsError = nil
+        do {
+            recordings = try await APIService.shared.fetchCameraRecordings(cameraId: camera.id)
+        } catch {
+            recordingsError = error.localizedDescription
+        }
+        isLoadingRecordings = false
     }
 }
 
@@ -2406,7 +2591,7 @@ struct EventExportView: View {
     let placeId: String
     @State private var fromDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
     @State private var toDate = Date()
-    @State private var selectedFormat = "csv"
+    @State private var selectedFormat = "pdf"
     @State private var selectedType: ReportType = .weeklyAnalytics
     @State private var isExporting = false
     @State private var exportResult: ReportExportResponse?
