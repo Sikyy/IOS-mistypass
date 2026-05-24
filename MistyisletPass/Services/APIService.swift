@@ -486,16 +486,16 @@ final class APIService: @unchecked Sendable {
         let _: Empty = try await delete(path: Constants.API.adminCardUnassignPath(placeId, cardUid))
     }
 
-    func suspendWalletPass(passId: String) async throws {
-        let _: Empty = try await patch(path: Constants.API.walletPassSuspendPath(passId), body: Optional<String>.none)
+    func suspendWalletPass(passId: String, tenantId: String) async throws {
+        let _: Empty = try await patch(path: Constants.API.walletPassSuspendPath(passId, tenantId: tenantId), body: Optional<String>.none)
     }
 
-    func activateWalletPass(passId: String) async throws {
-        let _: Empty = try await patch(path: Constants.API.walletPassActivatePath(passId), body: Optional<String>.none)
+    func activateWalletPass(passId: String, tenantId: String) async throws {
+        let _: Empty = try await patch(path: Constants.API.walletPassActivatePath(passId, tenantId: tenantId), body: Optional<String>.none)
     }
 
-    func revokeWalletPass(passId: String) async throws {
-        let _: Empty = try await patch(path: Constants.API.walletPassRevokePath(passId), body: Optional<String>.none)
+    func revokeWalletPass(passId: String, tenantId: String) async throws {
+        let _: Empty = try await patch(path: Constants.API.walletPassRevokePath(passId, tenantId: tenantId), body: Optional<String>.none)
     }
 
     // MARK: - User Management

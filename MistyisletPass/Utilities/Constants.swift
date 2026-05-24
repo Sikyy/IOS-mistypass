@@ -93,9 +93,19 @@ enum Constants {
         static func adminCredentialsPath(_ placeId: String) -> String { "/app/places/\(placeId)/credentials" }
         static func adminCredentialSearchPath(_ placeId: String) -> String { "/app/places/\(placeId)/credentials/search" }
         static func adminCredentialPath(_ placeId: String, _ credId: String) -> String { "/app/places/\(placeId)/credentials/\(credId)" }
-        static func walletPassSuspendPath(_ passId: String) -> String { "/wallet/passes/\(passId)/suspend" }
-        static func walletPassActivatePath(_ passId: String) -> String { "/wallet/passes/\(passId)/activate" }
-        static func walletPassRevokePath(_ passId: String) -> String { "/wallet/passes/\(passId)/revoke" }
+        private static func queryValue(_ value: String) -> String {
+            value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
+        }
+
+        static func walletPassSuspendPath(_ passId: String, tenantId: String) -> String {
+            "/wallet/passes/\(passId)/suspend?tenant_id=\(queryValue(tenantId))"
+        }
+        static func walletPassActivatePath(_ passId: String, tenantId: String) -> String {
+            "/wallet/passes/\(passId)/activate?tenant_id=\(queryValue(tenantId))"
+        }
+        static func walletPassRevokePath(_ passId: String, tenantId: String) -> String {
+            "/wallet/passes/\(passId)/revoke?tenant_id=\(queryValue(tenantId))"
+        }
         static func adminTeamsPath(_ placeId: String) -> String { "/app/places/\(placeId)/teams" }
 
         // User management

@@ -1030,7 +1030,11 @@ private struct UserCredentialsDetailView: View {
             Button(settings.L("profile.revoke"), role: .destructive) {
                 Task {
                     do {
-                        try await APIService.shared.revokeWalletPass(passId: cred.id)
+                        guard let tenantId = settings.selectedOrgId, !tenantId.isEmpty else {
+                            actionError = "Missing selected organization"
+                            return
+                        }
+                        try await APIService.shared.revokeWalletPass(passId: cred.id, tenantId: tenantId)
                         if let idx = credentials.firstIndex(where: { $0.id == cred.id }) {
                             credentials.remove(at: idx)
                         }
