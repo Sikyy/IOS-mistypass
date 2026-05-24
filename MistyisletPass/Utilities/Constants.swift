@@ -117,6 +117,9 @@ enum Constants {
         static func adminUserRolePath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/role" }
         static func adminUserSignOutPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/sign-out" }
         static func adminInviteUserPath(_ placeId: String) -> String { "/app/places/\(placeId)/users/invite" }
+        static func adminUserLoginsPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/logins" }
+        static func adminUserAccessRightsPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/access-rights" }
+        static func adminUserShareAccessPath(_ placeId: String, _ userId: String) -> String { "/app/places/\(placeId)/users/\(userId)/share-access" }
 
         // Groups
         static func adminGroupsPath(_ placeId: String) -> String { "/app/places/\(placeId)/groups" }
@@ -131,6 +134,10 @@ enum Constants {
 
         // Organization settings
         static func orgSettingsPath(_ orgId: String) -> String { "/app/orgs/\(orgId)/settings" }
+
+        // Zones
+        static func adminZonePath(_ placeId: String, _ zoneId: String) -> String { "/app/places/\(placeId)/zones/\(zoneId)" }
+        static func adminZoneHolidayRegionsPath(_ placeId: String, _ zoneId: String) -> String { "/app/places/\(placeId)/zones/\(zoneId)/holiday-regions" }
 
         // Place management
         static func placeSettingsPath(_ placeId: String) -> String { "/app/places/\(placeId)/settings" }
@@ -193,6 +200,8 @@ enum Constants {
         static let camerasPath = "/app/cameras"
         static func cameraVideoLinkPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/video-link" }
         static func cameraSnapshotPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/snapshot" }
+        static func cameraCloudTokenPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/cloud-token" }
+        static func cameraRecordingsPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/recordings" }
         static func eventMediaPath(_ placeId: String, _ eventId: String) -> String {
             "/app/places/\(placeId)/events/\(eventId)/media"
         }

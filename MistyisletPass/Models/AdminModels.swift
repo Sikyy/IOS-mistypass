@@ -20,6 +20,19 @@ struct PlaceUser: Codable, Identifiable {
     }
 }
 
+struct UserAccessShare: Codable {
+    let userId: String?
+    let url: String?
+    let token: String?
+    let expiresAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case url, token
+        case userId = "user_id"
+        case expiresAt = "expires_at"
+    }
+}
+
 // MARK: - Events (admin-scoped, not same as access logs)
 
 struct AdminEvent: Codable, Identifiable {
@@ -323,6 +336,22 @@ struct AccessRightAssignment: Codable, Identifiable {
     }
 }
 
+struct UserAccessRight: Codable, Identifiable {
+    let id: String
+    let role: String
+    let scope: String
+    let scopeName: String?
+    let scopeId: String?
+    let grantedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, role, scope
+        case scopeName = "scope_name"
+        case scopeId = "scope_id"
+        case grantedAt = "granted_at"
+    }
+}
+
 // MARK: - Schedules
 
 struct UnlockSchedule: Codable, Identifiable {
@@ -416,11 +445,31 @@ struct Zone: Codable, Identifiable {
     let description: String
     let status: String
     let doorCount: Int
+    let cameraCount: Int?
+    let holidayRegionCount: Int?
+    let createdAt: String?
 
     enum CodingKeys: String, CodingKey {
         case id, name, description, status
         case placeId = "place_id"
         case doorCount = "door_count"
+        case cameraCount = "camera_count"
+        case holidayRegionCount = "holiday_region_count"
+        case createdAt = "created_at"
+    }
+}
+
+struct HolidayRegion: Codable, Identifiable {
+    let id: String
+    let name: String
+    let countryCode: String?
+    let regionCode: String?
+    let timezone: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, timezone
+        case countryCode = "country_code"
+        case regionCode = "region_code"
     }
 }
 
@@ -530,6 +579,40 @@ struct CameraSnapshot: Codable, Identifiable {
         case snapshotUrl = "snapshot_url"
         case triggeredBy = "triggered_by"
         case createdAt = "created_at"
+    }
+}
+
+struct CameraCloudToken: Codable {
+    let cameraId: String?
+    let token: String?
+    let provider: String?
+    let expiresAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case token, provider
+        case cameraId = "camera_id"
+        case expiresAt = "expires_at"
+    }
+}
+
+struct CameraRecording: Codable, Identifiable {
+    let id: String
+    let cameraId: String?
+    let startedAt: String
+    let endedAt: String?
+    let durationSeconds: Int?
+    let playbackUrl: String?
+    let thumbnailUrl: String?
+    let status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, status
+        case cameraId = "camera_id"
+        case startedAt = "started_at"
+        case endedAt = "ended_at"
+        case durationSeconds = "duration_seconds"
+        case playbackUrl = "playback_url"
+        case thumbnailUrl = "thumbnail_url"
     }
 }
 

@@ -36,4 +36,21 @@ final class ConstantsTests: XCTestCase {
         XCTAssertEqual(Constants.API.adminIncidentPath("place-001", "inc-001"), "/app/places/place-001/incidents/inc-001")
         XCTAssertEqual(Constants.API.adminIncidentOccurrencesPath("place-001", "inc-001"), "/app/places/place-001/incidents/inc-001/occurrences")
     }
+
+    func testAdminUserDetailRoutePaths() {
+        XCTAssertEqual(Constants.API.adminUserPath("place-001", "user-001"), "/app/places/place-001/users/user-001")
+        XCTAssertEqual(Constants.API.adminUserLoginsPath("place-001", "user-001"), "/app/places/place-001/users/user-001/logins")
+        XCTAssertEqual(Constants.API.adminUserAccessRightsPath("place-001", "user-001"), "/app/places/place-001/users/user-001/access-rights")
+        XCTAssertEqual(Constants.API.adminUserShareAccessPath("place-001", "user-001"), "/app/places/place-001/users/user-001/share-access")
+    }
+
+    func testAdminZoneRoutePaths() {
+        XCTAssertEqual(Constants.API.adminZonePath("place-001", "zone-001"), "/app/places/place-001/zones/zone-001")
+        XCTAssertEqual(Constants.API.adminZoneHolidayRegionsPath("place-001", "zone-001"), "/app/places/place-001/zones/zone-001/holiday-regions")
+    }
+
+    func testCameraCloudRoutePaths() {
+        XCTAssertEqual(Constants.API.cameraCloudTokenPath("cam-001"), "/app/cameras/cam-001/cloud-token")
+        XCTAssertEqual(Constants.API.cameraRecordingsPath("cam-001"), "/app/cameras/cam-001/recordings")
+    }
 }

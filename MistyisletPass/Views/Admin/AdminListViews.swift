@@ -864,7 +864,11 @@ struct AdminZonesListView: View {
                 emptyView(title: settings.L("admin.no_zones"), icon: "map")
             } else {
                 ForEach(vm.items) { zone in
-                    zoneRow(zone)
+                    NavigationLink {
+                        ZoneDetailView(placeId: placeId, zoneSummary: zone)
+                    } label: {
+                        zoneRow(zone)
+                    }
                 }
             }
 
@@ -906,6 +910,100 @@ struct AdminZonesListView: View {
                 .foregroundStyle(.secondary)
         }
         .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Zone Detail
+
+private struct ZoneDetailView: View {
+    let placeId: String
+    let zoneSummary: Zone
+    @State private var zone: Zone
+    @State private var holidayRegions: [HolidayRegion] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+
+    init(placeId: String, zoneSummary: Zone) {
+        self.placeId = placeId
+        self.zoneSummary = zoneSummary
+        self._zone = State(initialValue: zoneSummary)
+    }
+
+    var body: some View {
+        List {
+            Section("Zone") {
+                Label(zone.status.capitalized, systemImage: "map.fill")
+                    .foregroundStyle(zone.status == "active" ? .green : .secondary)
+                detailRow("Description", zone.description)
+                LabeledContent("Doors", value: "\(zone.doorCount)")
+                if let cameraCount = zone.cameraCount {
+                    LabeledContent("Cameras", value: "\(cameraCount)")
+                }
+                if let count = zone.holidayRegionCount {
+                    LabeledContent("Holiday Regions", value: "\(count)")
+                }
+                detailRow("Created", zone.createdAt)
+            }
+
+            Section("Holiday Regions") {
+                if isLoading {
+                    loadingRow
+                } else if holidayRegions.isEmpty {
+                    emptyView(title: "No Holiday Regions", icon: "calendar.badge.exclamationmark")
+                } else {
+                    ForEach(holidayRegions) { region in
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(region.name)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            HStack(spacing: 6) {
+                                if let countryCode = region.countryCode {
+                                    Text(countryCode)
+                                }
+                                if let regionCode = region.regionCode {
+                                    Text(regionCode)
+                                }
+                                if let timezone = region.timezone {
+                                    Text(timezone)
+                                }
+                            }
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+            }
+
+            errorSection(errorMessage)
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle(zone.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .refreshable { await loadData() }
+        .task(id: zoneSummary.id) { await loadData() }
+    }
+
+    @ViewBuilder
+    private func detailRow(_ label: String, _ value: String?) -> some View {
+        if let value, !value.isEmpty {
+            LabeledContent(label, value: value)
+        }
+    }
+
+    private func loadData() async {
+        isLoading = true
+        errorMessage = nil
+        do {
+            async let zoneResult = APIService.shared.fetchAdminZone(placeId: placeId, zoneId: zoneSummary.id)
+            async let regionsResult = APIService.shared.fetchZoneHolidayRegions(placeId: placeId, zoneId: zoneSummary.id)
+            let (freshZone, regions) = try await (zoneResult, regionsResult)
+            zone = freshZone
+            holidayRegions = regions
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
     }
 }
 

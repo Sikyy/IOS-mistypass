@@ -494,6 +494,17 @@ final class APIService: @unchecked Sendable {
         return response.items
     }
 
+    func fetchAdminZone(placeId: String, zoneId: String) async throws -> Zone {
+        try await get(path: Constants.API.adminZonePath(placeId, zoneId))
+    }
+
+    func fetchZoneHolidayRegions(placeId: String, zoneId: String) async throws -> [HolidayRegion] {
+        let response: AdminListResponse<HolidayRegion> = try await get(
+            path: Constants.API.adminZoneHolidayRegionsPath(placeId, zoneId)
+        )
+        return response.items
+    }
+
     func fetchAdminCards(placeId: String) async throws -> [CardAssignment] {
         let response: AdminListResponse<CardAssignment> = try await get(path: Constants.API.adminCardsPath(placeId))
         return response.items
@@ -537,6 +548,26 @@ final class APIService: @unchecked Sendable {
 
     func signOutUser(placeId: String, userId: String) async throws {
         let _: Empty = try await post(path: Constants.API.adminUserSignOutPath(placeId, userId), body: Optional<String>.none)
+    }
+
+    func fetchAdminUser(placeId: String, userId: String) async throws -> PlaceUser {
+        try await get(path: Constants.API.adminUserPath(placeId, userId))
+    }
+
+    func fetchUserLogins(placeId: String, userId: String) async throws -> [UserLogin] {
+        let response: UserLoginListResponse = try await get(path: Constants.API.adminUserLoginsPath(placeId, userId))
+        return response.items
+    }
+
+    func fetchUserAccessRights(placeId: String, userId: String) async throws -> [UserAccessRight] {
+        let response: AdminListResponse<UserAccessRight> = try await get(
+            path: Constants.API.adminUserAccessRightsPath(placeId, userId)
+        )
+        return response.items
+    }
+
+    func createUserAccessShare(placeId: String, userId: String) async throws -> UserAccessShare {
+        try await post(path: Constants.API.adminUserShareAccessPath(placeId, userId), body: Empty())
     }
 
     // MARK: - Groups
@@ -775,6 +806,17 @@ final class APIService: @unchecked Sendable {
 
     func captureSnapshot(cameraId: String) async throws -> CameraSnapshot {
         try await post(path: Constants.API.cameraSnapshotPath(cameraId), body: Empty())
+    }
+
+    func fetchCameraCloudToken(cameraId: String) async throws -> CameraCloudToken {
+        try await post(path: Constants.API.cameraCloudTokenPath(cameraId), body: Empty())
+    }
+
+    func fetchCameraRecordings(cameraId: String) async throws -> [CameraRecording] {
+        let response: AdminListResponse<CameraRecording> = try await get(
+            path: Constants.API.cameraRecordingsPath(cameraId)
+        )
+        return response.items
     }
 
     func fetchEventMedia(placeId: String, eventId: String) async throws -> [EventMedia] {
