@@ -46,11 +46,11 @@ final class ConstantsTests: XCTestCase {
 
     func testAdminZoneRoutePaths() {
         XCTAssertEqual(Constants.API.adminZonePath("place-001", "zone-001"), "/app/places/place-001/zones/zone-001")
-        XCTAssertEqual(Constants.API.adminZoneHolidayRegionsPath("place-001", "zone-001"), "/app/places/place-001/zones/zone-001/holiday-regions")
+        XCTAssertEqual(Constants.API.adminZoneHolidayRegionsPath("place-001", "zone-001"), "/app/places/place-001/holiday-regions")
     }
 
     func testCameraCloudRoutePaths() {
         XCTAssertEqual(Constants.API.cameraCloudTokenPath("cam-001"), "/app/cameras/cam-001/cloud-token")
-        XCTAssertEqual(Constants.API.cameraRecordingsPath("cam-001"), "/app/cameras/cam-001/recordings")
+        XCTAssertEqual(Constants.API.cameraRecordingsPath("cam-001"), "/app/cameras/cam-001/cloud-recordings")
     }
 }
