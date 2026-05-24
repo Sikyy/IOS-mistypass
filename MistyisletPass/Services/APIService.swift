@@ -809,7 +809,7 @@ final class APIService: @unchecked Sendable {
     }
 
     func fetchCameraCloudToken(cameraId: String) async throws -> CameraCloudToken {
-        try await post(path: Constants.API.cameraCloudTokenPath(cameraId), body: Empty())
+        try await get(path: Constants.API.cameraCloudTokenPath(cameraId))
     }
 
     func fetchCameraRecordings(cameraId: String) async throws -> [CameraRecording] {
