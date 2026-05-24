@@ -137,7 +137,7 @@ enum Constants {
 
         // Zones
         static func adminZonePath(_ placeId: String, _ zoneId: String) -> String { "/app/places/\(placeId)/zones/\(zoneId)" }
-        static func adminZoneHolidayRegionsPath(_ placeId: String, _ zoneId: String) -> String { "/app/places/\(placeId)/zones/\(zoneId)/holiday-regions" }
+        static func adminZoneHolidayRegionsPath(_ placeId: String, _: String) -> String { "/app/places/\(placeId)/holiday-regions" }
 
         // Place management
         static func placeSettingsPath(_ placeId: String) -> String { "/app/places/\(placeId)/settings" }
@@ -201,7 +201,7 @@ enum Constants {
         static func cameraVideoLinkPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/video-link" }
         static func cameraSnapshotPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/snapshot" }
         static func cameraCloudTokenPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/cloud-token" }
-        static func cameraRecordingsPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/recordings" }
+        static func cameraRecordingsPath(_ cameraId: String) -> String { "/app/cameras/\(cameraId)/cloud-recordings" }
         static func eventMediaPath(_ placeId: String, _ eventId: String) -> String {
             "/app/places/\(placeId)/events/\(eventId)/media"
         }
