@@ -115,6 +115,7 @@ final class ModelDecodingTests: XCTestCase {
         XCTAssertFalse(credential.isExpired)
         XCTAssertEqual(credential.platform, "ios")
         XCTAssertTrue(credential.isCurrentPlatformMobileCredential)
+        XCTAssertTrue(credential.isVisibleInIOSCredentialList)
     }
 
     func testAndroidCredentialIsNotCurrentIOSPlatformCredential() throws {
@@ -134,6 +135,28 @@ final class ModelDecodingTests: XCTestCase {
 
         let credential = try decoder.decode(Credential.self, from: json)
         XCTAssertFalse(credential.isCurrentPlatformMobileCredential)
+        XCTAssertFalse(credential.isVisibleInIOSCredentialList)
+    }
+
+    func testNFCCredentialIsVisibleInIOSCredentialList() throws {
+        let json = """
+        {
+            "id": "cred-nfc-001",
+            "user_email": "test@example.com",
+            "device_id": "04:A1:B2:C3:D4:E5:F6",
+            "platform": "nfc",
+            "device_model": "DESFire EV3",
+            "keystore_level": "physical_card",
+            "status": "active",
+            "issued_at": "2026-04-01T00:00:00Z",
+            "expires_at": "2026-07-01T00:00:00Z"
+        }
+        """.data(using: .utf8)!
+
+        let credential = try decoder.decode(Credential.self, from: json)
+        XCTAssertFalse(credential.isCurrentPlatformMobileCredential)
+        XCTAssertTrue(credential.isNFCPhysicalCardCredential)
+        XCTAssertTrue(credential.isVisibleInIOSCredentialList)
     }
 
     // MARK: - Visitor

@@ -137,8 +137,9 @@ struct NFCBindingView: View {
                 cardUID: uid,
                 label: cardLabel.isEmpty ? "NFC Card" : cardLabel
             )
-            // Add to credentials list
-            viewModel.credentials.append(credential)
+            if credential.isVisibleInIOSCredentialList {
+                viewModel.credentials.append(credential)
+            }
             bindSuccess = true
         } catch {
             errorMessage = error.localizedDescription

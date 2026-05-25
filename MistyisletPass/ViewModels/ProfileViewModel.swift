@@ -19,7 +19,7 @@ final class ProfileViewModel {
             async let credentialsResult = APIService.shared.fetchCredentials()
             user = try await profileResult
             let fetchedCredentials = try await credentialsResult
-            credentials = fetchedCredentials.filter(\.isCurrentPlatformMobileCredential)
+            credentials = fetchedCredentials.filter(\.isVisibleInIOSCredentialList)
         } catch {
             errorMessage = error.localizedDescription
         }
