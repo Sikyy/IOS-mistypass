@@ -3,8 +3,8 @@ import CoreBluetooth
 
 enum Constants {
     // MARK: - Environment
-    /// App environment. Resolves base URL from `APP_ENV` Info.plist key (set per
-    /// scheme) or falls back to production. Mirrors Android build variants.
+    /// App environment. Resolves base URL from scheme `APP_ENV`, then the
+    /// Info.plist build setting, then production. Mirrors Android build variants.
     enum AppEnvironment: String {
         case mock, dev, staging, production
 
@@ -17,12 +17,15 @@ enum Constants {
             }
         }
 
-        static let current: AppEnvironment = {
-            let raw = (Bundle.main.object(forInfoDictionaryKey: "APP_ENV") as? String)
-                ?? ProcessInfo.processInfo.environment["APP_ENV"]
-                ?? ""
+        static func resolve(environmentValue: String?, infoValue: String?) -> AppEnvironment {
+            let raw = environmentValue ?? infoValue ?? ""
             return AppEnvironment(rawValue: raw.lowercased()) ?? .production
-        }()
+        }
+
+        static let current: AppEnvironment = resolve(
+            environmentValue: ProcessInfo.processInfo.environment["APP_ENV"],
+            infoValue: Bundle.main.object(forInfoDictionaryKey: "APP_ENV") as? String
+        )
 
         static let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
     }

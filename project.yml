@@ -90,3 +90,15 @@ schemes:
     test:
       targets:
         - MistyisletPassTests
+  MistyisletPass-Staging:
+    build:
+      targets:
+        MistyisletPass: all
+        MistyisletPassWidgetExtension: all
+        MistyisletPassTests: [test]
+    run:
+      environmentVariables:
+        APP_ENV: staging
+    test:
+      targets:
+        - MistyisletPassTests

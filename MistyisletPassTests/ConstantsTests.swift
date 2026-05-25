@@ -30,6 +30,24 @@ final class ConstantsTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(Constants.UI.minimumTouchTarget, 44.0)
     }
 
+    func testAppEnvironmentPrefersSchemeEnvironment() {
+        XCTAssertEqual(
+            Constants.AppEnvironment.resolve(environmentValue: "staging", infoValue: "dev"),
+            .staging
+        )
+    }
+
+    func testAppEnvironmentFallsBackToInfoPlist() {
+        XCTAssertEqual(
+            Constants.AppEnvironment.resolve(environmentValue: nil, infoValue: "dev"),
+            .dev
+        )
+    }
+
+    func testStagingBaseURL() {
+        XCTAssertEqual(Constants.AppEnvironment.staging.baseURL, "https://staging-api.mistyislet.com/api/v1")
+    }
+
     func testAdminDeepRoutePaths() {
         XCTAssertEqual(Constants.API.adminEventPath("place-001", "evt-001"), "/app/places/place-001/events/evt-001")
         XCTAssertEqual(Constants.API.adminEventRelatedPath("place-001", "evt-001"), "/app/places/place-001/events/evt-001/related")
