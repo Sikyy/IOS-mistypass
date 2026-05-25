@@ -43,4 +43,8 @@ struct Credential: Codable, Identifiable {
     var deviceName: String {
         deviceModel ?? deviceId ?? "Unknown"
     }
+
+    var isCurrentPlatformMobileCredential: Bool {
+        platform?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "ios"
+    }
 }

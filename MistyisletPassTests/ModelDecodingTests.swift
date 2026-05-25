@@ -114,6 +114,26 @@ final class ModelDecodingTests: XCTestCase {
         XCTAssertTrue(credential.isActive)
         XCTAssertFalse(credential.isExpired)
         XCTAssertEqual(credential.platform, "ios")
+        XCTAssertTrue(credential.isCurrentPlatformMobileCredential)
+    }
+
+    func testAndroidCredentialIsNotCurrentIOSPlatformCredential() throws {
+        let json = """
+        {
+            "id": "cred-android-001",
+            "user_email": "test@example.com",
+            "device_id": "xiaomi-15",
+            "platform": "android",
+            "device_model": "Xiaomi 15",
+            "keystore_level": "strongbox",
+            "status": "active",
+            "issued_at": "2026-04-01T00:00:00Z",
+            "expires_at": "2026-07-01T00:00:00Z"
+        }
+        """.data(using: .utf8)!
+
+        let credential = try decoder.decode(Credential.self, from: json)
+        XCTAssertFalse(credential.isCurrentPlatformMobileCredential)
     }
 
     // MARK: - Visitor
