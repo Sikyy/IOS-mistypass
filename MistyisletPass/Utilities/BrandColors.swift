@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension Color {
-    /// Brand primary color: #4F55FF (light) / #8589FF (dark)
+    /// Brand primary color aligned with mistyislet.com: #62B7A8.
     static let brandPrimary = Color("BrandPrimary")
 }
 

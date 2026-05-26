@@ -72,7 +72,7 @@ Tab Bar (always visible)
 
 | Role | Light Mode | Dark Mode | Usage |
 |------|-----------|-----------|-------|
-| Brand Primary | #4F55FF | #8589FF | Tab bar active, buttons, links |
+| Brand Primary | #62B7A8 | #62B7A8 | Tab bar active, buttons, links |
 | Success | systemGreen | systemGreen | Access granted, door unlocked |
 | Denied | systemRed | systemRed | Access denied, expired credential |
 | Warning | systemOrange | systemOrange | Offline, credential expiring |
