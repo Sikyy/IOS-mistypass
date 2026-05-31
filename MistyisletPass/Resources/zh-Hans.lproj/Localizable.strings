@@ -331,6 +331,9 @@
 "admin.no_members" = "没有成员";
 "admin.no_group_doors" = "没有门禁";
 "admin.no_access_rights" = "没有访问权限";
+"admin.access_via_group" = "通过群组";
+"admin.access_via_role" = "通过角色";
+"admin.access_via_group_role" = "通过群组和角色";
 "admin.search_users" = "搜索用户";
 "admin.search_doors" = "搜索门禁";
 "admin.doors_count" = "%d 个门";

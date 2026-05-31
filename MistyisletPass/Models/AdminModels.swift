@@ -337,18 +337,21 @@ struct AccessRightAssignment: Codable, Identifiable {
 }
 
 struct UserAccessRight: Codable, Identifiable {
-    let id: String
-    let role: String
-    let scope: String
-    let scopeName: String?
-    let scopeId: String?
-    let grantedAt: String?
+    var id: String { doorId }
+    let doorId: String
+    let doorName: String
+    let placeId: String?
+    let kind: String?
+    let status: String?
+    let source: String?
+    let canAccess: Bool?
 
     enum CodingKeys: String, CodingKey {
-        case id, role, scope
-        case scopeName = "scope_name"
-        case scopeId = "scope_id"
-        case grantedAt = "granted_at"
+        case doorId = "door_id"
+        case doorName = "door_name"
+        case placeId = "place_id"
+        case kind, status, source
+        case canAccess = "can_access"
     }
 }
 

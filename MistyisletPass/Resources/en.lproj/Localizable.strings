@@ -331,6 +331,9 @@
 "admin.no_members" = "No Members";
 "admin.no_group_doors" = "No Doors";
 "admin.no_access_rights" = "No Access Rights";
+"admin.access_via_group" = "Via group";
+"admin.access_via_role" = "Via role";
+"admin.access_via_group_role" = "Via group & role";
 "admin.search_users" = "Search users";
 "admin.search_doors" = "Search doors";
 "admin.doors_count" = "%d doors";

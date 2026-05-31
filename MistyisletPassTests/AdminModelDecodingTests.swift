@@ -220,19 +220,20 @@ final class AdminModelDecodingTests: XCTestCase {
     func testDecodeUserAccessRight() throws {
         let json = """
         {
-            "id": "right-001",
-            "role": "door_access",
-            "scope": "group",
-            "scope_name": "Lobby",
-            "scope_id": "group-001",
-            "granted_at": "2026-05-24T08:00:00Z"
+            "door_id": "door-001",
+            "door_name": "Main Entrance",
+            "place_id": "place-001",
+            "kind": "door",
+            "status": "active",
+            "source": "group",
+            "can_access": true
         }
         """.data(using: .utf8)!
 
         let right = try decoder.decode(UserAccessRight.self, from: json)
-        XCTAssertEqual(right.id, "right-001")
-        XCTAssertEqual(right.scopeName, "Lobby")
-        XCTAssertEqual(right.grantedAt, "2026-05-24T08:00:00Z")
+        XCTAssertEqual(right.id, "door-001")
+        XCTAssertEqual(right.doorName, "Main Entrance")
+        XCTAssertEqual(right.source, "group")
     }
 
     func testDecodeUserAccessShare() throws {

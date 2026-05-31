@@ -331,6 +331,9 @@
 "admin.no_members" = "Tidak Ada Anggota";
 "admin.no_group_doors" = "Tidak Ada Pintu";
 "admin.no_access_rights" = "Tidak Ada Hak Akses";
+"admin.access_via_group" = "Melalui grup";
+"admin.access_via_role" = "Melalui peran";
+"admin.access_via_group_role" = "Melalui grup & peran";
 "admin.search_users" = "Cari pengguna";
 "admin.search_doors" = "Cari pintu";
 "admin.doors_count" = "%d pintu";
