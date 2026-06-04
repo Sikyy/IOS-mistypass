@@ -7,36 +7,31 @@ struct CreateVisitorView: View {
 
     @State private var name = ""
     @State private var selectedTTL = 24
-    @State private var deliveryMethod: DeliveryMethod = .whatsapp
+    @State private var deliveryMethod: DeliveryMethod = .emailQR
 
     private let ttlOptions = [4, 8, 24, 48, 72]
 
+    // Only the values the backend accepts (`normalizeDeliveryMethod` in
+    // api/internal/modules/access/service_policies.go: wallet, email_qr).
+    // Other channels (whatsapp/sms/email) are not delivered server-side and
+    // were rejected on create, so they are not offered here.
     enum DeliveryMethod: String, CaseIterable, Identifiable {
-        case email = "email"
         case emailQR = "email_qr"
-        case whatsapp = "whatsapp"
-        case whatsappQR = "whatsapp_qr"
-        case sms = "sms"
+        case wallet = "wallet"
 
         var id: String { rawValue }
 
         var label: String {
             switch self {
-            case .email: return "Email"
             case .emailQR: return "Email + QR"
-            case .whatsapp: return "WhatsApp"
-            case .whatsappQR: return "WhatsApp + QR"
-            case .sms: return "SMS"
+            case .wallet: return "Wallet"
             }
         }
 
         var icon: String {
             switch self {
-            case .email: return "envelope"
             case .emailQR: return "qrcode"
-            case .whatsapp: return "bubble.left.fill"
-            case .whatsappQR: return "qrcode"
-            case .sms: return "message"
+            case .wallet: return "wallet.pass"
             }
         }
     }
