@@ -87,7 +87,7 @@ final class VisitorsViewModel {
     func createVisitor(
         name: String,
         ttlHours: Double = 24,
-        deliveryMethod: String = "whatsapp",
+        deliveryMethod: String = "email_qr",
         buildingId: String? = nil
     ) async {
         isLoading = true

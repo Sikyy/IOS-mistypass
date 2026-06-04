@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		009F0BFF5A417946A9B7D1F2 /* AccessEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9941959B7D21B358B58037 /* AccessEvent.swift */; };
 		034B3C3C1EE9FCDCF975A276 /* ModelDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */; };
+		6FCA60DCAFDD2DE372797646 /* CreateVisitorDeliveryMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D47B68B0AED90A3E3B9D6BE /* CreateVisitorDeliveryMethodTests.swift */; };
 		07D2B193D856A9068AE4A539 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0CBDF18C820408FFC540096 /* AdminDashboardView.swift */; };
 		0A6D4B5FAFE5C0204A5E1D55 /* DoorsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052906042FEFD41256597F69 /* DoorsViewModelTests.swift */; };
 		0D328A28F9208EE6FF502987 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA263DEDC614D6571E3D2532 /* UserProfile.swift */; };
@@ -142,6 +143,7 @@
 		27F71721675C8C6E91AE2B27 /* VisitorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorsView.swift; sourceTree = "<group>"; };
 		2858D3DC63174DC5CC13ED0E /* NFCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCService.swift; sourceTree = "<group>"; };
 		286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDecodingTests.swift; sourceTree = "<group>"; };
+		5D47B68B0AED90A3E3B9D6BE /* CreateVisitorDeliveryMethodTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateVisitorDeliveryMethodTests.swift; sourceTree = "<group>"; };
 		28EC5A794CDD22CF09A9AE43 /* Site.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Site.swift; sourceTree = "<group>"; };
 		A7B3C94D5F1E6A80D2E47F13 /* TCPAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPAuthClient.swift; sourceTree = "<group>"; };
 		F1B2A73E8D4C5901E6A03B57 /* TCPAuthTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPAuthTestView.swift; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 				052906042FEFD41256597F69 /* DoorsViewModelTests.swift */,
 				B15BC893999F4D04247727B9 /* KeychainServiceTests.swift */,
 				286FD510308F76A1CA91AAF6 /* ModelDecodingTests.swift */,
+				5D47B68B0AED90A3E3B9D6BE /* CreateVisitorDeliveryMethodTests.swift */,
 				D4E5F6071829304152637B85 /* NFCAuthFlowTests.swift */,
 				6AA63B71054C378AB74A5F75 /* SettingsServiceTests.swift */,
 				8F4D2B61A9C3E70F5D8B4A93 /* TCPAuthClientTests.swift */,
@@ -716,6 +719,7 @@
 				0A6D4B5FAFE5C0204A5E1D55 /* DoorsViewModelTests.swift in Sources */,
 				30495B37C96C18BE7C9A5F97 /* KeychainServiceTests.swift in Sources */,
 				034B3C3C1EE9FCDCF975A276 /* ModelDecodingTests.swift in Sources */,
+				6FCA60DCAFDD2DE372797646 /* CreateVisitorDeliveryMethodTests.swift in Sources */,
 				C3D4E5F607182930415263B4 /* NFCAuthFlowTests.swift in Sources */,
 				41A4B81BE5585F75395F5A5B /* SettingsServiceTests.swift in Sources */,
 				C2E91A4B7D3F5C8E0A6B1D72 /* TCPAuthClientTests.swift in Sources */,
