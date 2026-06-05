@@ -47,6 +47,10 @@ final class HistoryViewModel {
             errorMessage = error.localizedDescription
         }
 
+        #if DEBUG
+        if events.isEmpty { events = PreviewData.events }
+        #endif
+
         isLoading = false
     }
 
