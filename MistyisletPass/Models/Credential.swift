@@ -43,4 +43,20 @@ struct Credential: Codable, Identifiable {
     var deviceName: String {
         deviceModel ?? deviceId ?? "Unknown"
     }
+
+    private var normalizedPlatform: String {
+        platform?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
+    }
+
+    var isCurrentPlatformMobileCredential: Bool {
+        normalizedPlatform == "ios"
+    }
+
+    var isNFCPhysicalCardCredential: Bool {
+        normalizedPlatform == "nfc"
+    }
+
+    var isVisibleInIOSCredentialList: Bool {
+        isCurrentPlatformMobileCredential || isNFCPhysicalCardCredential
+    }
 }

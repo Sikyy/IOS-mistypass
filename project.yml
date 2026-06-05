@@ -33,6 +33,13 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mistyislet.pass
         INFOPLIST_FILE: MistyisletPass/Info.plist
+      configs:
+        Debug:
+          APP_ENV: staging
+          API_PINNED_SPKI_HASHES: ""
+        Release:
+          APP_ENV: production
+          API_PINNED_SPKI_HASHES: "SCLfz8HMkTfdKWXGwyvGP8MfePXUCuLlNuXrxxoq/AA=,kIdp6NNEd8wsugYyyIYFsi1ylMCED3hZbSR8ZFsa/A4=,mEflZT5enoR1FuXLgYYGqnVEoZvmf9c2bVBpiOjYQ0c="
     entitlements:
       path: MistyisletPass/MistyisletPass.entitlements
       properties:
@@ -58,6 +65,9 @@ targets:
         GENERATE_INFOPLIST_FILE: true
         INFOPLIST_KEY_CFBundleDisplayName: MistyisletPass Widget
         INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+      configs:
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: com.mistyislet.pass.staging.widget
     entitlements:
       path: MistyisletPassWidget/MistyisletPassWidget.entitlements
       properties:
@@ -87,6 +97,18 @@ schemes:
     run:
       environmentVariables:
         APP_ENV: dev
+    test:
+      targets:
+        - MistyisletPassTests
+  MistyisletPass-Staging:
+    build:
+      targets:
+        MistyisletPass: all
+        MistyisletPassWidgetExtension: all
+        MistyisletPassTests: [test]
+    run:
+      environmentVariables:
+        APP_ENV: staging
     test:
       targets:
         - MistyisletPassTests

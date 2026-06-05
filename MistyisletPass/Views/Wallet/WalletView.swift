@@ -157,7 +157,7 @@ struct WalletView: View {
 
         do {
             let credentials = try await APIService.shared.fetchCredentials()
-            for cred in credentials where cred.isActive {
+            for cred in credentials where cred.isCurrentPlatformMobileCredential && cred.isActive {
                 result.append(PassItem(
                     id: cred.id,
                     type: .deviceCredential,

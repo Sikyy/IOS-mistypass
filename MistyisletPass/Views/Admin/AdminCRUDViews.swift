@@ -233,26 +233,30 @@ struct UserDetailView: View {
                 .foregroundStyle(.purple)
                 .frame(width: 28)
             VStack(alignment: .leading, spacing: 3) {
-                Text(right.role.replacingOccurrences(of: "_", with: " ").capitalized)
+                Text(right.doorName.isEmpty ? right.doorId : right.doorName)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 HStack(spacing: 4) {
-                    Text(right.scope.capitalized)
-                    if let scopeName = right.scopeName {
+                    Text(accessRightSourceLabel(right.source))
+                    if let status = right.status, !status.isEmpty {
                         Text("·")
-                        Text(scopeName)
+                        Text(status.capitalized)
                     }
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                if let grantedAt = right.grantedAt {
-                    Text(grantedAt)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
             }
         }
         .padding(.vertical, 2)
+    }
+
+    private func accessRightSourceLabel(_ source: String?) -> String {
+        switch source?.lowercased() {
+        case "group": return settings.L("admin.access_via_group")
+        case "role": return settings.L("admin.access_via_role")
+        case "group+role": return settings.L("admin.access_via_group_role")
+        default: return source ?? ""
+        }
     }
 
     private func loginPlatformIcon(_ platform: String) -> String {

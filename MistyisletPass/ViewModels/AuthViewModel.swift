@@ -231,7 +231,10 @@ final class AuthViewModel {
         do {
             let credentials = try await APIService.shared.fetchCredentials()
             let hasValidCredential = credentials.contains { cred in
-                cred.isActive && !cred.isExpired && !cred.isExpiringSoon
+                cred.isCurrentPlatformMobileCredential &&
+                    cred.isActive &&
+                    !cred.isExpired &&
+                    !cred.isExpiringSoon
             }
 
             if !hasValidCredential {
